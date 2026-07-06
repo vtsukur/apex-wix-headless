@@ -31,6 +31,7 @@ const { title, description, hasSeoTags = false } = Astro.props;
     <ClientRouter />
   </head>
   <body>
+    <div class="film-grain" aria-hidden="true"></div>
     <div class="nav-progress" data-nav-progress aria-hidden="true"></div>
     <Navigation />
     <main><slot /></main>
@@ -126,11 +127,48 @@ const { title, description, hasSeoTags = false } = Astro.props;
       import Lenis from "lenis";
 
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // Scroll-driven effects — hero parallax-exit + pinned fleet progress.
+      // Re-scanned after every ClientRouter swap; a no-op on pages without the
+      // hooks. Under reduced motion nothing runs (CSS shows the static layout).
+      let heroEl: HTMLElement | null = null;
+      let heroScene: HTMLElement | null = null;
+      let pinStages: HTMLElement[] = [];
+      function scanScrollFx() {
+        heroEl = document.querySelector("[data-hero-parallax]");
+        heroScene = document.querySelector(".hero-scene");
+        pinStages = Array.from(document.querySelectorAll("[data-pin-stage]"));
+      }
+      function applyScrollFx() {
+        const y = window.scrollY;
+        const vh = window.innerHeight;
+        if (heroEl) {
+          const k = Math.min(y / (vh * 0.9), 1);
+          heroEl.style.transform = `translateY(${y * 0.28}px)`;
+          heroEl.style.opacity = String(1 - k * 0.9);
+          if (heroScene) heroScene.style.transform = `translateY(${y * 0.14}px)`;
+        }
+        for (const stage of pinStages) {
+          const rect = stage.getBoundingClientRect();
+          const total = rect.height - vh;
+          const p = total > 0 ? Math.min(Math.max(-rect.top / total, 0), 1) : 0;
+          const cars = stage.querySelectorAll(".pin-car");
+          const idx = Math.min(cars.length - 1, Math.floor(p * cars.length));
+          cars.forEach((car, i) => car.classList.toggle("is-active", i === idx));
+          const bar = stage.querySelector<HTMLElement>("[data-pin-bar]");
+          if (bar) bar.style.setProperty("--p", String(p));
+          const count = stage.querySelector<HTMLElement>("[data-pin-count]");
+          if (count) count.textContent = String(idx + 1).padStart(2, "0");
+        }
+      }
+
       let lenis: Lenis | null = null;
       if (!reduced) {
         lenis = new Lenis({ lerp: 0.11 });
+        scanScrollFx();
         const raf = (time: number) => {
           lenis?.raf(time);
+          applyScrollFx();
           requestAnimationFrame(raf);
         };
         requestAnimationFrame(raf);
@@ -157,7 +195,10 @@ const { title, description, hasSeoTags = false } = Astro.props;
       }
 
       setupReveals();
-      document.addEventListener("astro:page-load", setupReveals);
+      document.addEventListener("astro:page-load", () => {
+        setupReveals();
+        scanScrollFx();
+      });
       document.addEventListener("astro:after-swap", () => {
         lenis?.scrollTo(0, { immediate: true });
       });

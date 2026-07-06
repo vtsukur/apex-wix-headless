@@ -1,8 +1,11 @@
 ---
 // Home — five full-viewport scenes (Pagani pacing · Rimac scale · Aston
-// refinement · Exo Ape motion). Programmes are queried live from Wix Bookings
-// (non-fatal — the scene degrades to a CTA if the read fails).
+// refinement · Exo Ape motion). The hero carries a generative racing-line
+// canvas (HeroScene) with a parallax exit; the fleet is a pinned scroll
+// sequence (one car per scroll beat). Programmes are queried live from Wix
+// Bookings (non-fatal — the scene degrades to a CTA if the read fails).
 import Layout from '../layouts/Layout.astro';
+import HeroScene from '../components/HeroScene.astro';
 import { services } from "@wix/bookings";
 import { auth } from "@wix/essentials";
 
@@ -64,10 +67,11 @@ const fleet = [
 ];
 ---
 <Layout>
-  <!-- Scene 1 — hero -->
+  <!-- Scene 1 — hero: generative racing line + parallax exit -->
   <section class="scene scene-hero" aria-label="Apex">
+    <HeroScene />
     <div class="scene-watermark" aria-hidden="true">APEX</div>
-    <div class="max-w-6xl mx-auto px-6 w-full flex flex-col gap-8">
+    <div class="max-w-6xl mx-auto px-6 w-full flex flex-col gap-8 relative z-10" data-hero-parallax>
       <p class="eyebrow" data-reveal>Supercar driving experiences</p>
       <h1 class="display-hero" data-reveal style="--d:100ms">
         Commit to<br />the corner<span class="accent-dot">.</span>
@@ -80,31 +84,38 @@ const fleet = [
         <a href="#programmes" class="btn-secondary">The programmes</a>
       </div>
     </div>
-    <div class="scroll-cue" aria-hidden="true">Scroll</div>
+    <div class="scroll-cue z-10" aria-hidden="true">Scroll</div>
   </section>
 
-  <!-- Scene 2 — the fleet -->
-  <section class="scene border-t border-rule" aria-label="The fleet" style="background-color: var(--color-paper-warm);">
-    <div class="max-w-6xl mx-auto px-6 w-full flex flex-col gap-14">
-      <div class="flex flex-col gap-5" data-reveal>
-        <p class="eyebrow">The fleet</p>
-        <h2 class="display-xl">Three cars.<br />One discipline.</h2>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-        {fleet.map((car, i) => (
-          <article class="data-plate" data-reveal style={`--d:${i * 140}ms`}>
-            <h3 class="plate-designation">{car.designation}</h3>
-            <p class="plate-role">{car.role}</p>
-            <div class="plate-specs">
-              {car.specs.map((s) => (
-                <div>
-                  <span class="plate-value">{s.value}<span class="plate-unit">{s.unit}</span></span>
-                  <span class="plate-label">{s.label}</span>
-                </div>
-              ))}
-            </div>
-          </article>
-        ))}
+  <!-- Scene 2 — the fleet: pinned scroll sequence, one car per beat -->
+  <section class="pin-stage border-t border-rule" data-pin-stage aria-label="The fleet" style="background-color: var(--color-paper-warm);">
+    <div class="pin-viewport">
+      <div class="max-w-6xl mx-auto px-6 w-full flex flex-col gap-12">
+        <div class="flex flex-col gap-5" data-reveal>
+          <p class="eyebrow">The fleet</p>
+          <h2 class="display-lg">Three cars. One discipline.</h2>
+        </div>
+        <div class="pin-cars">
+          {fleet.map((car, i) => (
+            <article class={`pin-car${i === 0 ? " is-active" : ""}`} data-car-index={i}>
+              <h3 class="pin-designation">{car.designation}</h3>
+              <p class="plate-role max-w-prose">{car.role}</p>
+              <div class="plate-specs">
+                {car.specs.map((s) => (
+                  <div>
+                    <span class="plate-value">{s.value}<span class="plate-unit">{s.unit}</span></span>
+                    <span class="plate-label">{s.label}</span>
+                  </div>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+        <div class="pin-progress" aria-hidden="true">
+          <span class="pin-count" data-pin-count>01</span>
+          <span class="pin-track"><span class="pin-bar" data-pin-bar></span></span>
+          <span class="pin-count">03</span>
+        </div>
       </div>
     </div>
   </section>

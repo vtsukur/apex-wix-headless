@@ -1,0 +1,20 @@
+---
+const year = new Date().getFullYear();
+---
+<footer class="site-footer" transition:persist="site-footer">
+  <div class="max-w-6xl mx-auto px-6 py-16 flex flex-col md:flex-row md:items-start md:justify-between gap-8">
+    <div class="flex flex-col gap-3 max-w-prose">
+      <span class="font-display text-lg text-ink">Apex</span>
+      <p class="text-sm">Apex — the point of maximum commitment.</p>
+    </div>
+    <nav>
+      <ul class="flex flex-col gap-3 text-sm">
+        <li><a href="/about">About</a></li>
+        <li><a href="/faq">FAQ</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="max-w-6xl mx-auto px-6 pb-8 text-xs">
+    <p>© {year} Apex. All rights reserved.</p>
+  </div>
+</footer>

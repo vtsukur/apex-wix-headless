@@ -5,10 +5,13 @@ import wixPages from "@wix/astro-pages";
 
 import react from "@astrojs/react";
 import cloudProviderFetchAdapter from "@wix/cloud-provider-fetch-adapter";
-const isBuild = process.env.NODE_ENV == "production";
+import tailwindcss from "@tailwindcss/vite";
+const isBuild =
+  (/** @type {any} */ (globalThis)).process?.env?.NODE_ENV === "production";
 
 // https://astro.build/config
 export default defineConfig({
+  vite: { plugins: [tailwindcss()] },
   integrations: [wix(), wixPages(), react()],
   security: { checkOrigin: false },
   ...(isBuild && { adapter: cloudProviderFetchAdapter({}) }),

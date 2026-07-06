@@ -1,0 +1,49 @@
+---
+// src/pages/booking-confirmation.astro — post-booking confirmation.
+//
+// Renders from the redirect query params (service name + start date) that the
+// booking step passes through. The Wix-hosted checkout returns here after a paid
+// booking; a free / pay-in-person booking lands here directly. Do not re-fetch a
+// stranger's booking from this public page — show what the flow passed in.
+import Layout from "../layouts/Layout.astro";
+
+const serviceName = Astro.url.searchParams.get("service") ?? "your session";
+const startDateParam = Astro.url.searchParams.get("startDate");
+const formattedDate = startDateParam
+  ? new Date(startDateParam).toLocaleString("en-GB", {
+      weekday: "long", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit",
+    })
+  : null;
+---
+
+<Layout title="Session confirmed">
+  <section class="max-w-prose mx-auto px-6 py-24 text-center">
+    <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-8"
+         style="background-color: var(--color-accent);" aria-hidden="true">
+      <span class="text-2xl" style="color: var(--color-ink);">✓</span>
+    </div>
+    <hr class="editorial-rule w-16 mx-auto mb-6" />
+    <h1 class="font-display text-4xl md:text-5xl leading-tight mb-4">You're on the grid.</h1>
+
+    {
+      formattedDate ? (
+        <p class="text-lg text-mute leading-relaxed mb-4">
+          Your <strong class="text-ink">{serviceName}</strong> session is <strong class="text-ink">confirmed</strong> for{" "}
+          <strong class="text-ink">{formattedDate}</strong>. The briefing details are in your inbox.
+        </p>
+      ) : (
+        <p class="text-lg text-mute leading-relaxed mb-4">
+          Your <strong class="text-ink">{serviceName}</strong> session is <strong class="text-ink">confirmed</strong>. The briefing details are in your inbox.
+        </p>
+      )
+    }
+    <p class="text-sm text-mute leading-relaxed mb-8">
+      Arrive fifteen minutes early. Your instructor will walk the line with you before you take it.
+    </p>
+
+    <div class="flex flex-col gap-4 items-center">
+      <a href="/services" class="btn-primary">Book another session</a>
+      <a href="/" class="text-sm text-mute hover:text-ink">Return home</a>
+    </div>
+  </section>
+</Layout>

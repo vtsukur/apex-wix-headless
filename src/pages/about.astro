@@ -1,0 +1,177 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { items } from "@wix/data";
+import { auth } from "@wix/essentials";
+import { renderRicos } from "../utils/ricos";
+
+// Collection ID resolved from the seeded CMS slice (.wix/seeded.json → cms.collectionIds.about).
+// Native user collections take the bare name — no namespace prefix.
+const ABOUT_COLLECTION_ID = "About";
+
+interface AboutContent {
+  title: string;
+  bodyHtml: string;
+}
+
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// The CMS body field may arrive as a Ricos node tree (RICH_CONTENT), a
+// JSON-encoded Ricos string, an HTML string (RICH_TEXT), or plain text.
+// Normalize every shape to safe HTML — never set:html raw field values.
+function toHtml(value: unknown): string {
+  if (value == null) return "";
+  if (typeof value === "object") return renderRicos(value as never);
+  if (typeof value !== "string") return "";
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  const ricos = renderRicos(trimmed);
+  if (ricos) return ricos;
+  if (trimmed.startsWith("<")) return trimmed;
+  return trimmed
+    .split(/\r?\n\s*\r?\n/)
+    .map((para) => `<p>${escapeHtml(para).replace(/\r?\n/g, "<br />")}</p>`)
+    .join("");
+}
+
+// Live @wix/data query at request time. Guarded: an uncaught SSR throw would
+// truncate the response stream mid-body, so fall back to the quiet notice below.
+let about: AboutContent | null = null;
+try {
+  const elevatedQuery = auth.elevate(items.query);
+  const { items: results } = await elevatedQuery(ABOUT_COLLECTION_ID)
+    .limit(1)
+    .find();
+  const item = results[0];
+  if (item) {
+    const bodyHtml = toHtml(item.body);
+    about = {
+      title: ((item.title as string) ?? "").trim() || "The point of maximum commitment",
+      bodyHtml,
+    };
+  }
+} catch (err) {
+  console.error("[cms:About] query failed:", err);
+}
+---
+
+<Layout
+  title="About"
+  description="Apex puts you behind the wheel of a supercar on a closed circuit — one car, one line, one timed session."
+>
+  <article class="max-w-3xl mx-auto px-6 py-24">
+    <header class="flex flex-col gap-4 mb-12">
+      <p class="text-xs uppercase tracking-[0.2em] text-mute">The outfit</p>
+      <h1 class="font-display text-4xl md:text-5xl leading-tight">
+        {about?.title ?? "The point of maximum commitment"}
+      </h1>
+      <hr class="editorial-rule w-16 ml-0" />
+    </header>
+
+    {
+      about && about.bodyHtml ? (
+        <div class="prose-body" set:html={about.bodyHtml} />
+      ) : (
+        <div class="flex flex-col gap-4">
+          <p class="text-ink-soft leading-relaxed">
+            The full story is briefly off the timing screens. Refresh in a
+            moment — the session isn't over.
+          </p>
+          <p class="text-mute leading-relaxed">
+            In the meantime, the <a href="/faq" class="inline-link">FAQ</a>{" "}
+            covers what happens from the pit gate to the cool-down lap.
+          </p>
+        </div>
+      )
+    }
+
+    <aside class="mt-16 pt-8 border-t border-rule flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+      <p class="text-sm text-mute max-w-prose">
+        Questions before you commit to the corner? The briefing covers
+        sessions, circuits, and what happens on the day.
+      </p>
+      <a href="/faq" class="btn-secondary text-sm whitespace-nowrap">Read the FAQ</a>
+    </aside>
+  </article>
+</Layout>
+
+<style>
+  /* Prose treatment for the CMS-rendered body. The HTML arrives via set:html,
+     so Astro's scoping attributes never reach it — style through :global()
+     descendants of the locally-scoped wrapper. Tokens only; no new palette. */
+  .prose-body {
+    color: var(--color-ink-soft);
+  }
+  .prose-body :global(p) {
+    margin-block: 1rem;
+    line-height: 1.75;
+  }
+  .prose-body :global(> p:first-child) {
+    margin-top: 0;
+    font-size: 1.1875rem;
+    color: var(--color-ink);
+  }
+  .prose-body :global(h2),
+  .prose-body :global(h3),
+  .prose-body :global(h4) {
+    color: var(--color-ink);
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .prose-body :global(h2) {
+    font-size: 1.5rem;
+  }
+  .prose-body :global(h3) {
+    font-size: 1.25rem;
+  }
+  .prose-body :global(ul),
+  .prose-body :global(ol) {
+    margin-block: 1rem;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .prose-body :global(ul) {
+    list-style: disc;
+  }
+  .prose-body :global(ol) {
+    list-style: decimal;
+  }
+  .prose-body :global(li)::marker {
+    color: var(--color-accent);
+  }
+  .prose-body :global(blockquote) {
+    margin: 1.5rem 0;
+    padding-left: 1.25rem;
+    border-left: 2px solid var(--color-accent);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+  }
+  .prose-body :global(hr) {
+    border: 0;
+    height: 1px;
+    background: var(--color-rule);
+    margin-block: 2rem;
+  }
+  .prose-body :global(a) {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--color-accent);
+  }
+  .prose-body :global(a:hover) {
+    color: var(--color-accent);
+  }
+  .inline-link {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--color-accent);
+  }
+  .inline-link:hover {
+    color: var(--color-accent);
+  }
+</style>

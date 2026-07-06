@@ -1,8 +1,51 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
 ---
-
 <Layout>
-	<Welcome />
+  <section class="relative">
+    <div class="max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+      <div class="flex flex-col gap-6">
+        <h1 class="font-display text-4xl md:text-5xl leading-tight">Commit to the corner.</h1>
+        <p class="text-lg text-mute max-w-prose">A supercar, a circuit, a time slot — book the session and drive the racing line yourself.</p>
+      </div>
+      <div
+        class="hero-image rounded-md"
+        data-decorative-slot="hero"
+        style="aspect-ratio: 4/5; background-color: var(--color-paper-warm);"
+      >
+        <!-- orchestrator injects <img src={decorativeImages.hero} …> here -->
+      </div>
+    </div>
+  </section>
+  <!-- home:bookings -->
+  <section class="border-y border-rule" style="background-color: var(--color-paper-warm);">
+    <div class="max-w-6xl mx-auto px-6 py-24 flex flex-col gap-6 items-start">
+      <hr class="editorial-rule w-16 ml-0" />
+      <h2 class="font-display text-3xl md:text-4xl leading-tight">The grid is open.</h2>
+      <p class="text-mute leading-relaxed max-w-prose">
+        A car held under your name. A circuit held to a window of time. Pick the
+        session, take the wheel, and hold your line through the last corner.
+      </p>
+      <a href="/services" class="btn-primary">Book a session</a>
+    </div>
+  </section>
+  <section class="max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+    <div
+      class="about-image rounded-md order-last md:order-first"
+      data-decorative-slot="about"
+      style="aspect-ratio: 4/3; background-color: var(--color-paper-warm);"
+    >
+      <!-- orchestrator injects <img src={decorativeImages.about} …> here -->
+    </div>
+    <div class="flex flex-col gap-4 max-w-prose">
+      <hr class="editorial-rule w-16 ml-0" />
+      <h2 class="font-display text-3xl leading-tight">The story behind Apex</h2>
+      <p class="text-ink leading-relaxed">
+        A short, brand-contextual paragraph about what makes Apex distinct.
+      </p>
+      <p class="text-mute leading-relaxed">
+        A second paragraph adding warmth and detail to the brand story.
+      </p>
+    </div>
+  </section>
 </Layout>

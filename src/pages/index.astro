@@ -1,51 +1,166 @@
 ---
+// Home — five full-viewport scenes (Pagani pacing · Rimac scale · Aston
+// refinement · Exo Ape motion). Programmes are queried live from Wix Bookings
+// (non-fatal — the scene degrades to a CTA if the read fails).
 import Layout from '../layouts/Layout.astro';
+import { services } from "@wix/bookings";
+import { auth } from "@wix/essentials";
+
+const BOOKING_APP_ID = "13d21c63-b5ec-5912-8397-c3a5ddb27a97";
+
+const result = await auth
+  .elevate(services.queryServices)({ query: { filter: { appId: BOOKING_APP_ID }, paging: { limit: 8 } } })
+  .find()
+  .catch((err: any) => { console.error("[home] programmes query failed:", err); return null; });
+
+const programmes: any[] = (result?.items ?? []).filter((s: any) => !s.hidden);
+
+const getSlug = (s: any): string => s.mainSlug?.name ?? s.supportedSlugs?.[0]?.name ?? s._id;
+const getDuration = (s: any): number => s.schedule?.availabilityConstraints?.sessionDurations?.[0] ?? 60;
+const formatPrice = (s: any): string | undefined => {
+  const p = s.payment;
+  if (!p || p.rateType === "NO_FEE") return undefined;
+  if (p.rateType === "FIXED" && p.fixed?.price) {
+    const { value, currency } = p.fixed.price;
+    if (!value) return undefined;
+    return new Intl.NumberFormat("en-IE", {
+      style: "currency",
+      currency: currency ?? "EUR",
+      maximumFractionDigits: 0,
+    }).format(Number(value));
+  }
+  return undefined;
+};
+
+// The fleet — fictional in-house designations only.
+const fleet = [
+  {
+    designation: "TH-12",
+    role: "The circuit weapon. Mid-engined, downforce-led, honest at the limit.",
+    specs: [
+      { value: "730", unit: "PS", label: "Power" },
+      { value: "2.9", unit: "s", label: "0–100 km/h" },
+      { value: "340", unit: "km/h", label: "Top speed" },
+    ],
+  },
+  {
+    designation: "RS-Launch",
+    role: "The launch specialist. All-wheel drive, telemetry on every run.",
+    specs: [
+      { value: "640", unit: "PS", label: "Power" },
+      { value: "2.6", unit: "s", label: "0–100 km/h" },
+      { value: "305", unit: "km/h", label: "Top speed" },
+    ],
+  },
+  {
+    designation: "Apex GT",
+    role: "The grand tourer. Long-legged, unhurried, built for the high passes.",
+    specs: [
+      { value: "585", unit: "PS", label: "Power" },
+      { value: "3.4", unit: "s", label: "0–100 km/h" },
+      { value: "320", unit: "km/h", label: "Top speed" },
+    ],
+  },
+];
 ---
 <Layout>
-  <section class="relative">
-    <div class="max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-      <div class="flex flex-col gap-6">
-        <h1 class="font-display text-4xl md:text-5xl leading-tight">Commit to the corner.</h1>
-        <p class="text-lg text-mute max-w-prose">A supercar, a circuit, a time slot — book the session and drive the racing line yourself.</p>
+  <!-- Scene 1 — hero -->
+  <section class="scene scene-hero" aria-label="Apex">
+    <div class="scene-watermark" aria-hidden="true">APEX</div>
+    <div class="max-w-6xl mx-auto px-6 w-full flex flex-col gap-8">
+      <p class="eyebrow" data-reveal>Supercar driving experiences</p>
+      <h1 class="display-hero" data-reveal style="--d:100ms">
+        Commit to<br />the corner<span class="accent-dot">.</span>
+      </h1>
+      <p class="text-lg text-mute max-w-prose leading-relaxed" data-reveal style="--d:220ms">
+        A supercar, a circuit, a time slot — book the session and drive the racing line yourself.
+      </p>
+      <div class="flex flex-wrap gap-4 mt-2" data-reveal style="--d:340ms">
+        <a href="/services" class="btn-primary">Book a session</a>
+        <a href="#programmes" class="btn-secondary">The programmes</a>
       </div>
-      <div
-        class="hero-image rounded-md"
-        data-decorative-slot="hero"
-        style="aspect-ratio: 4/5; background-color: var(--color-paper-warm);"
-      >
-        <!-- orchestrator injects <img src={decorativeImages.hero} …> here -->
+    </div>
+    <div class="scroll-cue" aria-hidden="true">Scroll</div>
+  </section>
+
+  <!-- Scene 2 — the fleet -->
+  <section class="scene border-t border-rule" aria-label="The fleet" style="background-color: var(--color-paper-warm);">
+    <div class="max-w-6xl mx-auto px-6 w-full flex flex-col gap-14">
+      <div class="flex flex-col gap-5" data-reveal>
+        <p class="eyebrow">The fleet</p>
+        <h2 class="display-xl">Three cars.<br />One discipline.</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        {fleet.map((car, i) => (
+          <article class="data-plate" data-reveal style={`--d:${i * 140}ms`}>
+            <h3 class="plate-designation">{car.designation}</h3>
+            <p class="plate-role">{car.role}</p>
+            <div class="plate-specs">
+              {car.specs.map((s) => (
+                <div>
+                  <span class="plate-value">{s.value}<span class="plate-unit">{s.unit}</span></span>
+                  <span class="plate-label">{s.label}</span>
+                </div>
+              ))}
+            </div>
+          </article>
+        ))}
       </div>
     </div>
   </section>
+
   <!-- home:bookings -->
-  <section class="border-y border-rule" style="background-color: var(--color-paper-warm);">
-    <div class="max-w-6xl mx-auto px-6 py-24 flex flex-col gap-6 items-start">
-      <hr class="editorial-rule w-16 ml-0" />
-      <h2 class="font-display text-3xl md:text-4xl leading-tight">The grid is open.</h2>
-      <p class="text-mute leading-relaxed max-w-prose">
-        A car held under your name. A circuit held to a window of time. Pick the
-        session, take the wheel, and hold your line through the last corner.
-      </p>
-      <a href="/services" class="btn-primary">Book a session</a>
+  <!-- Scene 3 — the programmes (live from Wix Bookings) -->
+  <section id="programmes" class="scene" aria-label="The programmes">
+    <div class="max-w-6xl mx-auto px-6 w-full flex flex-col gap-14">
+      <div class="flex flex-col gap-5" data-reveal>
+        <p class="eyebrow">The programmes</p>
+        <h2 class="display-xl">Pick your window.</h2>
+      </div>
+      {
+        programmes.length > 0 ? (
+          <div data-reveal style="--d:140ms">
+            {programmes.map((s, i) => (
+              <a href={`/services/${getSlug(s)}`} class="index-row">
+                <span class="index-row-num">{String(i + 1).padStart(2, "0")}</span>
+                <span class="index-row-name">{s.name}</span>
+                <span class="index-row-meta">
+                  <span>{getDuration(s)} min</span>
+                  {formatPrice(s) && <span class="price">{formatPrice(s)}</span>}
+                  <span class="index-row-arrow" aria-hidden="true">→</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div class="flex flex-col gap-6 items-start" data-reveal style="--d:140ms">
+            <p class="text-mute leading-relaxed max-w-prose">
+              The grid opens soon — sessions are being scheduled.
+            </p>
+            <a href="/services" class="btn-secondary">See all sessions</a>
+          </div>
+        )
+      }
     </div>
   </section>
-  <section class="max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-    <div
-      class="about-image rounded-md order-last md:order-first"
-      data-decorative-slot="about"
-      style="aspect-ratio: 4/3; background-color: var(--color-paper-warm);"
-    >
-      <!-- orchestrator injects <img src={decorativeImages.about} …> here -->
+
+  <!-- Scene 4 — philosophy -->
+  <section class="scene border-t border-rule" aria-label="Philosophy" style="background-color: var(--color-paper-warm);">
+    <div class="max-w-4xl mx-auto px-6 w-full flex flex-col gap-10 items-start">
+      <p class="eyebrow" data-reveal>Why Apex</p>
+      <p class="statement" data-reveal style="--d:140ms">
+        Speed is not the point. Control at the edge of it is. Every session pairs
+        you with an instructor who lives on that edge — and teaches you to hold it.
+      </p>
+      <a href="/about" class="btn-secondary" data-reveal style="--d:280ms">The story behind Apex</a>
     </div>
-    <div class="flex flex-col gap-4 max-w-prose">
-      <hr class="editorial-rule w-16 ml-0" />
-      <h2 class="font-display text-3xl leading-tight">The story behind Apex</h2>
-      <p class="text-ink leading-relaxed">
-        A short, brand-contextual paragraph about what makes Apex distinct.
-      </p>
-      <p class="text-mute leading-relaxed">
-        A second paragraph adding warmth and detail to the brand story.
-      </p>
+  </section>
+
+  <!-- Scene 5 — final call -->
+  <section class="scene" aria-label="Book">
+    <div class="max-w-6xl mx-auto px-6 w-full flex flex-col gap-10 items-start">
+      <h2 class="display-hero" data-reveal>The grid<br />is open<span class="accent-dot">.</span></h2>
+      <a href="/services" class="btn-primary" data-reveal style="--d:200ms">Book a session</a>
     </div>
   </section>
 </Layout>

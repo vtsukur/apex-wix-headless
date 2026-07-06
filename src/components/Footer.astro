@@ -2,19 +2,23 @@
 const year = new Date().getFullYear();
 ---
 <footer class="site-footer" transition:persist="site-footer">
-  <div class="max-w-6xl mx-auto px-6 py-16 flex flex-col md:flex-row md:items-start md:justify-between gap-8">
-    <div class="flex flex-col gap-3 max-w-prose">
-      <span class="font-display text-lg text-ink">Apex</span>
-      <p class="text-sm">Apex — the point of maximum commitment.</p>
+  <div class="max-w-6xl mx-auto px-6 pt-20 pb-10 flex flex-col gap-16">
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-10">
+      <div class="flex flex-col gap-4 max-w-prose">
+        <span class="brand-mark text-ink">APEX</span>
+        <p class="text-sm leading-relaxed">The point of maximum commitment. A supercar, a circuit, a window of time.</p>
+      </div>
+      <nav aria-label="Footer">
+        <ul class="flex flex-col gap-3">
+          <li><a href="/services" class="nav-link">Book a session</a></li>
+          <li><a href="/about" class="nav-link">About</a></li>
+          <li><a href="/faq" class="nav-link">FAQ</a></li>
+        </ul>
+      </nav>
     </div>
-    <nav>
-      <ul class="flex flex-col gap-3 text-sm">
-        <li><a href="/about">About</a></li>
-        <li><a href="/faq">FAQ</a></li>
-      </ul>
-    </nav>
-  </div>
-  <div class="max-w-6xl mx-auto px-6 pb-8 text-xs">
-    <p>© {year} Apex. All rights reserved.</p>
+    <div class="border-t border-rule pt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs">
+      <p>© {year} Apex. All rights reserved.</p>
+      <p>A fictional marque. Every car, circuit, and pass is ours alone.</p>
+    </div>
   </div>
 </footer>

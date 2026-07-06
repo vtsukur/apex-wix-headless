@@ -147,19 +147,28 @@ try {
       <img src={imageUrl} alt={serviceName} class="w-full h-64 object-cover rounded-md mb-8" />
     )}
 
-    <div class="flex flex-col gap-4 mb-16">
-      <hr class="editorial-rule w-16 ml-0" />
-      <h1 class="font-display text-4xl md:text-5xl leading-tight">{serviceName}</h1>
+    <div class="flex flex-col gap-6 mb-16" data-reveal>
+      <p class="eyebrow">The programme</p>
+      <h1 class="display-lg">{serviceName}</h1>
       {service.tagLine && <p class="text-lg text-mute leading-relaxed max-w-prose">{service.tagLine}</p>}
-      <div class="flex items-center gap-4 text-sm text-mute">
-        <span>{duration} min</span>
-        {price && <span class="text-ink font-medium">{price}</span>}
+      <div class="plate-specs mt-2">
+        <div>
+          <span class="plate-value">{duration}<span class="plate-unit">min</span></span>
+          <span class="plate-label">Duration</span>
+        </div>
+        {price && (
+          <div>
+            <span class="plate-value">{price}</span>
+            <span class="plate-label">Session</span>
+          </div>
+        )}
       </div>
       {service.description && <p class="text-ink leading-relaxed max-w-prose">{service.description}</p>}
     </div>
 
     <section class="border-t border-rule pt-12">
-      <h2 class="font-display text-3xl leading-tight mb-8">Book your session</h2>
+      <p class="eyebrow mb-4">Availability</p>
+      <h2 class="font-display text-2xl md:text-3xl uppercase leading-tight mb-3">Book your session</h2>
       <p class="text-mute leading-relaxed mb-8">Pick the window. Commit to the corner.</p>
       <ServiceBookingFlow
         service={service}

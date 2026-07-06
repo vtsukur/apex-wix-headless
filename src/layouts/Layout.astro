@@ -119,5 +119,48 @@ const { title, description, hasSeoTags = false } = Astro.props;
       document.addEventListener("astro:page-load", endProgress);
       syncCategoryRail();
     </script>
+    <script>
+      // Cinematic motion layer — Lenis smooth scroll + reveal-on-scroll.
+      // Respects prefers-reduced-motion (no smoothing, reveals shown instantly)
+      // and replays reveal setup after every ClientRouter swap.
+      import Lenis from "lenis";
+
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let lenis: Lenis | null = null;
+      if (!reduced) {
+        lenis = new Lenis({ lerp: 0.11 });
+        const raf = (time: number) => {
+          lenis?.raf(time);
+          requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+      }
+
+      function setupReveals() {
+        const els = document.querySelectorAll<HTMLElement>("[data-reveal]:not(.in)");
+        if (reduced) {
+          els.forEach((el) => el.classList.add("in"));
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("in");
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+        );
+        els.forEach((el) => io.observe(el));
+      }
+
+      setupReveals();
+      document.addEventListener("astro:page-load", setupReveals);
+      document.addEventListener("astro:after-swap", () => {
+        lenis?.scrollTo(0, { immediate: true });
+      });
+    </script>
   </body>
 </html>

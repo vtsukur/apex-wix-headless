@@ -234,17 +234,9 @@ const LETTERS = "APEX".split("");
       strokeSegment(0, 1, `rgba(225,18,31,${(0.3 + 0.25 * m) * keep})`, 1.5 + 0.5 * m, 14, `rgba(225,18,31,${0.5 * keep})`);
       if (fade > 0.02) {
         const p = (t / 3200) % 1;
-        // A car-suggestive wedge laps the corner (same abstract shape the
-        // header curve carries), trailing a short comet tail.
-        const tail = p - 0.03;
-        const bright = `rgba(255,92,92,${0.9 * fade})`;
+        // A car-suggestive wedge laps the corner — same abstract shape the
+        // header curve carries. No trail; just the car.
         const glow = `rgba(225,18,31,${0.85 * fade})`;
-        if (tail >= 0) {
-          strokeSegment(tail, p, bright, 2.5, 22, glow);
-        } else {
-          strokeSegment(0, p, bright, 2.5, 22, glow);
-          strokeSegment(1 + tail, 1, bright, 2.5, 22, glow);
-        }
         const hi = Math.max(2, Math.min(N - 2, Math.round(p * N)));
         const ha = pts[hi - 2];
         const hb = pts[hi + 2];

@@ -210,16 +210,14 @@
   filter: blur(5px);
 }
 /* The lap — an abstract car-suggestive wedge rides the curve (SMIL
-   animateMotion, auto-rotating with the tangent) with a short comet trail
-   whose leading edge stays under the shape; the apex ring flare shares the
-   same SMIL clock (markup in Navigation.astro). Only the glow lives here. */
-.nav-curve-trail,
+   animateMotion, auto-rotating with the tangent); the apex ring flare shares
+   the same SMIL clock (markup in Navigation.astro). Only the glow lives here. */
 .nav-curve-car {
   filter: drop-shadow(0 0 3px rgba(225, 18, 31, 0.7));
 }
 @media (prefers-reduced-motion: reduce) {
   /* SMIL ignores the media query, so remove the moving parts outright. */
-  .nav-curve-trail, .nav-curve-car, .nav-curve-ring { display: none; }
+  .nav-curve-car, .nav-curve-ring { display: none; }
 }
 @media (max-width: 1279px) {
   .site-nav { --curve-scale: 0.85; --curve-w: 245px; }

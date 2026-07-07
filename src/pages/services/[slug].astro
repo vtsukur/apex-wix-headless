@@ -194,44 +194,43 @@ try {
   <section class="container-wide py-24">
     <a href="/services" class="inline-block text-sm text-mute hover:text-ink mb-8">← All sessions</a>
 
-    <!-- Split hero — copy left, wide media right on desktop (stacked, media
-         first, on mobile). Media only when the service has it (image-less is
-         the common seed case; a fixed placeholder collapses the layout). -->
-    <div class={`detail-hero${imageUrl ? " has-media" : ""}`} data-reveal>
-      <div class="flex flex-col gap-6">
-        <p class="eyebrow">The programme</p>
-        <h1 class="display-lg">
-          {nameDot === -1 ? (
-            serviceName
-          ) : (
-            <>
-              {serviceName.slice(0, nameDot)}
-              <br />
-              {serviceName.slice(nameDot + 3)}
-            </>
-          )}
-        </h1>
-        {service.tagLine && <p class="text-lg text-mute leading-relaxed max-w-prose">{service.tagLine}</p>}
-        <div class="plate-specs mt-2">
-          <div>
-            <span class="plate-value">{duration}<span class="plate-unit">min</span></span>
-            <span class="plate-label">Duration</span>
-          </div>
-          {price && (
-            <div>
-              <span class="plate-value">{price}</span>
-              <span class="plate-label">Session</span>
+    <p class="eyebrow mb-6" data-reveal>The programme</p>
+
+    <!-- Card hero — the home fleet card, stretched: name top-left with the
+         programme line as its subline, service tagline top-right, car stats
+         bottom-left, book CTA bottom-right, the film fading in over the
+         still. Image-less services fall back to the warm-paper ground. -->
+    <div class="detail-card" data-detail-media data-reveal>
+      <div class="pin-car-copy">
+        <div class="pin-car-head">
+          <h1 class="pin-designation">
+            {nameDot === -1 ? (
+              serviceName
+            ) : (
+              <>
+                {serviceName.slice(0, nameDot)}
+                <span class="detail-title-sub">{serviceName.slice(nameDot + 3)}</span>
+              </>
+            )}
+          </h1>
+          {service.tagLine && <p class="plate-role">{service.tagLine}</p>}
+        </div>
+        <div class="pin-car-foot">
+          {film?.specs && (
+            <div class="plate-specs">
+              {film.specs.map((s) => (
+                <div>
+                  <span class="plate-value">{s.value}<span class="plate-unit">{s.unit}</span></span>
+                  <span class="plate-label">{s.label}</span>
+                </div>
+              ))}
             </div>
           )}
+          <a href="#book" class="btn-primary">Book this drive</a>
         </div>
-        {/* The seed duplicates description into tagLine — only render it
-            when it actually says something new. */}
-        {service.description && service.description !== service.tagLine && (
-          <p class="text-ink leading-relaxed max-w-prose">{service.description}</p>
-        )}
       </div>
       {imageUrl && (
-        <div class="detail-media" data-detail-media>
+        <div class="pin-car-media">
           <img src={imageUrl} alt={serviceName} style={mediaPos} />
           {film && (
             <video
@@ -244,23 +243,33 @@ try {
               style={mediaPos}
             />
           )}
-          {film?.specs && (
-            <div class="detail-media-specs plate-specs">
-              {film.specs.map((s) => (
-                <div>
-                  <span class="plate-value">{s.value}<span class="plate-unit">{s.unit}</span></span>
-                  <span class="plate-label">{s.label}</span>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       )}
     </div>
 
+    <!-- Duration and price — big, centered, straight under the film. -->
+    <div class="detail-figures" data-reveal>
+      <div>
+        <span class="plate-value">{duration}<span class="plate-unit">min</span></span>
+        <span class="plate-label">Duration</span>
+      </div>
+      {price && (
+        <div>
+          <span class="plate-value">{price}</span>
+          <span class="plate-label">Session</span>
+        </div>
+      )}
+    </div>
+
+    {/* The seed duplicates description into tagLine — only render it when
+        it actually says something new. */}
+    {service.description && service.description !== service.tagLine && (
+      <p class="text-ink leading-relaxed max-w-prose mx-auto text-center mb-16">{service.description}</p>
+    )}
+
     <!-- Availability — intro column rides sticky on the left, the calendar
          and form get the wide right column. -->
-    <section class="border-t border-rule pt-12 detail-book">
+    <section class="border-t border-rule pt-12 detail-book" id="book">
       <div class="detail-book-intro">
         <p class="eyebrow mb-4">Availability</p>
         <h2 class="font-display text-2xl md:text-3xl uppercase leading-tight mb-3">Book your session</h2>

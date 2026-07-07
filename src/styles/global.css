@@ -464,64 +464,50 @@ body[data-navigating="true"] .product-grid {
   }
 }
 
-/* ── Service detail — split hero and split booking, desktop-wide ────────── */
-/* Hero: copy left, media right (media first when stacked on mobile). */
-.detail-hero {
-  display: grid;
-  gap: 3rem;
-  margin-bottom: 4.5rem;
-}
-.detail-hero > .detail-media {
-  order: -1;
-}
-@media (min-width: 1024px) {
-  .detail-hero.has-media {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 4rem;
-    align-items: stretch;
-  }
-  .detail-hero > .detail-media {
-    order: 2;
-  }
-}
-/* The media card — service still as poster; the car's fleet film fades in
-   over it once playing (.video-live, cued in the page script). */
-.detail-media {
+/* ── Service detail — the home fleet card, stretched into a hero ────────── */
+/* Reuses the card anatomy (.pin-car-copy/head/foot/media): name top-left,
+   tagline top-right, stats bottom-left, book CTA bottom-right; the film
+   fades in over the still (.video-live, cued in the page script). */
+.detail-card {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-sm);
-  aspect-ratio: 16 / 9;
+  min-height: clamp(24rem, 66svh, 44rem);
+  background: var(--color-paper-warm); /* image-less fallback ground */
+  margin-bottom: 3rem;
 }
-@media (min-width: 1024px) {
-  .detail-media {
-    aspect-ratio: auto;
-    height: 100%;
-    min-height: 26rem;
-  }
-}
-.detail-media img,
-.detail-media video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.detail-media video {
-  opacity: 0;
-  transition: opacity 600ms ease;
-}
-.detail-media.video-live video {
+.detail-card.video-live .pin-car-media video {
   opacity: 1;
 }
-/* Car stats ride the bottom of the media card, over their own scrim. */
-.detail-media-specs {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  padding: 3rem clamp(1.25rem, 2.5vw, 2rem) clamp(1.25rem, 2.5vw, 2rem);
-  background: linear-gradient(to top, rgba(10, 10, 11, 0.82), rgba(10, 10, 11, 0.35) 60%, rgba(10, 10, 11, 0) 100%);
+/* Long service taglines wrap as a right-aligned block instead of running
+   the whole head row. */
+.detail-card .plate-role {
+  max-width: 34rem;
+}
+/* The programme line rides under the car name, an order quieter. */
+.detail-title-sub {
+  display: block;
+  margin-top: 0.4em;
+  font-size: 0.38em;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  color: var(--color-ink-soft);
+}
+/* Duration and price — big, centered, straight under the film. */
+.detail-figures {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  gap: clamp(3rem, 9vw, 7rem);
+  margin-bottom: 4.5rem;
+}
+.detail-figures .plate-value {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+}
+.detail-figures .plate-label {
+  font-size: 0.75rem;
+  margin-top: 0.75rem;
 }
 /* Availability: sticky intro left, the calendar/form breathe on the right. */
 .detail-book {
@@ -540,7 +526,7 @@ body[data-navigating="true"] .product-grid {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .detail-media video { display: none; }
+  .detail-card .pin-car-media video { display: none; }
 }
 
 /* Why-Apex scene — the garage shot ghosts through the warm-paper ground

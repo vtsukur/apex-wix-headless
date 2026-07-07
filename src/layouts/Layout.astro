@@ -159,6 +159,22 @@ const { title, description, hasSeoTags = false } = Astro.props;
         heroEl = document.querySelector("[data-hero-parallax]");
         heroScene = document.querySelector(".hero-scene");
         pinStages = Array.from(document.querySelectorAll("[data-pin-stage]"));
+        // Snap each scroller dot onto the browser's own arc parametrization —
+        // getPointAtLength matches the dash-fill math exactly, so the fill
+        // touches a circle at precisely its data-pin-dot fraction (the SSR
+        // inline positions are close-enough estimates until this runs).
+        for (const stage of pinStages) {
+          const path = stage.querySelector<SVGPathElement>(".pin-curve-base");
+          const box = path?.ownerSVGElement?.viewBox?.baseVal;
+          if (!path || !box) continue;
+          const total = path.getTotalLength();
+          stage.querySelectorAll<HTMLElement>("[data-pin-dot]").forEach((dot) => {
+            const f = parseFloat(dot.dataset.pinDot ?? "0");
+            const pt = path.getPointAtLength(f * total);
+            dot.style.left = `${(pt.x / box.width) * 100}%`;
+            dot.style.top = `${pt.y}px`;
+          });
+        }
       }
       function applyScrollFx() {
         const y = window.scrollY;

@@ -209,6 +209,8 @@ const { title, description, hasSeoTags = false } = Astro.props;
           if (count) count.textContent = String(idx + 1).padStart(2, "0");
           const dots = stage.querySelectorAll<HTMLElement>("[data-pin-dot]");
           dots.forEach((dot, i) => dot.classList.toggle("on", i <= idx));
+          stage.querySelector(".pin-nav-prev")?.toggleAttribute("disabled", idx === 0);
+          stage.querySelector(".pin-nav-next")?.toggleAttribute("disabled", idx === cars.length - 1);
           // Plateau map through the circle stops (arc fractions on
           // data-pin-dot): while car k is on stage the fill rests centered in
           // circle k; across each beat boundary it sweeps smoothly to the
@@ -228,6 +230,9 @@ const { title, description, hasSeoTags = false } = Astro.props;
               fill = stops[k - 1] + (stops[k] - stops[k - 1]) * (0.5 + (0.5 * t) / EDGE);
             } else if (t > 1 - EDGE && k < n - 1) {
               fill = stops[k] + (stops[k + 1] - stops[k]) * ((0.5 * (t - (1 - EDGE))) / EDGE);
+            } else if (t > 1 - EDGE) {
+              // Final beat — complete the short run-out by section end.
+              fill = stops[k] + (1 - stops[k]) * ((t - (1 - EDGE)) / EDGE);
             }
             bar.style.setProperty("--p", String(fill));
           }
@@ -246,20 +251,37 @@ const { title, description, hasSeoTags = false } = Astro.props;
         requestAnimationFrame(raf);
       }
 
-      // Scroller circles are buttons — clicking circle k scrolls the pinned
-      // stage to the center of car k's beat (fill centered in that circle).
-      document.addEventListener("click", (event) => {
-        const dot = (event.target as HTMLElement | null)?.closest?.<HTMLElement>("[data-pin-dot]");
-        if (!dot) return;
-        const stage = dot.closest<HTMLElement>("[data-pin-stage]");
-        if (!stage) return;
-        const dots = Array.from(stage.querySelectorAll("[data-pin-dot]"));
-        const i = dots.indexOf(dot);
+      // Scroller circles and card chevrons share one behavior: scroll the
+      // pinned stage to the center of car i's beat (fill centered in its
+      // circle). Chevrons step relative to the beat under the current scroll.
+      function scrollToBeat(stage: HTMLElement, i: number, count: number) {
         const total = stage.offsetHeight - window.innerHeight;
         const top = stage.getBoundingClientRect().top + window.scrollY;
-        const target = top + ((i + 0.5) / dots.length) * total;
+        const target = top + ((Math.max(0, Math.min(count - 1, i)) + 0.5) / count) * total;
         if (lenis) lenis.scrollTo(target, { duration: 1.1 });
         else window.scrollTo({ top: target, behavior: "smooth" });
+      }
+      document.addEventListener("click", (event) => {
+        const el = event.target as HTMLElement | null;
+        const dot = el?.closest?.<HTMLElement>("[data-pin-dot]");
+        if (dot) {
+          const stage = dot.closest<HTMLElement>("[data-pin-stage]");
+          if (!stage) return;
+          const dots = Array.from(stage.querySelectorAll("[data-pin-dot]"));
+          scrollToBeat(stage, dots.indexOf(dot), dots.length);
+          return;
+        }
+        const nav = el?.closest?.<HTMLElement>("[data-pin-nav]");
+        if (nav) {
+          const stage = nav.closest<HTMLElement>("[data-pin-stage]");
+          if (!stage) return;
+          const n = stage.querySelectorAll(".pin-car").length;
+          const rect = stage.getBoundingClientRect();
+          const total = rect.height - window.innerHeight;
+          const p = total > 0 ? Math.min(Math.max(-rect.top / total, 0), 1) : 0;
+          const idx = Math.min(n - 1, Math.floor(p * n));
+          scrollToBeat(stage, idx + Number(nav.dataset.pinNav || 0), n);
+        }
       });
 
       function setupReveals() {

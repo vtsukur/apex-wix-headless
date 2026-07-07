@@ -42,7 +42,7 @@ const formatPrice = (s: any): string | undefined => {
 const fleet = [
   {
     designation: "TH-12W",
-    href: "/services/th-12w-20-min-circuit-session",
+    href: "/services/th-12w-30-min-circuit-session",
     cta: "Book a thrill",
     role: "The circuit weapon. Mid-engined, downforce-led, honest at the limit.",
     image: "https://static.wixstatic.com/media/67964a_688bd941058043ffad139b51410e5983~mv2.png/v1/fill/w_1376,h_768,q_85/th-12.jpg",
@@ -109,7 +109,7 @@ const fleet = [
       {/* Hidden for now, per request — restore by uncommenting.
       <p class="eyebrow" data-reveal>Supercar driving experiences</p> */}
       <h1 class="display-hero" data-reveal style="--d:100ms">
-        Commit to<br />the corner<span class="accent-dot">.</span>
+        Commit to<br />the corner<span class="accent-dot" aria-hidden="true"></span>
       </h1>
       <p class="text-xl md:text-2xl text-mute max-w-prose leading-relaxed" data-reveal style="--d:220ms">
         A supercar, a circuit, a time slot — book and drive the racing line yourself.
@@ -127,8 +127,7 @@ const fleet = [
     <div class="pin-viewport">
       <div class="container-wide flex flex-col gap-12">
         <div class="flex flex-col gap-5" data-reveal>
-          <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-x-12 gap-y-6">
-            <div class="hidden md:block"></div>
+          <div class="fleet-head">
             <h2 class="display-lg text-center">Three cars. One discipline.</h2>
             <!-- Scroll progress as a racing curve. Circles at 8%/50%/92% of
                  the arc (fractions on data-pin-dot); the scroll driver holds
@@ -137,13 +136,13 @@ const fleet = [
                  boundary (continuous, scroll-driven). The circles are buttons
                  — clicking one scrolls the stage to that car. -->
             <div class="pin-progress">
-              <svg class="pin-curve" viewBox="0 0 400 40" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path class="pin-curve-base" d="M2 6 Q120 2 210 16 Q320 32 398 34" />
-                <path class="pin-curve-fill" data-pin-bar pathLength="100" d="M2 6 Q120 2 210 16 Q320 32 398 34" />
+              <svg class="pin-curve" viewBox="0 0 400 96" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path class="pin-curve-base" d="M2 43 Q120 39 210 60 Q320 84 398 89" />
+                <path class="pin-curve-fill" data-pin-bar pathLength="100" d="M2 43 Q120 39 210 60 Q320 84 398 89" />
               </svg>
-              <button type="button" class="pin-dot" data-pin-dot="0.08" style="left:8.5%; top:5px" aria-label="Show car 1"><span class="pin-dot-num">1</span></button>
-              <button type="button" class="pin-dot" data-pin-dot="0.5" style="left:50%; top:14px" aria-label="Show car 2"><span class="pin-dot-num">2</span></button>
-              <button type="button" class="pin-dot" data-pin-dot="0.92" style="left:91.5%; top:33px" aria-label="Show car 3"><span class="pin-dot-num">3</span></button>
+              <button type="button" class="pin-dot" data-pin-dot="0.08" style="left:9%; top:42px" aria-label="Show car 1"><span class="pin-dot-num">1</span></button>
+              <button type="button" class="pin-dot" data-pin-dot="0.5" style="left:50%; top:58px" aria-label="Show car 2"><span class="pin-dot-num">2</span></button>
+              <button type="button" class="pin-dot" data-pin-dot="0.92" style="left:92%; top:87px" aria-label="Show car 3"><span class="pin-dot-num">3</span></button>
             </div>
           </div>
         </div>
@@ -178,6 +177,13 @@ const fleet = [
               </div>
             </article>
           ))}
+          <!-- Prev/next car — same scroll behavior as the numbered circles. -->
+          <button type="button" class="pin-nav pin-nav-prev" data-pin-nav="-1" aria-label="Previous car">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 4 L7 12 L15 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
+          <button type="button" class="pin-nav pin-nav-next" data-pin-nav="1" aria-label="Next car">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4 L17 12 L9 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -235,7 +241,7 @@ const fleet = [
   <!-- Scene 5 — final call -->
   <section class="scene" aria-label="Book">
     <div class="container-wide flex flex-col gap-10 items-center text-center">
-      <h2 class="display-hero" data-reveal>The grid<br />is open<span class="accent-dot">.</span></h2>
+      <h2 class="display-hero" data-reveal>The grid<br />is open<span class="accent-dot" aria-hidden="true"></span></h2>
       <a href="/services" class="btn-primary" data-reveal style="--d:200ms">Book a drive</a>
     </div>
   </section>

@@ -488,8 +488,9 @@ body[data-navigating="true"] .product-grid {
     font-size: 1rem;
     padding: 1.25rem 2.25rem;
   }
-  /* Editorial offset — the statement steps in from the left edge. */
-  .why-row .statement {
+  /* Editorial offset — eyebrow and statement step in from the left edge. */
+  .why-row .statement,
+  .why-eyebrow {
     margin-left: clamp(3rem, 10vw, 12rem);
   }
 }

@@ -178,6 +178,9 @@ const { title, description, hasSeoTags = false } = Astro.props;
           if (bar) bar.style.setProperty("--p", String(p));
           const count = stage.querySelector<HTMLElement>("[data-pin-count]");
           if (count) count.textContent = String(idx + 1).padStart(2, "0");
+          stage
+            .querySelectorAll<HTMLElement>("[data-pin-dot]")
+            .forEach((dot, i) => dot.classList.toggle("on", i <= idx));
         }
       }
 

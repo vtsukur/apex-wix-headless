@@ -119,10 +119,17 @@ const fleet = [
           <p class="eyebrow">The fleet</p>
           <div class="flex flex-wrap items-center gap-x-12 gap-y-6">
             <h2 class="display-lg">Three cars. One discipline.</h2>
+            <!-- Scroll progress as a racing curve — the accent line fills with
+                 scroll (data-pin-bar carries --p) and a dot marks each car,
+                 lighting up as its beat arrives. Spans to the image's edge. -->
             <div class="pin-progress" aria-hidden="true">
-              <span class="pin-count" data-pin-count>01</span>
-              <span class="pin-track"><span class="pin-bar" data-pin-bar></span></span>
-              <span class="pin-count">03</span>
+              <svg class="pin-curve" viewBox="0 0 400 40" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path class="pin-curve-base" d="M2 34 Q120 38 210 24 Q320 8 398 6" />
+                <path class="pin-curve-fill" data-pin-bar pathLength="100" d="M2 34 Q120 38 210 24 Q320 8 398 6" />
+              </svg>
+              <span class="pin-dot" data-pin-dot style="left:13.75%; top:35px"></span>
+              <span class="pin-dot" data-pin-dot style="left:50.25%; top:25px"></span>
+              <span class="pin-dot" data-pin-dot style="left:88.75%; top:8px"></span>
             </div>
           </div>
         </div>
@@ -130,8 +137,10 @@ const fleet = [
           {fleet.map((car, i) => (
             <article class={`pin-car${i === 0 ? " is-active" : ""}`} data-car-index={i}>
               <div class="pin-car-copy">
-                <h3 class="pin-designation">{car.designation}</h3>
-                <p class="plate-role max-w-prose">{car.role}</p>
+                <div class="pin-car-head">
+                  <h3 class="pin-designation">{car.designation}</h3>
+                  <p class="plate-role">{car.role}</p>
+                </div>
                 <div class="plate-specs">
                   {car.specs.map((s) => (
                     <div>

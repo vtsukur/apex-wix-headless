@@ -675,6 +675,10 @@ html.lenis, html.lenis body { height: auto; }
   mix-blend-mode: screen;
   pointer-events: none;
 }
+/* Cursor effect — desktop only. */
+@media (hover: none), (pointer: coarse) {
+  .hero-fluid { display: none; }
+}
 
 /* ── Hero media layer (film or canvas) ───────────────────────────────────── */
 .hero-scene {

@@ -121,6 +121,9 @@
     if (!canvas) return;
     canvas.dataset.init = "1";
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Cursor-driven effect — skip it entirely on touch/mobile (no fine
+    // pointer to drive it; the CSS also hides the canvas there).
+    if (window.matchMedia("(hover: none), (pointer: coarse)").matches) return;
 
     const gl = canvas.getContext("webgl2", {
       alpha: false,

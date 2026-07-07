@@ -180,11 +180,19 @@ const { title, description, hasSeoTags = false } = Astro.props;
           if (count) count.textContent = String(idx + 1).padStart(2, "0");
           const dots = stage.querySelectorAll<HTMLElement>("[data-pin-dot]");
           dots.forEach((dot, i) => dot.classList.toggle("on", i <= idx));
-          // Raw scroll drives the fill directly — the circles are placed at
-          // the arc points matching each beat's START (p = k/n), so alignment
-          // with the car switches is exact by construction.
+          // Continuous piecewise map through the circle stops (arc fractions
+          // on data-pin-dot): the fill sits at circle k exactly when car k
+          // opens (p = k/n) — the short lead-in starts filled, the short
+          // run-out completes through the last beat.
           const bar = stage.querySelector<HTMLElement>("[data-pin-bar]");
-          if (bar) bar.style.setProperty("--p", String(p));
+          if (bar && dots.length > 0) {
+            const stops = Array.from(dots).map((d) => parseFloat(d.dataset.pinDot ?? "0"));
+            const n = stops.length;
+            const k = Math.min(n - 1, Math.floor(p * n));
+            const t = p * n - k;
+            const to = k + 1 < n ? stops[k + 1] : 1;
+            bar.style.setProperty("--p", String(stops[k] + (to - stops[k]) * t));
+          }
         }
       }
 

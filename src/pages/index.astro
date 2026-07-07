@@ -119,18 +119,19 @@ const fleet = [
           <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-x-12 gap-y-6">
             <div class="hidden md:block"></div>
             <h2 class="display-lg text-center">Three cars. One discipline.</h2>
-            <!-- Scroll progress as a racing curve — the accent line tracks raw
-                 section scroll (--p), and each circle sits at the arc-length
-                 point where its car's beat BEGINS (p = 0, 1/3, 2/3), so the
-                 fill reaches a circle exactly as that car takes the stage. -->
+            <!-- Scroll progress as a racing curve. Short lead-in before circle
+                 1 and short run-out after circle 3 (circles at 8%/50%/92% of
+                 the arc, fractions carried on data-pin-dot); the scroll driver
+                 maps section progress piecewise through those stops so the
+                 fill crosses each circle exactly as its car takes the stage. -->
             <div class="pin-progress" aria-hidden="true">
               <svg class="pin-curve" viewBox="0 0 400 40" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path class="pin-curve-base" d="M2 34 Q120 38 210 24 Q320 8 398 6" />
                 <path class="pin-curve-fill" data-pin-bar pathLength="100" d="M2 34 Q120 38 210 24 Q320 8 398 6" />
               </svg>
-              <span class="pin-dot" data-pin-dot style="left:0.5%; top:34px"><span class="pin-dot-num">1</span></span>
-              <span class="pin-dot" data-pin-dot style="left:33.5%; top:32px"><span class="pin-dot-num">2</span></span>
-              <span class="pin-dot" data-pin-dot style="left:66.5%; top:17px"><span class="pin-dot-num">3</span></span>
+              <span class="pin-dot" data-pin-dot="0.08" style="left:8.5%; top:35px"><span class="pin-dot-num">1</span></span>
+              <span class="pin-dot" data-pin-dot="0.5" style="left:50%; top:26px"><span class="pin-dot-num">2</span></span>
+              <span class="pin-dot" data-pin-dot="0.92" style="left:91.5%; top:7px"><span class="pin-dot-num">3</span></span>
             </div>
           </div>
         </div>

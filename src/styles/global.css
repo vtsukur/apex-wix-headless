@@ -414,7 +414,7 @@ body[data-navigating="true"] .product-grid {
   font-family: var(--font-display);
   font-weight: 500;
   text-transform: uppercase;
-  line-height: 0.94;
+  line-height: 1.04;
   letter-spacing: -0.015em;
   font-size: clamp(3.25rem, 10vw, 9.5rem);
 }

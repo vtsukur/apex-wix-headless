@@ -647,6 +647,8 @@ html.lenis, html.lenis body { height: auto; }
   height: 0.36em;
   background: var(--color-accent);
   flex: none;
+  /* Heavy top-left round — the tick is a corner apex, not a square. */
+  border-radius: 100% 0 0 0;
 }
 /* In the header, center the mark in the full chrome silhouette — bar plus the
    curve pocket below it — not just the bar rectangle. Transform only, so the
@@ -978,6 +980,7 @@ html.booting .boot.boot-exit { background-color: transparent; }
   width: 0.36em;
   height: 0.36em;
   background: var(--color-accent);
+  border-radius: 100% 0 0 0; /* same corner-apex shape as .brand-mark::before */
 }
 .boot.boot-play .boot-letter,
 .boot.boot-play .boot-tick { transform: none; }

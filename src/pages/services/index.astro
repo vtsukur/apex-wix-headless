@@ -14,6 +14,7 @@ import Layout from "../../layouts/Layout.astro";
 import ServiceCard from "../../components/ServiceCard.astro";
 import { services, categoriesV2 } from "@wix/bookings";
 import { auth } from "@wix/essentials";
+import { media as wixMedia } from "@wix/sdk";
 
 // Wix Bookings app id — the base filter must scope queryServices to it.
 const BOOKING_APP_ID = "13d21c63-b5ec-5912-8397-c3a5ddb27a97";
@@ -41,8 +42,10 @@ else if (selectedLocation) filter["locations.business.id"] = { $hasSome: [select
 // @wix/essentials — do NOT build createClient({ auth: OAuthStrategy(...) });
 // that env var is client-only and undefined at server render → 500.
 const [servicesResult, locResult, catResult] = await Promise.all([
+  // Object-literal query form (dynamic dotted-field filters) — runtime-valid
+  // but not modeled by the SDK's typed builder overloads, hence the cast.
   auth
-    .elevate(services.queryServices)({ query: { filter, paging: { limit: 100 } }, conditionalFields: ["STAFF_MEMBER_DETAILS"] })
+    .elevate(services.queryServices as any)({ query: { filter, paging: { limit: 100 } }, conditionalFields: ["STAFF_MEMBER_DETAILS"] })
     .find()
     .catch((err: any) => { console.error("[services] listing query failed:", err); return null; }),
   auth.elevate(services.queryLocations)().catch((err: any) => { console.error("[services] queryLocations failed:", err); return null; }),
@@ -85,6 +88,15 @@ const hrefWith = (patch: Record<string, string | null>): string => {
 const filterActive = Boolean(selectedCategory || selectedLocation);
 
 const getSlug = (s: any): string => s.mainSlug?.name ?? s.supportedSlugs?.[0]?.name ?? s._id;
+// The SDK returns service images as `wix:image://` URI strings (REST returns
+// an object with a bare media id in `url`) — normalize every shape to an
+// absolute wixstatic URL.
+const absMedia = (img: unknown): string | undefined => {
+  const raw = typeof img === "string" ? img : (img as any)?.url;
+  if (!raw) return undefined;
+  if (raw.startsWith("wix:image://")) return wixMedia.getImageUrl(raw).url;
+  return raw.startsWith("http") ? raw : `https://static.wixstatic.com/media/${raw}`;
+};
 const formatPrice = (s: any): string | undefined => {
   const p = s.payment;
   if (!p || p.rateType === "NO_FEE") return undefined;
@@ -164,7 +176,7 @@ const locationName = (loc: any): string => loc?.business?.name ?? loc?.calculate
               tagLine={s.tagLine ?? s.description}
               durationMinutes={getDuration(s)}
               price={formatPrice(s)}
-              imageUrl={s.media?.mainMedia?.image?.url ?? s.media?.items?.[0]?.image?.url}
+              imageUrl={absMedia(s.media?.mainMedia?.image ?? s.media?.items?.[0]?.image)}
               type={s.type ?? "APPOINTMENT"}
               locationId={selectedLocation || undefined}
               locationType={selectedLocationType || undefined}

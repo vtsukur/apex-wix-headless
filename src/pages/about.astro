@@ -61,13 +61,22 @@ try {
   description="Apex puts you behind the wheel of a supercar on a closed circuit — one car, one line, one timed session."
 >
   <article class="max-w-3xl mx-auto px-6 py-24">
-    <header class="flex flex-col gap-4 mb-12">
-      <p class="text-xs uppercase tracking-[0.2em] text-mute">The outfit</p>
-      <h1 class="font-display text-4xl md:text-5xl leading-tight">
+    <header class="flex flex-col gap-5 mb-10">
+      <p class="eyebrow">The outfit</p>
+      <h1 class="display-lg">
         {about?.title ?? "The point of maximum commitment"}
       </h1>
-      <hr class="editorial-rule w-16 ml-0" />
     </header>
+
+    <figure class="mb-12">
+      <img
+        src="https://static.wixstatic.com/media/67964a_9db8ffeab8184766862166c5c3ab41bd~mv2.png/v1/fill/w_1440,h_760,q_85/apex-garage.jpg"
+        alt="A carbon-fiber racing helmet on a workbench in a dark garage bay, lit by a single beam"
+        class="w-full aspect-[2/1] object-cover border border-rule rounded-sm"
+        loading="eager"
+        decoding="async"
+      />
+    </figure>
 
     {
       about && about.bodyHtml ? (

@@ -7,6 +7,7 @@ import ServiceBookingFlow from "../../components/ServiceBookingFlow";
 import { services } from "@wix/bookings";
 import { forms } from "@wix/forms";
 import { auth } from "@wix/essentials";
+import { media as wixMedia } from "@wix/sdk";
 
 const BOOKING_APP_ID = "13d21c63-b5ec-5912-8397-c3a5ddb27a97";
 const { slug } = Astro.params;
@@ -92,7 +93,18 @@ const formatPrice = (p: any): string | undefined => {
 };
 const price = formatPrice(service.payment);
 const duration = service.schedule?.availabilityConstraints?.sessionDurations?.[0] ?? 60;
-const imageUrl = service.media?.mainMedia?.image?.url ?? service.media?.items?.[0]?.image?.url;
+// The SDK returns service images as `wix:image://` URI strings (REST returns
+// an object with a bare media id in `url`) — normalize every shape.
+const rawImage: unknown =
+  service.media?.coverMedia?.image ?? service.media?.mainMedia?.image ?? service.media?.items?.[0]?.image;
+const rawUrl = typeof rawImage === "string" ? rawImage : (rawImage as any)?.url;
+const imageUrl = !rawUrl
+  ? undefined
+  : rawUrl.startsWith("wix:image://")
+    ? wixMedia.getImageUrl(rawUrl).url
+    : rawUrl.startsWith("http")
+      ? rawUrl
+      : `https://static.wixstatic.com/media/${rawUrl}`;
 const serviceName = service.name ?? "Session";
 const seoTags = service.seoData?.tags ?? [];
 const hasTitleTag = seoTags.some((t: any) => t.type === "title" && !t.disabled);

@@ -12,7 +12,9 @@ import { auth } from "@wix/essentials";
 const BOOKING_APP_ID = "13d21c63-b5ec-5912-8397-c3a5ddb27a97";
 
 const result = await auth
-  .elevate(services.queryServices)({ query: { filter: { appId: BOOKING_APP_ID }, paging: { limit: 8 } } })
+  .elevate(services.queryServices)()
+  .eq("appId", BOOKING_APP_ID)
+  .limit(8)
   .find()
   .catch((err: any) => { console.error("[home] programmes query failed:", err); return null; });
 
@@ -35,11 +37,14 @@ const formatPrice = (s: any): string | undefined => {
   return undefined;
 };
 
-// The fleet — fictional in-house designations only.
+// The fleet — fictional in-house designations only. Imagery is AI-generated
+// original design (badge-free, no real marque), served from Wix Media.
 const fleet = [
   {
     designation: "TH-12",
     role: "The circuit weapon. Mid-engined, downforce-led, honest at the limit.",
+    image: "https://static.wixstatic.com/media/67964a_688bd941058043ffad139b51410e5983~mv2.png/v1/fill/w_1200,h_675,q_85/th-12.jpg",
+    alt: "TH-12 hypercar cornering at the apex of a dark circuit at dusk, brake discs glowing",
     specs: [
       { value: "730", unit: "PS", label: "Power" },
       { value: "2.9", unit: "s", label: "0–100 km/h" },
@@ -49,6 +54,8 @@ const fleet = [
   {
     designation: "RS-Launch",
     role: "The launch specialist. All-wheel drive, telemetry on every run.",
+    image: "https://static.wixstatic.com/media/67964a_75f55bba9ff64d86bfc4d983c9bb8b7e~mv2.png/v1/fill/w_1200,h_675,q_85/rs-launch.jpg",
+    alt: "RS-Launch coupe launching from the start line at night, tire smoke trailing",
     specs: [
       { value: "640", unit: "PS", label: "Power" },
       { value: "2.6", unit: "s", label: "0–100 km/h" },
@@ -58,6 +65,8 @@ const fleet = [
   {
     designation: "Apex GT",
     role: "The grand tourer. Long-legged, unhurried, built for the high passes.",
+    image: "https://static.wixstatic.com/media/67964a_98ec9d42fd54409fac49b479d2b0d2d0~mv2.png/v1/fill/w_1200,h_675,q_85/apex-gt.jpg",
+    alt: "Apex GT sweeping through an alpine hairpin at blue hour, tail lights tracing the road",
     specs: [
       { value: "585", unit: "PS", label: "Power" },
       { value: "3.4", unit: "s", label: "0–100 km/h" },
@@ -98,15 +107,20 @@ const fleet = [
         <div class="pin-cars">
           {fleet.map((car, i) => (
             <article class={`pin-car${i === 0 ? " is-active" : ""}`} data-car-index={i}>
-              <h3 class="pin-designation">{car.designation}</h3>
-              <p class="plate-role max-w-prose">{car.role}</p>
-              <div class="plate-specs">
-                {car.specs.map((s) => (
-                  <div>
-                    <span class="plate-value">{s.value}<span class="plate-unit">{s.unit}</span></span>
-                    <span class="plate-label">{s.label}</span>
-                  </div>
-                ))}
+              <div class="pin-car-copy">
+                <h3 class="pin-designation">{car.designation}</h3>
+                <p class="plate-role max-w-prose">{car.role}</p>
+                <div class="plate-specs">
+                  {car.specs.map((s) => (
+                    <div>
+                      <span class="plate-value">{s.value}<span class="plate-unit">{s.unit}</span></span>
+                      <span class="plate-label">{s.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div class="pin-car-media">
+                <img src={car.image} alt={car.alt} loading={i === 0 ? "eager" : "lazy"} decoding="async" />
               </div>
             </article>
           ))}

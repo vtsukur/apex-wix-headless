@@ -2,17 +2,17 @@
 // src/pages/services/index.astro — SSR sessions listing grid (SEO).
 // One dir deep inside src/pages → ../../ reaches src/.
 //
-// Optional catalog filters (both auto-skip when there's nothing to filter):
+// Optional catalog filter (auto-skips when there's nothing to filter):
 //   location — a location selector, shown ONLY when the site has >1 location
 //              (business + custom + customer). The choice is carried as
 //              ?locationId (+?locationType) and forwarded into both the services
 //              query and the detail page's availability.
-//   category — a category filter bar, shown ONLY when >1 category exists. The
-//              choice is carried as ?category and merged into the services query.
-// Both are plain links that re-SSR with query params — no client JS on the catalog.
+// Category filtering is deliberately absent — the catalog always shows every
+// session (the seeded categories are meaningless duplicates).
+// Plain links that re-SSR with query params — no client JS on the catalog.
 import Layout from "../../layouts/Layout.astro";
 import ServiceCard from "../../components/ServiceCard.astro";
-import { services, categoriesV2 } from "@wix/bookings";
+import { services } from "@wix/bookings";
 import { auth } from "@wix/essentials";
 import { media as wixMedia } from "@wix/sdk";
 
@@ -20,28 +20,26 @@ import { media as wixMedia } from "@wix/sdk";
 const BOOKING_APP_ID = "13d21c63-b5ec-5912-8397-c3a5ddb27a97";
 
 const reqUrl = new URL(Astro.request.url);
-const selectedCategory = reqUrl.searchParams.get("category") ?? "";
 const selectedLocation = reqUrl.searchParams.get("locationId") ?? "";
 const selectedLocationType = reqUrl.searchParams.get("locationType") ?? "";
 
-// ── Services filter (appId + optional category + optional location) ─────────
+// ── Services filter (appId + optional location) ──────────────────────────────
 // A real business-location id filters by locations.business.id; the synthetic
 // "custom"/"customer" ids map to a location-TYPE filter. Built from URL params
-// only, so it doesn't depend on the locations/categories reads.
+// only, so it doesn't depend on the locations read.
 const filter: Record<string, any> = { appId: BOOKING_APP_ID };
-if (selectedCategory) filter["category.id"] = { $eq: selectedCategory };
 if (selectedLocation === "custom") filter["locations.type"] = { $hasSome: ["CUSTOM"] };
 else if (selectedLocation === "customer") filter["locations.type"] = { $hasSome: ["CUSTOMER"] };
 else if (selectedLocation) filter["locations.business.id"] = { $hasSome: [selectedLocation] };
 
-// ── Catalog reads — three INDEPENDENT queries, fetched concurrently ─────────
-// queryServices (the filtered list) + queryLocations (selector) + queryCategories
-// (bar) don't depend on each other, so run them in parallel. Each is individually
-// non-fatal: a failed read degrades only its own piece (an empty list / a hidden
-// selector or bar), never the whole page. Ambient @wix/astro SSR client via
-// @wix/essentials — do NOT build createClient({ auth: OAuthStrategy(...) });
-// that env var is client-only and undefined at server render → 500.
-const [servicesResult, locResult, catResult] = await Promise.all([
+// ── Catalog reads — two INDEPENDENT queries, fetched concurrently ───────────
+// queryServices (the filtered list) + queryLocations (selector) don't depend on
+// each other, so run them in parallel. Each is individually non-fatal: a failed
+// read degrades only its own piece (an empty list / a hidden selector), never
+// the whole page. Ambient @wix/astro SSR client via @wix/essentials — do NOT
+// build createClient({ auth: OAuthStrategy(...) }); that env var is client-only
+// and undefined at server render → 500.
+const [servicesResult, locResult] = await Promise.all([
   // Object-literal query form (dynamic dotted-field filters) — runtime-valid
   // but not modeled by the SDK's typed builder overloads, hence the cast.
   auth
@@ -49,7 +47,6 @@ const [servicesResult, locResult, catResult] = await Promise.all([
     .find()
     .catch((err: any) => { console.error("[services] listing query failed:", err); return null; }),
   auth.elevate(services.queryLocations)().catch((err: any) => { console.error("[services] queryLocations failed:", err); return null; }),
-  auth.elevate(categoriesV2.queryCategories)().find().catch((err: any) => { console.error("[services] queryCategories failed:", err); return null; }),
 ]);
 
 const serviceList: any[] = (servicesResult?.items ?? []).filter((s: any) => !s.hidden);
@@ -62,15 +59,10 @@ const locationCount =
   businessLocations.length + (hasCustomLocations ? 1 : 0) + (hasCustomerLocations ? 1 : 0);
 const showLocationSelector = locationCount > 1;
 
-// Categories — non-fatal; show the bar only when >1 (a fresh site has one default).
-const categories: any[] = catResult?.items ?? [];
-const showCategoryBar = categories.length > 1;
-
 // Build a /services href preserving the current selection, applying overrides.
 // Pass null to clear a param. locationType is always paired with locationId.
 const hrefWith = (patch: Record<string, string | null>): string => {
   const p = new URLSearchParams();
-  if (selectedCategory) p.set("category", selectedCategory);
   if (selectedLocation) {
     p.set("locationId", selectedLocation);
     if (selectedLocationType) p.set("locationType", selectedLocationType);
@@ -85,7 +77,7 @@ const hrefWith = (patch: Record<string, string | null>): string => {
 };
 
 // Is a filter narrowing the list right now? Drives the empty-state copy.
-const filterActive = Boolean(selectedCategory || selectedLocation);
+const filterActive = Boolean(selectedLocation);
 
 const getSlug = (s: any): string => s.mainSlug?.name ?? s.supportedSlugs?.[0]?.name ?? s._id;
 // The SDK returns service images as `wix:image://` URI strings (REST returns
@@ -139,22 +131,6 @@ const locationName = (loc: any): string => loc?.business?.name ?? loc?.calculate
           {hasCustomerLocations && (
             <a href={hrefWith({ locationId: "customer", locationType: "CUSTOMER" })} class={`booking-filter-chip${selectedLocation === "customer" ? " booking-filter-chip--active" : ""}`}>My location</a>
           )}
-        </nav>
-      )
-    }
-
-    {
-      showCategoryBar && (
-        <nav class="booking-filter-bar" aria-label="Filter by category">
-          <a href={hrefWith({ category: null })} class={`booking-filter-chip${selectedCategory ? "" : " booking-filter-chip--active"}`}>All</a>
-          {categories.map((cat: any) => (
-            <a
-              href={hrefWith({ category: cat._id })}
-              class={`booking-filter-chip${selectedCategory === cat._id ? " booking-filter-chip--active" : ""}`}
-            >
-              {cat.name ?? "Category"}
-            </a>
-          ))}
         </nav>
       )
     }

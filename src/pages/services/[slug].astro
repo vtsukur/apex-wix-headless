@@ -109,6 +109,17 @@ const serviceName = service.name ?? "Session";
 const seoTags = service.seoData?.tags ?? [];
 const hasTitleTag = seoTags.some((t: any) => t.type === "title" && !t.disabled);
 
+// Fleet films — the same Wix Media clips the home deck plays, keyed by the
+// car the service name leads with (and the same cover crops). The service
+// image stays the poster; the film fades in over it once actually playing.
+const FLEET_FILMS: { car: string; video: string; pos?: string }[] = [
+  { car: "TH-12W", video: "https://video.wixstatic.com/video/67964a_6d60600de434486fa612ce9589d9d2f1/720p/mp4/file.mp4" },
+  { car: "ROCKET 4S", video: "https://video.wixstatic.com/video/67964a_27024945f4a848eba030934f3f8e183a/720p/mp4/file.mp4", pos: "50% 35%" },
+  { car: "APEX GT", video: "https://video.wixstatic.com/video/67964a_90326cc4dcfb401490328519e1b5951b/720p/mp4/file.mp4", pos: "50% 85%" },
+];
+const film = FLEET_FILMS.find((f) => serviceName.toUpperCase().startsWith(f.car));
+const mediaPos = film?.pos ? `object-position: ${film.pos}` : undefined;
+
 // Staff for the optional instructor picker — carried on the service via the
 // STAFF_MEMBER_DETAILS conditional field (already requested in the query above).
 // Each entry is { staffMemberId, name } — `staffMemberId` is, despite the name,
@@ -153,45 +164,94 @@ try {
   <section class="container-wide py-24">
     <a href="/services" class="inline-block text-sm text-mute hover:text-ink mb-8">← All sessions</a>
 
-    <!-- Optional banner image — only when the service has media (image-less is the
-         common seed case; rendering a fixed placeholder collapses the layout). -->
-    {imageUrl && (
-      <img src={imageUrl} alt={serviceName} class="w-full h-64 object-cover rounded-md mb-8" />
-    )}
-
-    <div class="flex flex-col gap-6 mb-16" data-reveal>
-      <p class="eyebrow">The programme</p>
-      <h1 class="display-lg">{serviceName}</h1>
-      {service.tagLine && <p class="text-lg text-mute leading-relaxed max-w-prose">{service.tagLine}</p>}
-      <div class="plate-specs mt-2">
-        <div>
-          <span class="plate-value">{duration}<span class="plate-unit">min</span></span>
-          <span class="plate-label">Duration</span>
-        </div>
-        {price && (
+    <!-- Split hero — copy left, wide media right on desktop (stacked, media
+         first, on mobile). Media only when the service has it (image-less is
+         the common seed case; a fixed placeholder collapses the layout). -->
+    <div class={`detail-hero${imageUrl ? " has-media" : ""}`} data-reveal>
+      <div class="flex flex-col gap-6">
+        <p class="eyebrow">The programme</p>
+        <h1 class="display-lg">{serviceName}</h1>
+        {service.tagLine && <p class="text-lg text-mute leading-relaxed max-w-prose">{service.tagLine}</p>}
+        <div class="plate-specs mt-2">
           <div>
-            <span class="plate-value">{price}</span>
-            <span class="plate-label">Session</span>
+            <span class="plate-value">{duration}<span class="plate-unit">min</span></span>
+            <span class="plate-label">Duration</span>
           </div>
-        )}
+          {price && (
+            <div>
+              <span class="plate-value">{price}</span>
+              <span class="plate-label">Session</span>
+            </div>
+          )}
+        </div>
+        {service.description && <p class="text-ink leading-relaxed max-w-prose">{service.description}</p>}
       </div>
-      {service.description && <p class="text-ink leading-relaxed max-w-prose">{service.description}</p>}
+      {imageUrl && (
+        <div class="detail-media" data-detail-media>
+          <img src={imageUrl} alt={serviceName} style={mediaPos} />
+          {film && (
+            <video
+              src={film.video}
+              muted
+              loop
+              playsinline
+              preload="auto"
+              aria-hidden="true"
+              style={mediaPos}
+            />
+          )}
+        </div>
+      )}
     </div>
 
-    <section class="border-t border-rule pt-12 max-w-3xl">
-      <p class="eyebrow mb-4">Availability</p>
-      <h2 class="font-display text-2xl md:text-3xl uppercase leading-tight mb-3">Book your session</h2>
-      <p class="text-mute leading-relaxed mb-8">Pick the window. Commit to the corner.</p>
-      <ServiceBookingFlow
-        service={service}
-        serviceName={serviceName}
-        serviceType={service.type ?? "APPOINTMENT"}
-        fields={formFields}
-        staffMembers={staffMembers}
-        locations={serviceLocations}
-        locationId={locationId}
-        client:only="react"
-      />
+    <!-- Availability — intro column rides sticky on the left, the calendar
+         and form get the wide right column. -->
+    <section class="border-t border-rule pt-12 detail-book">
+      <div class="detail-book-intro">
+        <p class="eyebrow mb-4">Availability</p>
+        <h2 class="font-display text-2xl md:text-3xl uppercase leading-tight mb-3">Book your session</h2>
+        <p class="text-mute leading-relaxed">Pick the window. Commit to the corner.</p>
+      </div>
+      <div class="detail-book-flow">
+        <ServiceBookingFlow
+          service={service}
+          serviceName={serviceName}
+          serviceType={service.type ?? "APPOINTMENT"}
+          fields={formFields}
+          staffMembers={staffMembers}
+          locations={serviceLocations}
+          locationId={locationId}
+          client:only="react"
+        />
+      </div>
     </section>
   </section>
 </Layout>
+
+<script>
+  // Detail film — the still shows first; the car's clip cues a beat later
+  // and fades in only once playback actually starts (home-deck spirit).
+  // Waits out the boot curtain on hard loads, skipped under reduced motion.
+  function initDetailFilm() {
+    const wrap = document.querySelector<HTMLElement>("[data-detail-media]:not([data-init])");
+    if (!wrap) return;
+    wrap.dataset.init = "1";
+    const vid = wrap.querySelector("video");
+    if (!vid) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const cue = () =>
+      setTimeout(() => {
+        vid
+          .play()
+          .then(() => wrap.classList.add("video-live"))
+          .catch(() => {}); // autoplay blocked — the still holds
+      }, 600);
+    if (document.documentElement.classList.contains("booting")) {
+      document.addEventListener("apex:boot-done", cue, { once: true });
+    } else {
+      cue();
+    }
+  }
+  initDetailFilm();
+  document.addEventListener("astro:page-load", initDetailFilm);
+</script>

@@ -464,6 +464,77 @@ body[data-navigating="true"] .product-grid {
   }
 }
 
+/* ── Service detail — split hero and split booking, desktop-wide ────────── */
+/* Hero: copy left, media right (media first when stacked on mobile). */
+.detail-hero {
+  display: grid;
+  gap: 3rem;
+  margin-bottom: 4.5rem;
+}
+.detail-hero > .detail-media {
+  order: -1;
+}
+@media (min-width: 1024px) {
+  .detail-hero.has-media {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 4rem;
+    align-items: stretch;
+  }
+  .detail-hero > .detail-media {
+    order: 2;
+  }
+}
+/* The media card — service still as poster; the car's fleet film fades in
+   over it once playing (.video-live, cued in the page script). */
+.detail-media {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  aspect-ratio: 16 / 9;
+}
+@media (min-width: 1024px) {
+  .detail-media {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 26rem;
+  }
+}
+.detail-media img,
+.detail-media video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.detail-media video {
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+.detail-media.video-live video {
+  opacity: 1;
+}
+/* Availability: sticky intro left, the calendar/form breathe on the right. */
+.detail-book {
+  display: grid;
+  gap: 2.5rem;
+}
+@media (min-width: 1024px) {
+  .detail-book {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: 4rem;
+  }
+  .detail-book-intro {
+    position: sticky;
+    top: 7rem;
+    align-self: start;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .detail-media video { display: none; }
+}
+
 /* Why-Apex scene — the garage shot ghosts through the warm-paper ground
    (same image that headlines the About page the story CTA leads to).
    isolate + z:-1 slots it between the section's background and its copy. */

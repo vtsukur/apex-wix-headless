@@ -209,18 +209,27 @@ const { title, description, hasSeoTags = false } = Astro.props;
           if (count) count.textContent = String(idx + 1).padStart(2, "0");
           const dots = stage.querySelectorAll<HTMLElement>("[data-pin-dot]");
           dots.forEach((dot, i) => dot.classList.toggle("on", i <= idx));
-          // Continuous piecewise map through the circle stops (arc fractions
-          // on data-pin-dot): the fill sits at circle k exactly when car k
-          // opens (p = k/n) — the short lead-in starts filled, the short
-          // run-out completes through the last beat.
+          // Plateau map through the circle stops (arc fractions on
+          // data-pin-dot): while car k is on stage the fill rests centered in
+          // circle k; across each beat boundary it sweeps smoothly to the
+          // next circle (scroll-driven and continuous — the sweep spans the
+          // last/first EDGE of the adjacent beats, meeting halfway exactly at
+          // the boundary).
           const bar = stage.querySelector<HTMLElement>("[data-pin-bar]");
           if (bar && dots.length > 0) {
             const stops = Array.from(dots).map((d) => parseFloat(d.dataset.pinDot ?? "0"));
             const n = stops.length;
-            const k = Math.min(n - 1, Math.floor(p * n));
-            const t = p * n - k;
-            const to = k + 1 < n ? stops[k + 1] : 1;
-            bar.style.setProperty("--p", String(stops[k] + (to - stops[k]) * t));
+            const EDGE = 0.18;
+            const seg = Math.min(n - 1e-6, p * n);
+            const k = Math.floor(seg);
+            const t = seg - k;
+            let fill = stops[k];
+            if (t < EDGE && k > 0) {
+              fill = stops[k - 1] + (stops[k] - stops[k - 1]) * (0.5 + (0.5 * t) / EDGE);
+            } else if (t > 1 - EDGE && k < n - 1) {
+              fill = stops[k] + (stops[k + 1] - stops[k]) * ((0.5 * (t - (1 - EDGE))) / EDGE);
+            }
+            bar.style.setProperty("--p", String(fill));
           }
         }
       }
@@ -236,6 +245,22 @@ const { title, description, hasSeoTags = false } = Astro.props;
         };
         requestAnimationFrame(raf);
       }
+
+      // Scroller circles are buttons — clicking circle k scrolls the pinned
+      // stage to the center of car k's beat (fill centered in that circle).
+      document.addEventListener("click", (event) => {
+        const dot = (event.target as HTMLElement | null)?.closest?.<HTMLElement>("[data-pin-dot]");
+        if (!dot) return;
+        const stage = dot.closest<HTMLElement>("[data-pin-stage]");
+        if (!stage) return;
+        const dots = Array.from(stage.querySelectorAll("[data-pin-dot]"));
+        const i = dots.indexOf(dot);
+        const total = stage.offsetHeight - window.innerHeight;
+        const top = stage.getBoundingClientRect().top + window.scrollY;
+        const target = top + ((i + 0.5) / dots.length) * total;
+        if (lenis) lenis.scrollTo(target, { duration: 1.1 });
+        else window.scrollTo({ top: target, behavior: "smooth" });
+      });
 
       function setupReveals() {
         const els = document.querySelectorAll<HTMLElement>("[data-reveal]:not(.in)");

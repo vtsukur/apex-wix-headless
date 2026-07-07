@@ -130,19 +130,20 @@ const fleet = [
           <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-x-12 gap-y-6">
             <div class="hidden md:block"></div>
             <h2 class="display-lg text-center">Three cars. One discipline.</h2>
-            <!-- Scroll progress as a racing curve. Short lead-in before circle
-                 1 and short run-out after circle 3 (circles at 8%/50%/92% of
-                 the arc, fractions carried on data-pin-dot); the scroll driver
-                 maps section progress piecewise through those stops so the
-                 fill crosses each circle exactly as its car takes the stage. -->
-            <div class="pin-progress" aria-hidden="true">
-              <svg class="pin-curve" viewBox="0 0 400 40" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Scroll progress as a racing curve. Circles at 8%/50%/92% of
+                 the arc (fractions on data-pin-dot); the scroll driver holds
+                 the fill centered in the active car's circle for the length
+                 of its beat and sweeps to the next circle across the beat
+                 boundary (continuous, scroll-driven). The circles are buttons
+                 — clicking one scrolls the stage to that car. -->
+            <div class="pin-progress">
+              <svg class="pin-curve" viewBox="0 0 400 40" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path class="pin-curve-base" d="M2 6 Q120 2 210 16 Q320 32 398 34" />
                 <path class="pin-curve-fill" data-pin-bar pathLength="100" d="M2 6 Q120 2 210 16 Q320 32 398 34" />
               </svg>
-              <span class="pin-dot" data-pin-dot="0.08" style="left:8.5%; top:5px"><span class="pin-dot-num">1</span></span>
-              <span class="pin-dot" data-pin-dot="0.5" style="left:50%; top:14px"><span class="pin-dot-num">2</span></span>
-              <span class="pin-dot" data-pin-dot="0.92" style="left:91.5%; top:33px"><span class="pin-dot-num">3</span></span>
+              <button type="button" class="pin-dot" data-pin-dot="0.08" style="left:8.5%; top:5px" aria-label="Show car 1"><span class="pin-dot-num">1</span></button>
+              <button type="button" class="pin-dot" data-pin-dot="0.5" style="left:50%; top:14px" aria-label="Show car 2"><span class="pin-dot-num">2</span></button>
+              <button type="button" class="pin-dot" data-pin-dot="0.92" style="left:91.5%; top:33px" aria-label="Show car 3"><span class="pin-dot-num">3</span></button>
             </div>
           </div>
         </div>

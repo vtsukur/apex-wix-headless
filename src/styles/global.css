@@ -707,15 +707,19 @@ html.lenis, html.lenis body { height: auto; }
 }
 .pin-cars {
   position: relative;
-  min-height: clamp(18rem, 42svh, 26rem);
+  min-height: clamp(20rem, 58svh, 36rem);
 }
+/* One full-bleed image per car; the plate (designation, role, specs) sits on
+   top of it, bottom-left, over a legibility scrim. */
 .pin-car {
   position: absolute;
   inset: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1.75rem;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
   opacity: 0;
   transform: translateY(2.5rem);
   transition:
@@ -723,36 +727,32 @@ html.lenis, html.lenis body { height: auto; }
     transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
 }
-@media (min-width: 1024px) {
-  .pin-car {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-    gap: 4rem;
-    align-items: center;
-  }
-}
 .pin-car-copy {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
   min-width: 0;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
 }
 .pin-car-media {
-  order: -1;
-  min-width: 0;
+  position: absolute;
+  inset: 0;
 }
-@media (min-width: 1024px) {
-  .pin-car-media { order: 0; }
+/* Strongest under the plate, clearing toward the top right. */
+.pin-car-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(10, 10, 11, 0.85), rgba(10, 10, 11, 0.35) 42%, rgba(10, 10, 11, 0) 68%),
+    linear-gradient(to right, rgba(10, 10, 11, 0.45), rgba(10, 10, 11, 0) 45%);
 }
 .pin-car-media img {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: 28svh;
+  height: 100%;
   object-fit: cover;
-  border: 1px solid var(--color-rule);
-  border-radius: var(--radius-sm);
-}
-@media (min-width: 1024px) {
-  .pin-car-media img { max-height: 56svh; }
 }
 .pin-car.is-active .pin-car-media img {
   animation: media-drift 6s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -813,7 +813,9 @@ html.lenis, html.lenis body { height: auto; }
     min-height: 0;
   }
   .pin-car {
-    position: static;
+    /* Overlay layout needs a box of its own once unpinned. */
+    position: relative;
+    min-height: clamp(16rem, 52vw, 26rem);
     opacity: 1;
     transform: none;
     transition: none;

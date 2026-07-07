@@ -117,7 +117,14 @@ const fleet = [
       <div class="container-wide flex flex-col gap-12">
         <div class="flex flex-col gap-5" data-reveal>
           <p class="eyebrow">The fleet</p>
-          <h2 class="display-lg">Three cars. One discipline.</h2>
+          <div class="flex flex-wrap items-center gap-x-12 gap-y-6">
+            <h2 class="display-lg">Three cars. One discipline.</h2>
+            <div class="pin-progress" aria-hidden="true">
+              <span class="pin-count" data-pin-count>01</span>
+              <span class="pin-track"><span class="pin-bar" data-pin-bar></span></span>
+              <span class="pin-count">03</span>
+            </div>
+          </div>
         </div>
         <div class="pin-cars">
           {fleet.map((car, i) => (
@@ -139,11 +146,6 @@ const fleet = [
               </div>
             </article>
           ))}
-        </div>
-        <div class="pin-progress" aria-hidden="true">
-          <span class="pin-count" data-pin-count>01</span>
-          <span class="pin-track"><span class="pin-bar" data-pin-bar></span></span>
-          <span class="pin-count">03</span>
         </div>
       </div>
     </div>

@@ -226,10 +226,18 @@
 @media (max-width: 1023px) {
   .site-nav { --curve-scale: 0.72; --curve-w: 207px; }
 }
-/* Mobile keeps the pocket + lap + boot handoff, just smaller. */
+/* Mobile keeps the pocket + lap + boot handoff, just smaller — but only at
+   the top of the page: once scrolled past the hero (html.past-hero, set by
+   the Layout scroll gate) the chrome collapses to the plain bar. */
 @media (max-width: 767px) {
   .site-nav { --curve-scale: 0.6; --curve-w: 173px; }
+  .nav-curve { transition: opacity 300ms ease; }
+  html.past-hero .nav-curve { opacity: 0; visibility: hidden; transition: opacity 300ms ease, visibility 0s 300ms; }
+  html.past-hero .site-nav { --curve-w: 0px; }
+  html.past-hero .site-nav .brand-mark { transform: none; }
 }
+.site-nav::after { transition: left 300ms ease; }
+.site-nav .brand-mark { transition: transform 300ms ease; }
 .site-footer {
   border-top: 1px solid var(--color-rule);
   background: var(--color-paper-warm);

@@ -149,6 +149,17 @@ const { title, description, hasSeoTags = false } = Astro.props;
 
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+      // Past-hero gate — mobile CSS collapses the header to the plain bar
+      // (no curve pocket, no lap) once the page is meaningfully scrolled.
+      const heroGate = () => {
+        document.documentElement.classList.toggle(
+          "past-hero",
+          window.scrollY > window.innerHeight * 0.5,
+        );
+      };
+      window.addEventListener("scroll", heroGate, { passive: true });
+      heroGate();
+
       // Scroll-driven effects — hero parallax-exit + pinned fleet progress.
       // Re-scanned after every ClientRouter swap; a no-op on pages without the
       // hooks. Under reduced motion nothing runs (CSS shows the static layout).
@@ -254,6 +265,7 @@ const { title, description, hasSeoTags = false } = Astro.props;
       document.addEventListener("astro:page-load", () => {
         setupReveals();
         scanScrollFx();
+        heroGate();
       });
       document.addEventListener("astro:after-swap", () => {
         lenis?.scrollTo(0, { immediate: true });

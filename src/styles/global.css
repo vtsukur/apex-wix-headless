@@ -956,14 +956,14 @@ html.lenis, html.lenis body { height: auto; }
    (pathLength=100 keeps the dash math stretch-proof, non-scaling strokes
    keep the weight honest under preserveAspectRatio:none); a dot per car
    lights up as its beat arrives (toggled by the pin-stage scroll driver). */
-/* The box is taller than its row and overflows downward (negative margin)
-   so the curve descends toward the image; the scroll driver then centers
-   its visible ink between the pinned viewport's top and the image top. */
+/* On desktop the box is taller than its row and overflows downward
+   (negative margin) so the curve descends toward the image; the scroll
+   driver then centers its visible ink between the pinned viewport's top
+   and the image top. On mobile it sits in plain flow under the title. */
 .pin-progress {
   position: relative;
   min-width: 12rem;
   height: 96px;
-  margin-bottom: -48px;
 }
 @media (min-width: 768px) {
   .pin-progress { margin-bottom: -56px; }
@@ -1001,6 +1001,15 @@ html.lenis, html.lenis body { height: auto; }
   border: 1px solid var(--color-mute);
   cursor: pointer;
   transition: background-color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
+}
+/* One shape per beat — circle, rectangle, square — same footprint. */
+.pin-dot:nth-of-type(2) {
+  border-radius: 0;
+  width: 21px;
+  height: 11px;
+}
+.pin-dot:nth-of-type(3) {
+  border-radius: 0;
 }
 .pin-dot:hover {
   border-color: var(--color-ink);

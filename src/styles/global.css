@@ -699,7 +699,7 @@ html.booting .boot.boot-exit { transform: translateY(-101%); }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2.25rem;
+  gap: 2.75rem;
 }
 .boot-mark {
   display: flex;
@@ -721,20 +721,20 @@ html.booting .boot.boot-exit { transform: translateY(-101%); }
   font-family: var(--font-display);
   font-weight: 600;
   text-transform: uppercase;
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-size: clamp(3.25rem, 8.5vw, 6.5rem);
   letter-spacing: 0.08em;
   line-height: 1;
   color: var(--color-ink);
 }
 .boot-tick {
-  width: clamp(0.875rem, 1.8vw, 1.25rem);
-  height: clamp(0.875rem, 1.8vw, 1.25rem);
+  width: clamp(1.125rem, 2.4vw, 1.75rem);
+  height: clamp(1.125rem, 2.4vw, 1.75rem);
   background: var(--color-accent);
 }
 .boot.boot-play .boot-letter,
 .boot.boot-play .boot-tick { transform: none; }
 .boot-line {
-  width: min(16rem, 50vw);
+  width: min(24rem, 64vw);
   height: 1px;
   background: var(--color-rule);
   overflow: hidden;
@@ -745,7 +745,7 @@ html.booting .boot.boot-exit { transform: translateY(-101%); }
   background: var(--color-accent);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 1250ms cubic-bezier(0.76, 0, 0.24, 1) 150ms;
+  transition: transform 2900ms cubic-bezier(0.65, 0, 0.35, 1) 150ms;
 }
 .boot.boot-play .boot-line-bar { transform: scaleX(1); }
 /* The mark drifts up ahead of the curtain for a beat of parallax on exit. */

@@ -40,8 +40,8 @@ const LETTERS = "APEX".split("");
     Promise.race([fontsReady, new Promise((r) => setTimeout(r, 800))]).then(() => {
       requestAnimationFrame(() => {
         boot.classList.add("boot-play");
-        setTimeout(() => boot.classList.add("boot-exit"), 1450);
-        setTimeout(finish, 2250);
+        setTimeout(() => boot.classList.add("boot-exit"), 3200);
+        setTimeout(finish, 4000);
       });
     });
   } else if (html.classList.contains("booting")) {

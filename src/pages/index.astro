@@ -71,7 +71,7 @@ const fleet = [
   },
   {
     designation: "Apex GT",
-    href: "/services/half-day-alpine-pass-apex-gt-1",
+    href: "/services/apex-gt-half-day-alpine-pass",
     cta: "Book a drive",
     role: "The grand tourer. Long-legged, unhurried, built for the high passes.",
     image: "https://static.wixstatic.com/media/67964a_98ec9d42fd54409fac49b479d2b0d2d0~mv2.png/v1/fill/w_1376,h_768,q_85/apex-gt.jpg",
@@ -217,17 +217,31 @@ const fleet = [
       {
         programmes.length > 0 ? (
           <div>
-            {programmes.map((s, i) => (
-              <a href={`/services/${getSlug(s)}`} class="index-row" data-roll>
-                <span class="index-row-num">{String(i + 1).padStart(2, "0")}</span>
-                <span class="index-row-name">{s.name}</span>
-                <span class="index-row-meta">
-                  <span>{getDuration(s)} min</span>
-                  {formatPrice(s) && <span class="price">{formatPrice(s)}</span>}
-                  <span class="index-row-arrow" aria-hidden="true">→</span>
-                </span>
-              </a>
-            ))}
+            {programmes.map((s, i) => {
+              // Car-led names read "CAR · programme" — paint just the car red.
+              const name = s.name ?? "";
+              const dot = name.indexOf(" · ");
+              return (
+                <a href={`/services/${getSlug(s)}`} class="index-row" data-roll>
+                  <span class="index-row-num">{String(i + 1).padStart(2, "0")}</span>
+                  <span class="index-row-name">
+                    {dot === -1 ? (
+                      name
+                    ) : (
+                      <>
+                        <span class="text-accent">{name.slice(0, dot)}</span>
+                        {name.slice(dot)}
+                      </>
+                    )}
+                  </span>
+                  <span class="index-row-meta">
+                    <span>{getDuration(s)} min</span>
+                    {formatPrice(s) && <span class="price">{formatPrice(s)}</span>}
+                    <span class="index-row-arrow" aria-hidden="true">→</span>
+                  </span>
+                </a>
+              );
+            })}
           </div>
         ) : (
           <div class="flex flex-col gap-6 items-start" data-reveal style="--d:140ms">
@@ -260,7 +274,7 @@ const fleet = [
   <!-- Scene 5 — final call -->
   <section class="scene" aria-label="Book">
     <div class="container-wide flex flex-col gap-10 items-center text-center">
-      <h2 class="display-hero" data-reveal>The grid<br />is open<span class="accent-dot" aria-hidden="true"></span></h2>
+      <h2 class="display-hero" data-reveal>The grid<br />is open<span class="accent-dot" data-fluid aria-hidden="true"></span></h2>
       <a href="/services" class="btn-primary" data-reveal style="--d:200ms">Book a drive</a>
     </div>
   </section>

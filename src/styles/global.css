@@ -476,7 +476,7 @@ body[data-navigating="true"] .product-grid {
   line-height: 1;
 }
 .plate-role {
-  font-size: 0.8125rem;
+  font-size: 1rem;
   color: var(--color-mute);
   line-height: 1.6;
 }
@@ -707,16 +707,14 @@ html.lenis, html.lenis body { height: auto; }
 }
 .pin-cars {
   position: relative;
-  min-height: clamp(20rem, 58svh, 36rem);
+  min-height: clamp(24rem, 68svh, 44rem);
 }
-/* One full-bleed image per car; the plate (designation, role, specs) sits on
-   top of it, bottom-left, over a legibility scrim. */
+/* One full-bleed image per car; the plate rides on top — designation and
+   role pinned to the top of the card, specs to the bottom (margin-top: auto),
+   both over legibility scrims. */
 .pin-car {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
   overflow: hidden;
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-sm);
@@ -728,7 +726,8 @@ html.lenis, html.lenis body { height: auto; }
   pointer-events: none;
 }
 .pin-car-copy {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -736,18 +735,23 @@ html.lenis, html.lenis body { height: auto; }
   min-width: 0;
   padding: clamp(1.25rem, 3vw, 2.5rem);
 }
+.pin-car-copy .plate-specs {
+  margin-top: auto;
+}
 .pin-car-media {
   position: absolute;
   inset: 0;
 }
-/* Strongest under the plate, clearing toward the top right. */
+/* Scrims under both text zones — top for the name/role, bottom for the
+   specs — clearing in the middle so the car stays clean. */
 .pin-car-media::after {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to top, rgba(10, 10, 11, 0.85), rgba(10, 10, 11, 0.35) 42%, rgba(10, 10, 11, 0) 68%),
-    linear-gradient(to right, rgba(10, 10, 11, 0.45), rgba(10, 10, 11, 0) 45%);
+    linear-gradient(to bottom, rgba(10, 10, 11, 0.75), rgba(10, 10, 11, 0.25) 30%, rgba(10, 10, 11, 0) 52%),
+    linear-gradient(to top, rgba(10, 10, 11, 0.85), rgba(10, 10, 11, 0.3) 30%, rgba(10, 10, 11, 0) 52%),
+    linear-gradient(to right, rgba(10, 10, 11, 0.4), rgba(10, 10, 11, 0) 45%);
 }
 .pin-car-media img {
   width: 100%;

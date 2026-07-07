@@ -5,6 +5,7 @@
 // fleet is a pinned scroll sequence (one car per scroll beat). Programmes are
 // queried live from Wix Bookings (non-fatal — degrades to a CTA on failure).
 import Layout from '../layouts/Layout.astro';
+import HeroFluid from '../components/HeroFluid.astro';
 import { services } from "@wix/bookings";
 import { auth } from "@wix/essentials";
 
@@ -40,10 +41,10 @@ const formatPrice = (s: any): string | undefined => {
 // original design (badge-free, no real marque), served from Wix Media.
 const fleet = [
   {
-    designation: "TH-12",
+    designation: "TH-12W",
     role: "The circuit weapon. Mid-engined, downforce-led, honest at the limit.",
     image: "https://static.wixstatic.com/media/67964a_688bd941058043ffad139b51410e5983~mv2.png/v1/fill/w_1376,h_768,q_85/th-12.jpg",
-    alt: "TH-12 hypercar cornering at the apex of a dark circuit at dusk, brake discs glowing",
+    alt: "TH-12W hypercar cornering at the apex of a dark circuit at dusk, brake discs glowing",
     specs: [
       { value: "830", unit: "PS", label: "Power" },
       { value: "2.9", unit: "s", label: "0–100 km/h" },
@@ -51,10 +52,10 @@ const fleet = [
     ],
   },
   {
-    designation: "RS-Launch",
+    designation: "ROCKET 4S",
     role: "The launch specialist. All-wheel drive, telemetry on every run.",
     image: "https://static.wixstatic.com/media/67964a_75f55bba9ff64d86bfc4d983c9bb8b7e~mv2.png/v1/fill/w_1376,h_768,q_85/rs-launch.jpg",
-    alt: "RS-Launch coupe launching from the start line at night, tire smoke trailing",
+    alt: "ROCKET 4S coupe launching from the start line at night, tire smoke trailing",
     specs: [
       { value: "740", unit: "PS", label: "Power" },
       { value: "2.6", unit: "s", label: "0–100 km/h" },
@@ -92,6 +93,7 @@ const fleet = [
         preload="auto"
       ></video>
       <div class="hero-video-scrim"></div>
+      <HeroFluid />
     </div>
     <div class="scene-watermark" aria-hidden="true">APEX</div>
     <div class="container-wide flex flex-col gap-12 relative z-10" data-hero-parallax>

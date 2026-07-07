@@ -394,8 +394,8 @@ body[data-navigating="true"] .product-grid {
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.875rem;
-  font-size: 0.6875rem;
+  gap: 1rem;
+  font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: 0.35em;
   text-transform: uppercase;
@@ -403,7 +403,7 @@ body[data-navigating="true"] .product-grid {
 }
 .eyebrow::before {
   content: "";
-  width: 1.75rem;
+  width: 2.25rem;
   height: 1px;
   background: var(--color-accent);
   flex: none;

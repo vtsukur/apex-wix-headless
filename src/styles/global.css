@@ -159,9 +159,75 @@
   position: sticky;
   top: 0;
   z-index: 50;
+  --curve-scale: 1;
+  --curve-w: 640px; /* x where the curve merges into the bottom rule (scaled) */
+}
+/* Bar glass lives on ::before, not the element itself — an ancestor with
+   backdrop-filter becomes the backdrop root, and .nav-curve-fill's own blur
+   would then sample nothing but the header instead of the page behind it. */
+.site-nav::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: color-mix(in srgb, var(--color-paper) 88%, transparent);
   backdrop-filter: saturate(1.1) blur(8px);
-  border-bottom: 1px solid var(--color-rule);
+}
+/* The bottom rule starts where the racing line merges into the bar edge; left
+   of that point the curve itself is the header's boundary. */
+.site-nav::after {
+  content: "";
+  position: absolute;
+  left: var(--curve-w);
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--color-rule);
+  pointer-events: none;
+}
+
+/* ── Header racing line (Navigation.astro) — the loader's corner, frozen.
+   .nav-curve-fill paints the region between the bar's bottom edge and the
+   line with the same glass (clip-path traces the curve), .nav-curve-svg
+   strokes the line itself: red gradient brightest at the apex, fading in from
+   the left edge and handing off to the rule color at the merge. The 2px
+   negative margin overlaps the bar so no subpixel seam can show through. */
+.nav-curve {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 640px;
+  height: 122px;
+  margin-top: -2px;
+  transform-origin: 0 0;
+  transform: scale(var(--curve-scale));
+  pointer-events: none;
+}
+.nav-curve-fill {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-paper) 88%, transparent);
+  backdrop-filter: saturate(1.1) blur(8px);
+  clip-path: path("M0 86 Q236 98 407 44 Q544 2 640 2 L640 0 L0 0 Z");
+}
+.nav-curve-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.nav-curve-glow {
+  filter: blur(5px);
+}
+@media (max-width: 1279px) {
+  .site-nav { --curve-scale: 0.85; --curve-w: 544px; }
+}
+@media (max-width: 1023px) {
+  .site-nav { --curve-scale: 0.72; --curve-w: 461px; }
+}
+@media (max-width: 767px) {
+  .site-nav { --curve-w: 0px; }
+  .nav-curve { display: none; }
 }
 .site-footer {
   border-top: 1px solid var(--color-rule);

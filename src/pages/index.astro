@@ -42,6 +42,7 @@ const formatPrice = (s: any): string | undefined => {
 const fleet = [
   {
     designation: "TH-12W",
+    href: "/services/th-12w-20-min-circuit-session",
     role: "The circuit weapon. Mid-engined, downforce-led, honest at the limit.",
     image: "https://static.wixstatic.com/media/67964a_688bd941058043ffad139b51410e5983~mv2.png/v1/fill/w_1376,h_768,q_85/th-12.jpg",
     alt: "TH-12W hypercar cornering at the apex of a dark circuit at dusk, brake discs glowing",
@@ -53,6 +54,7 @@ const fleet = [
   },
   {
     designation: "ROCKET 4S",
+    href: "/services/rocket-4s-launch-control-run",
     role: "The launch specialist. All-wheel drive, telemetry on every run.",
     image: "https://static.wixstatic.com/media/67964a_75f55bba9ff64d86bfc4d983c9bb8b7e~mv2.png/v1/fill/w_1376,h_768,q_85/rs-launch.jpg",
     alt: "ROCKET 4S coupe launching from the start line at night, tire smoke trailing",
@@ -64,6 +66,7 @@ const fleet = [
   },
   {
     designation: "Apex GT",
+    href: "/services/half-day-alpine-pass-apex-gt",
     role: "The grand tourer. Long-legged, unhurried, built for the high passes.",
     image: "https://static.wixstatic.com/media/67964a_98ec9d42fd54409fac49b479d2b0d2d0~mv2.png/v1/fill/w_1376,h_768,q_85/apex-gt.jpg",
     alt: "Apex GT sweeping through an alpine hairpin at blue hour, tail lights tracing the road",
@@ -154,7 +157,7 @@ const fleet = [
                       </div>
                     ))}
                   </div>
-                  <a href="/services" class="btn-primary">Book a drive</a>
+                  <a href={car.href} class="btn-primary">Book a drive</a>
                 </div>
               </div>
               <div class="pin-car-media">

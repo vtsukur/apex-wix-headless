@@ -14,7 +14,8 @@
 <script>
   import { createFluid } from "../scripts/fluid";
 
-  const CTA_SELECTOR = ".btn-primary, .nav-cta, .index-row, [data-fluid]";
+  const CTA_SELECTOR =
+    ".btn-primary, .btn-secondary, .nav-cta, .booking-cta, .index-row, [data-fluid]";
 
   function initCtaFluid() {
     const canvas = document.querySelector<HTMLCanvasElement>("[data-cta-fluid]:not([data-init])");

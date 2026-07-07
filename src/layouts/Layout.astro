@@ -3,6 +3,7 @@ import '../styles/global.css';
 import '../styles/components-bookings.css';
 import { ClientRouter } from 'astro:transitions';
 import BootScreen from '../components/BootScreen.astro';
+import CtaFluid from '../components/CtaFluid.astro';
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
 
@@ -52,6 +53,7 @@ const { title, description, hasSeoTags = false } = Astro.props;
   </head>
   <body>
     <BootScreen />
+    <CtaFluid />
     <div class="film-grain" aria-hidden="true"></div>
     <div class="nav-progress" data-nav-progress aria-hidden="true"></div>
     <Navigation />

@@ -688,6 +688,21 @@ html.lenis, html.lenis body { height: auto; }
   .hero-fluid { display: none; }
 }
 
+/* CTA smoke overlay (CtaFluid.astro) — one fixed sim for every booking
+   button, above the chrome (header z-50) and below the film grain (z-200). */
+.cta-fluid {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+@media (hover: none), (pointer: coarse) {
+  .cta-fluid { display: none; }
+}
+
 /* ── Hero media layer (film or canvas) ───────────────────────────────────── */
 .hero-scene {
   position: absolute;

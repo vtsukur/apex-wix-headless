@@ -464,6 +464,24 @@ body[data-navigating="true"] .product-grid {
   }
 }
 
+/* Why-Apex scene — the garage shot ghosts through the warm-paper ground
+   (same image that headlines the About page the story CTA leads to).
+   isolate + z:-1 slots it between the section's background and its copy. */
+.scene-why {
+  position: relative;
+  isolation: isolate;
+}
+.scene-why::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: url("https://static.wixstatic.com/media/67964a_9db8ffeab8184766862166c5c3ab41bd~mv2.png/v1/fill/w_1920,h_1080,q_80/apex-garage.jpg") center / cover no-repeat;
+  opacity: 0.08;
+  filter: grayscale(0.5);
+  pointer-events: none;
+}
+
 /* Why-Apex row — desktop floats the story CTA right of the statement,
    vertically centered against it and horizontally centered in the leftover
    run to the card's right edge (auto inline margins split it evenly; zero

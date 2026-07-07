@@ -191,10 +191,16 @@ try {
   hasSeoTags={hasTitleTag}
 >
   <SeoTags tags={seoTags} slot="head" />
-  <section class="container-wide py-24">
-    <a href="/services" class="inline-block text-sm text-mute hover:text-ink mb-8">← All sessions</a>
-
-    <p class="eyebrow w-full justify-center mb-6" data-reveal>The programme</p>
+  <section class="container-wide pt-8 pb-24">
+    <!-- Top row rides close under the header: centered eyebrow leads the
+         page, the back link tucks to its left on desktop (above on mobile). -->
+    <div class="relative mb-8" data-reveal>
+      <a
+        href="/services"
+        class="inline-block text-sm text-mute hover:text-ink mb-4 md:mb-0 md:absolute md:left-0 md:top-1/2 md:-translate-y-1/2"
+      >← All sessions</a>
+      <p class="eyebrow w-full justify-center">The programme</p>
+    </div>
 
     <!-- Card hero — the home fleet card, stretched: name top-left with the
          programme line as its subline, service tagline top-right, car stats

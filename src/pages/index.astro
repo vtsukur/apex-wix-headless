@@ -200,9 +200,9 @@ const fleet = [
       </div>
       {
         programmes.length > 0 ? (
-          <div data-reveal style="--d:140ms">
+          <div>
             {programmes.map((s, i) => (
-              <a href={`/services/${getSlug(s)}`} class="index-row">
+              <a href={`/services/${getSlug(s)}`} class="index-row" data-roll>
                 <span class="index-row-num">{String(i + 1).padStart(2, "0")}</span>
                 <span class="index-row-name">{s.name}</span>
                 <span class="index-row-meta">

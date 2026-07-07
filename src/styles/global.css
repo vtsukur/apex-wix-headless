@@ -817,9 +817,19 @@ html.lenis, html.lenis body { height: auto; }
   transform: translateY(2.5rem);
   transition:
     opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 700ms cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
 }
+/* The deck — the cards stack under one another. data-stack is the card's
+   position relative to the active one (set by the scroll driver): passed
+   cards peek as faint edges above, upcoming cards below, each layer
+   smaller, lighter and drained of colour so the focus card owns the
+   frame while the edges whisper "there are more". */
+.pin-car[data-stack="-2"] { opacity: 0.1; transform: translateY(-2.75rem) scale(0.93); z-index: 1; filter: saturate(0.3); }
+.pin-car[data-stack="-1"] { opacity: 0.22; transform: translateY(-1.4rem) scale(0.966); z-index: 2; filter: saturate(0.3); }
+.pin-car[data-stack="1"] { opacity: 0.22; transform: translateY(1.4rem) scale(0.966); z-index: 2; filter: saturate(0.3); }
+.pin-car[data-stack="2"] { opacity: 0.1; transform: translateY(2.75rem) scale(0.93); z-index: 1; filter: saturate(0.3); }
 .pin-car-copy {
   position: absolute;
   inset: 0;
@@ -829,6 +839,11 @@ html.lenis, html.lenis body { height: auto; }
   gap: 1.25rem;
   min-width: 0;
   padding: clamp(1.25rem, 3vw, 2.5rem);
+  transition: opacity 400ms ease;
+}
+/* Ghost cards show only their image edge — no copy bleeding through. */
+.pin-car:not(.is-active) .pin-car-copy {
+  opacity: 0;
 }
 /* Prev/next car chevrons — big, vertically centered on the card edges;
    same scroll behavior as the numbered circles (wired in Layout.astro). */
@@ -836,7 +851,7 @@ html.lenis, html.lenis body { height: auto; }
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 2;
+  z-index: 4; /* above the focus card of the deck */
   width: 3.5rem;
   height: 3.5rem;
   display: grid;
@@ -918,6 +933,9 @@ html.lenis, html.lenis body { height: auto; }
 .pin-car.is-active {
   opacity: 1;
   transform: none;
+  z-index: 3;
+  /* Lift the focus card off the deck. */
+  box-shadow: 0 1.25rem 2.5rem -1rem rgba(10, 10, 11, 0.35);
   pointer-events: auto;
 }
 .pin-designation {
@@ -1094,6 +1112,14 @@ html.lenis, html.lenis body { height: auto; }
     pointer-events: auto;
   }
   .pin-car.is-active .pin-car-media img { animation: none; }
+  /* No deck in the static stack — every card full-strength and readable. */
+  .pin-car[data-stack] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    box-shadow: none;
+  }
+  .pin-car:not(.is-active) .pin-car-copy { opacity: 1; }
   .pin-progress { display: none; }
   .pin-nav { display: none; }
   .hero-scene, [data-hero-parallax] { will-change: auto; }

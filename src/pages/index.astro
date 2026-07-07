@@ -149,7 +149,7 @@ const fleet = [
         </div>
         <div class="pin-cars">
           {fleet.map((car, i) => (
-            <article class={`pin-car${i === 0 ? " is-active" : ""}`} data-car-index={i}>
+            <article class={`pin-car${i === 0 ? " is-active" : ""}`} data-car-index={i} data-stack={i}>
               <div class="pin-car-copy">
                 <div class="pin-car-head">
                   <h3 class="pin-designation">{car.designation}</h3>

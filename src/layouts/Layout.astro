@@ -197,15 +197,31 @@ const { title, description, hasSeoTags = false } = Astro.props;
             dot.style.top = `${pt.y}px`;
           });
           // Center the scroller vertically in the band between the pinned
-          // viewport's top (where the hero ends) and the car image's top —
-          // equal air above the numerals and below the curve's run-out.
+          // viewport's top (where the hero ends) and the car image's top.
+          // Centered by its visible ink (curve + circles + numerals), not
+          // its layout box — the numerals hang below the box's bottom edge.
           // Desktop only: on mobile the scroller stacks under the title.
           const vp = stage.querySelector<HTMLElement>(".pin-viewport");
           const carsEl = stage.querySelector<HTMLElement>(".pin-cars");
           const prog = stage.querySelector<HTMLElement>(".pin-progress");
           if (!vp || !carsEl || !prog || !prog.offsetParent) continue;
           if (window.matchMedia("(min-width: 768px)").matches) {
-            const target = topWithin(carsEl, vp) / 2 - prog.offsetHeight / 2;
+            // Child rects relative to the box's own rect share its transform,
+            // so this measure stays idempotent across re-runs.
+            const pr = prog.getBoundingClientRect();
+            let inkTop = Infinity;
+            let inkBottom = -Infinity;
+            prog.querySelectorAll(".pin-curve-base, .pin-dot, .pin-dot-num").forEach((el) => {
+              const r = el.getBoundingClientRect();
+              inkTop = Math.min(inkTop, r.top);
+              inkBottom = Math.max(inkBottom, r.bottom);
+            });
+            if (inkTop > inkBottom) {
+              inkTop = pr.top;
+              inkBottom = pr.bottom;
+            }
+            const inkCenter = (inkTop + inkBottom) / 2 - pr.top;
+            const target = topWithin(carsEl, vp) / 2 - inkCenter;
             const delta = Math.round(target - topWithin(prog, vp));
             prog.style.transform = delta ? `translateY(${delta}px)` : "";
           } else {

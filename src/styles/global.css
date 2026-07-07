@@ -488,6 +488,10 @@ body[data-navigating="true"] .product-grid {
     font-size: 1rem;
     padding: 1.25rem 2.25rem;
   }
+  /* Editorial offset — the statement steps in from the left edge. */
+  .why-row .statement {
+    margin-left: clamp(3rem, 10vw, 12rem);
+  }
 }
 .scene-hero { min-height: calc(100svh - 3.75rem); }
 .scene-watermark {
@@ -950,8 +954,8 @@ html.lenis, html.lenis body { height: auto; }
    keep the weight honest under preserveAspectRatio:none); a dot per car
    lights up as its beat arrives (toggled by the pin-stage scroll driver). */
 /* The box is taller than its row and overflows downward (negative margin)
-   so the curve descends toward the image: headroom above the "1" numeral ≈
-   clearance between the curve's end and the image top. */
+   so the curve descends toward the image; the scroll driver then centers
+   its visible ink between the pinned viewport's top and the image top. */
 .pin-progress {
   position: relative;
   min-width: 12rem;
@@ -1005,7 +1009,7 @@ html.lenis, html.lenis body { height: auto; }
 }
 .pin-dot-num {
   position: absolute;
-  bottom: calc(100% + 0.4rem);
+  top: calc(100% + 0.4rem);
   left: 50%;
   transform: translateX(-50%);
   font-size: 0.875rem;

@@ -1,8 +1,9 @@
 ---
 // CtaFluid.astro — the hero's red fluid smoke, page-wide but button-scoped:
 // one fixed screen-blend canvas (shared engine in scripts/fluid.ts) that
-// splats dye only while the cursor rides a booking CTA, so every "Book …"
-// button on the site carries the signature effect. Slow hovers still smoke
+// splats dye only while the cursor rides a booking CTA (or anything opted
+// in via data-fluid), so every "Book …" button carries the signature
+// effect. Slow hovers still smoke
 // (a soft puff fills in when stroke velocity is low). The engine idles to
 // zero GPU a few seconds after the last stroke. Desktop-only (fine
 // pointers), skipped under reduced motion, degrades to nothing without
@@ -13,7 +14,7 @@
 <script>
   import { createFluid } from "../scripts/fluid";
 
-  const CTA_SELECTOR = ".btn-primary, .nav-cta, .index-row";
+  const CTA_SELECTOR = ".btn-primary, .nav-cta, .index-row, [data-fluid]";
 
   function initCtaFluid() {
     const canvas = document.querySelector<HTMLCanvasElement>("[data-cta-fluid]:not([data-init])");

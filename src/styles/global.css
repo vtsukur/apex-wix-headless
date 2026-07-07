@@ -464,8 +464,10 @@ body[data-navigating="true"] .product-grid {
   }
 }
 
-/* Why-Apex row — desktop puts the story CTA on the right, vertically
-   centered against the statement, a size up from the base button voice. */
+/* Why-Apex row — desktop floats the story CTA right of the statement,
+   vertically centered against it and horizontally centered in the leftover
+   run to the card's right edge (auto inline margins split it evenly; zero
+   column-gap keeps that split exact), a size up from the base button voice. */
 .why-row {
   display: flex;
   flex-direction: column;
@@ -477,11 +479,12 @@ body[data-navigating="true"] .product-grid {
   .why-row {
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    gap: 4rem;
+    flex-wrap: wrap;
+    gap: 2.5rem 0;
   }
   .why-row .btn-secondary {
     flex: none;
+    margin-inline: auto;
     font-size: 1rem;
     padding: 1.25rem 2.25rem;
   }

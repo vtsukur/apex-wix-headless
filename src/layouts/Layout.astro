@@ -176,6 +176,15 @@ const { title, description, hasSeoTags = false } = Astro.props;
         // getPointAtLength matches the dash-fill math exactly, so the fill
         // touches a circle at precisely its data-pin-dot fraction (the SSR
         // inline positions are close-enough estimates until this runs).
+        // Layout offsets ignore transforms, so this stays idempotent.
+        const topWithin = (el: Element | null, root: Element): number => {
+          let y = 0;
+          while (el && el !== root) {
+            y += (el as HTMLElement).offsetTop;
+            el = (el as HTMLElement).offsetParent;
+          }
+          return y;
+        };
         for (const stage of pinStages) {
           const path = stage.querySelector<SVGPathElement>(".pin-curve-base");
           const box = path?.ownerSVGElement?.viewBox?.baseVal;
@@ -187,6 +196,21 @@ const { title, description, hasSeoTags = false } = Astro.props;
             dot.style.left = `${(pt.x / box.width) * 100}%`;
             dot.style.top = `${pt.y}px`;
           });
+          // Center the scroller vertically in the band between the pinned
+          // viewport's top (where the hero ends) and the car image's top —
+          // equal air above the numerals and below the curve's run-out.
+          // Desktop only: on mobile the scroller stacks under the title.
+          const vp = stage.querySelector<HTMLElement>(".pin-viewport");
+          const carsEl = stage.querySelector<HTMLElement>(".pin-cars");
+          const prog = stage.querySelector<HTMLElement>(".pin-progress");
+          if (!vp || !carsEl || !prog || !prog.offsetParent) continue;
+          if (window.matchMedia("(min-width: 768px)").matches) {
+            const target = topWithin(carsEl, vp) / 2 - prog.offsetHeight / 2;
+            const delta = Math.round(target - topWithin(prog, vp));
+            prog.style.transform = delta ? `translateY(${delta}px)` : "";
+          } else {
+            prog.style.transform = "";
+          }
         }
       }
       function applyScrollFx() {
@@ -243,6 +267,10 @@ const { title, description, hasSeoTags = false } = Astro.props;
       if (!reduced) {
         lenis = new Lenis({ lerp: 0.11 });
         scanScrollFx();
+        // Geometry-dependent placement (dots, scroller centering) tracks
+        // viewport and web-font layout shifts.
+        window.addEventListener("resize", scanScrollFx);
+        document.fonts?.ready.then(scanScrollFx);
         const raf = (time: number) => {
           lenis?.raf(time);
           applyScrollFx();

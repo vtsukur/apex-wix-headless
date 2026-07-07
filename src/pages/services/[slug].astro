@@ -112,14 +112,43 @@ const hasTitleTag = seoTags.some((t: any) => t.type === "title" && !t.disabled);
 // Fleet films — the same Wix Media clips the home deck plays, keyed by the
 // car the service name leads with (and the same cover crops). The service
 // image stays the poster; the film fades in over it once actually playing.
-const FLEET_FILMS: { car: string; video: string; pos?: string }[] = [
-  { car: "TH-12W", video: "https://video.wixstatic.com/video/67964a_6d60600de434486fa612ce9589d9d2f1/720p/mp4/file.mp4" },
-  { car: "ROCKET 4S", video: "https://video.wixstatic.com/video/67964a_27024945f4a848eba030934f3f8e183a/720p/mp4/file.mp4", pos: "50% 35%" },
-  { car: "APEX GT", video: "https://video.wixstatic.com/video/67964a_90326cc4dcfb401490328519e1b5951b/720p/mp4/file.mp4", pos: "50% 85%" },
+type Spec = { value: string; unit: string; label: string };
+const FLEET_FILMS: { car: string; video: string; pos?: string; specs?: Spec[] }[] = [
+  {
+    car: "TH-12W",
+    video: "https://video.wixstatic.com/video/67964a_6d60600de434486fa612ce9589d9d2f1/720p/mp4/file.mp4",
+    specs: [
+      { value: "977", unit: "PS", label: "Power" },
+      { value: "2.5", unit: "s", label: "0–60 mph" },
+      { value: "340", unit: "km/h", label: "Top speed" },
+    ],
+  },
+  {
+    car: "ROCKET 4S",
+    video: "https://video.wixstatic.com/video/67964a_27024945f4a848eba030934f3f8e183a/720p/mp4/file.mp4",
+    pos: "50% 35%",
+    specs: [
+      { value: "1130", unit: "PS", label: "Power" },
+      { value: "2.1", unit: "s", label: "0–60 mph" },
+      { value: "305", unit: "km/h", label: "Top speed" },
+    ],
+  },
+  {
+    car: "APEX GT",
+    video: "https://video.wixstatic.com/video/67964a_90326cc4dcfb401490328519e1b5951b/720p/mp4/file.mp4",
+    pos: "50% 85%",
+    specs: [
+      { value: "850", unit: "PS", label: "Power" },
+      { value: "3.2", unit: "s", label: "0–60 mph" },
+      { value: "320", unit: "km/h", label: "Top speed" },
+    ],
+  },
   { car: "PASSENGER HOT LAP", video: "https://video.wixstatic.com/video/67964a_837457251f164d0c9e4a08c325afa181/720p/mp4/file.mp4" },
 ];
 const film = FLEET_FILMS.find((f) => serviceName.toUpperCase().startsWith(f.car));
 const mediaPos = film?.pos ? `object-position: ${film.pos}` : undefined;
+// "CAR · programme" titles break onto two lines: the car, then what it is.
+const nameDot = serviceName.indexOf(" · ");
 
 // Staff for the optional instructor picker — carried on the service via the
 // STAFF_MEMBER_DETAILS conditional field (already requested in the query above).
@@ -171,7 +200,17 @@ try {
     <div class={`detail-hero${imageUrl ? " has-media" : ""}`} data-reveal>
       <div class="flex flex-col gap-6">
         <p class="eyebrow">The programme</p>
-        <h1 class="display-lg">{serviceName}</h1>
+        <h1 class="display-lg">
+          {nameDot === -1 ? (
+            serviceName
+          ) : (
+            <>
+              {serviceName.slice(0, nameDot)}
+              <br />
+              {serviceName.slice(nameDot + 3)}
+            </>
+          )}
+        </h1>
         {service.tagLine && <p class="text-lg text-mute leading-relaxed max-w-prose">{service.tagLine}</p>}
         <div class="plate-specs mt-2">
           <div>
@@ -185,7 +224,11 @@ try {
             </div>
           )}
         </div>
-        {service.description && <p class="text-ink leading-relaxed max-w-prose">{service.description}</p>}
+        {/* The seed duplicates description into tagLine — only render it
+            when it actually says something new. */}
+        {service.description && service.description !== service.tagLine && (
+          <p class="text-ink leading-relaxed max-w-prose">{service.description}</p>
+        )}
       </div>
       {imageUrl && (
         <div class="detail-media" data-detail-media>
@@ -200,6 +243,16 @@ try {
               aria-hidden="true"
               style={mediaPos}
             />
+          )}
+          {film?.specs && (
+            <div class="detail-media-specs plate-specs">
+              {film.specs.map((s) => (
+                <div>
+                  <span class="plate-value">{s.value}<span class="plate-unit">{s.unit}</span></span>
+                  <span class="plate-label">{s.label}</span>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}

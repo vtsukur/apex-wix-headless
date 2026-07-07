@@ -515,6 +515,14 @@ body[data-navigating="true"] .product-grid {
 .detail-media.video-live video {
   opacity: 1;
 }
+/* Car stats ride the bottom of the media card, over their own scrim. */
+.detail-media-specs {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 3rem clamp(1.25rem, 2.5vw, 2rem) clamp(1.25rem, 2.5vw, 2rem);
+  background: linear-gradient(to top, rgba(10, 10, 11, 0.82), rgba(10, 10, 11, 0.35) 60%, rgba(10, 10, 11, 0) 100%);
+}
 /* Availability: sticky intro left, the calendar/form breathe on the right. */
 .detail-book {
   display: grid;

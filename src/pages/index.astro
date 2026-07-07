@@ -230,6 +230,21 @@ const fleet = [
       video.removeAttribute("autoplay");
       video.pause();
     }
+    // With the loader up, hold the film on frame zero and start it only when
+    // the curtain finishes (apex:boot-done) — the lap begins at reveal, not
+    // behind the veil. Failsafe mirrors the head watchdog in case the boot
+    // module died and only the watchdog cleared the curtain.
+    if (document.documentElement.classList.contains("booting")) {
+      video.pause();
+      try {
+        video.currentTime = 0;
+      } catch {}
+      const start = () => video.play().catch(() => {});
+      document.addEventListener("apex:boot-done", start, { once: true });
+      setTimeout(() => {
+        if (video.paused && !document.documentElement.classList.contains("booting")) start();
+      }, 14000);
+    }
     const announce = () => document.dispatchEvent(new CustomEvent("apex:hero-video-ready"));
     if (video.readyState >= 3) announce();
     else {

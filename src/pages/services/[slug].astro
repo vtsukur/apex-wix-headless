@@ -138,7 +138,7 @@ try {
   hasSeoTags={hasTitleTag}
 >
   <SeoTags tags={seoTags} slot="head" />
-  <section class="container-reading px-6 py-24">
+  <section class="container-wide py-24">
     <a href="/services" class="inline-block text-sm text-mute hover:text-ink mb-8">← All sessions</a>
 
     <!-- Optional banner image — only when the service has media (image-less is the
@@ -166,7 +166,7 @@ try {
       {service.description && <p class="text-ink leading-relaxed max-w-prose">{service.description}</p>}
     </div>
 
-    <section class="border-t border-rule pt-12">
+    <section class="border-t border-rule pt-12 max-w-3xl">
       <p class="eyebrow mb-4">Availability</p>
       <h2 class="font-display text-2xl md:text-3xl uppercase leading-tight mb-3">Book your session</h2>
       <p class="text-mute leading-relaxed mb-8">Pick the window. Commit to the corner.</p>

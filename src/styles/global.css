@@ -37,6 +37,12 @@
   margin-inline: auto;
 }
 
+/* Full-bleed shell — content runs edge to edge with a slim responsive gutter. */
+@utility container-wide {
+  width: 100%;
+  padding-inline: clamp(1.25rem, 3vw, 2.75rem);
+}
+
 /* Shared button primitive — declared with @utility so the variants below can
    @apply it (a plain contract class is NOT @apply-able in Tailwind v4). */
 @utility btn {

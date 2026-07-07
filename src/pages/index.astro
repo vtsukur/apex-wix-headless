@@ -69,6 +69,9 @@ const fleet = [
     href: "/services/half-day-alpine-pass-apex-gt",
     role: "The grand tourer. Long-legged, unhurried, built for the high passes.",
     image: "https://static.wixstatic.com/media/67964a_98ec9d42fd54409fac49b479d2b0d2d0~mv2.png/v1/fill/w_1376,h_768,q_85/apex-gt.jpg",
+    // The car sits low in this frame — bias the cover crop toward the bottom
+    // so it isn't clipped in the wide card.
+    pos: "50% 85%",
     alt: "Apex GT sweeping through an alpine hairpin at blue hour, tail lights tracing the road",
     specs: [
       { value: "850", unit: "PS", label: "Power" },
@@ -161,7 +164,13 @@ const fleet = [
                 </div>
               </div>
               <div class="pin-car-media">
-                <img src={car.image} alt={car.alt} loading={i === 0 ? "eager" : "lazy"} decoding="async" />
+                <img
+                  src={car.image}
+                  alt={car.alt}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  style={"pos" in car && car.pos ? `object-position: ${car.pos}` : undefined}
+                />
               </div>
             </article>
           ))}

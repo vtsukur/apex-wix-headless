@@ -1,14 +1,18 @@
 ---
-// BootScreen.astro — the entry curtain: red tick + APEX wordmark rising from a
-// masked baseline, a start-line filling beneath, then a full-screen upward
-// wipe. Plays once per session on a hard load; internal ClientRouter
+// BootScreen.astro — the entry curtain: the racing line draws itself through a
+// corner behind the rising APEX wordmark while a start-line fills, then the
+// screen wipes upward with the line layer exiting faster than the curtain
+// (layered parallax). The canvas camera drifts with the pointer, lerped,
+// behind the static type. Plays once per session on a hard load; ClientRouter
 // navigations never re-trigger it (the overlay is display:none unless the
 // head script set `html.booting` before first paint). Reduced motion skips it
 // entirely, and the head script's watchdog clears it even if this module
-// fails.
+// fails. When a hero film is on the page, the curtain holds until the film
+// can play through (8s network failsafe).
 const LETTERS = "APEX".split("");
 ---
 <div class="boot" aria-hidden="true">
+  <canvas class="boot-canvas" data-boot-canvas></canvas>
   <div class="boot-inner">
     <div class="boot-mark">
       <span class="boot-mask"><span class="boot-tick"></span></span>
@@ -21,10 +25,12 @@ const LETTERS = "APEX".split("");
 </div>
 
 <script>
-  const boot = document.querySelector(".boot");
+  const boot = document.querySelector(".boot") as HTMLElement | null;
   const html = document.documentElement;
+  let canvasRaf = 0;
 
   function finish() {
+    cancelAnimationFrame(canvasRaf);
     html.classList.remove("booting");
     try {
       sessionStorage.setItem("apex:booted", "1");
@@ -32,7 +38,196 @@ const LETTERS = "APEX".split("");
     document.dispatchEvent(new CustomEvent("apex:boot-done"));
   }
 
+  // ── The racing line — corner geometry drawn behind the wordmark. Entry runs
+  //    nearly flat along the bottom, the apex flares right of center, the exit
+  //    climbs off the top-right. Pointer moves a lerped camera behind the
+  //    static type; the pulse laps the corner every ~3.2s.
+  function startCanvas() {
+    const canvas = boot?.querySelector("[data-boot-canvas]") as HTMLCanvasElement | null;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+
+    let w = 0;
+    let h = 0;
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      w = canvas.clientWidth;
+      h = canvas.clientHeight;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    new ResizeObserver(resize).observe(canvas);
+    resize();
+
+    const N = 220;
+    const q = (a: number, b: number, c: number, t: number) =>
+      (1 - t) * (1 - t) * a + 2 * (1 - t) * t * b + t * t * c;
+    const A = [-0.08, 0.84];
+    const C1 = [0.38, 0.9];
+    const X = [0.64, 0.5];
+    const C2 = [0.88, 0.14];
+    const B = [0.96, -0.1];
+    const pts: number[][] = [];
+    for (let i = 0; i <= N; i++) {
+      const u = i / N;
+      const s = u < 0.5 ? u * 2 : u * 2 - 1;
+      pts.push(
+        u < 0.5
+          ? [q(A[0], C1[0], X[0], s), q(A[1], C1[1], X[1], s)]
+          : [q(X[0], C2[0], B[0], s), q(X[1], C2[1], B[1], s)],
+      );
+    }
+    const APEX_U = 0.5;
+    const apexIdx = Math.round(APEX_U * N);
+
+    const rand = (min: number, max: number) => min + Math.random() * (max - min);
+    const streaks = Array.from({ length: 6 }, () => ({
+      y: Math.random(),
+      len: rand(0.14, 0.4),
+      sp: rand(0.6, 2),
+      off: Math.random(),
+      a: rand(0.012, 0.04),
+      lw: rand(0.75, 1.5),
+    }));
+
+    // Pointer-parallax camera — lerped, inverse, canvas-only (type stays put).
+    let camX = 0;
+    let camY = 0;
+    let targetX = 0;
+    let targetY = 0;
+    window.addEventListener("pointermove", (e) => {
+      targetX = (e.clientX / window.innerWidth - 0.5) * -26;
+      targetY = (e.clientY / window.innerHeight - 0.5) * -16;
+    }, { passive: true });
+
+    const px = (p: number[]) => [p[0] * w, p[1] * h];
+    const normalAt = (i: number) => {
+      const a = pts[Math.max(0, i - 2)];
+      const b = pts[Math.min(N, i + 2)];
+      const dx = (b[0] - a[0]) * w;
+      const dy = (b[1] - a[1]) * h;
+      const l = Math.hypot(dx, dy) || 1;
+      return [-dy / l, dx / l];
+    };
+
+    function strokeSegment(from: number, to: number, style: string, width: number, blur = 0, blurColor = "") {
+      const i0 = Math.max(0, Math.round(from * N));
+      const i1 = Math.min(N, Math.round(to * N));
+      if (i1 - i0 < 1) return;
+      ctx!.beginPath();
+      const [x0, y0] = px(pts[i0]);
+      ctx!.moveTo(x0, y0);
+      for (let i = i0 + 1; i <= i1; i++) {
+        const [x, y] = px(pts[i]);
+        ctx!.lineTo(x, y);
+      }
+      ctx!.strokeStyle = style;
+      ctx!.lineWidth = width;
+      ctx!.lineCap = "round";
+      ctx!.lineJoin = "round";
+      ctx!.shadowBlur = blur;
+      ctx!.shadowColor = blurColor;
+      ctx!.stroke();
+      ctx!.shadowBlur = 0;
+    }
+
+    const t0 = performance.now();
+    function draw(now: number) {
+      const t = now - t0;
+      ctx!.clearRect(0, 0, w, h);
+
+      camX += (targetX - camX) * 0.06;
+      camY += (targetY - camY) * 0.06;
+      ctx!.save();
+      ctx!.translate(camX, camY);
+
+      for (const s of streaks) {
+        const span = w * (1 + s.len);
+        const head = ((s.off + t * 0.00003 * s.sp) % 1) * span;
+        const y = s.y * h;
+        const len = s.len * w;
+        const grad = ctx!.createLinearGradient(head - len, y, head, y);
+        grad.addColorStop(0, "rgba(242,240,235,0)");
+        grad.addColorStop(0.7, `rgba(242,240,235,${s.a})`);
+        grad.addColorStop(1, "rgba(242,240,235,0)");
+        ctx!.beginPath();
+        ctx!.moveTo(head - len, y);
+        ctx!.lineTo(head, y);
+        ctx!.strokeStyle = grad;
+        ctx!.lineWidth = s.lw;
+        ctx!.stroke();
+      }
+
+      const EDGE = Math.max(30, h * 0.055);
+      for (const side of [-1, 1]) {
+        ctx!.beginPath();
+        for (let i = 0; i <= N; i++) {
+          const [x, y] = px(pts[i]);
+          const [nx, ny] = normalAt(i);
+          const ex = x + nx * EDGE * side;
+          const ey = y + ny * EDGE * side;
+          if (i === 0) ctx!.moveTo(ex, ey);
+          else ctx!.lineTo(ex, ey);
+        }
+        ctx!.strokeStyle = "rgba(242,240,235,0.05)";
+        ctx!.lineWidth = 1;
+        ctx!.stroke();
+      }
+
+      for (let k = -16; k <= 16; k += 4) {
+        const i = Math.max(2, Math.min(N - 2, apexIdx + k));
+        const [x, y] = px(pts[i]);
+        const [nx, ny] = normalAt(i);
+        ctx!.beginPath();
+        ctx!.moveTo(x + nx * (EDGE + 4), y + ny * (EDGE + 4));
+        ctx!.lineTo(x + nx * (EDGE + 14), y + ny * (EDGE + 14));
+        ctx!.strokeStyle = (k / 4) % 2 === 0 ? "rgba(225,18,31,0.15)" : "rgba(242,240,235,0.11)";
+        ctx!.lineWidth = 3;
+        ctx!.stroke();
+      }
+
+      strokeSegment(0, 1, "rgba(225,18,31,0.3)", 1.5, 14, "rgba(225,18,31,0.5)");
+      const p = (t / 3200) % 1;
+      const tail = p - 0.085;
+      const bright = "rgba(255,92,92,0.9)";
+      const glow = "rgba(225,18,31,0.85)";
+      if (tail >= 0) {
+        strokeSegment(tail, p, bright, 2.5, 22, glow);
+      } else {
+        strokeSegment(0, p, bright, 2.5, 22, glow);
+        strokeSegment(1 + tail, 1, bright, 2.5, 22, glow);
+      }
+
+      const [ax, ay] = px(pts[apexIdx]);
+      ctx!.beginPath();
+      ctx!.arc(ax, ay, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = "rgba(225,18,31,0.85)";
+      ctx!.fill();
+      if (p > APEX_U && p < APEX_U + 0.14) {
+        const k = (p - APEX_U) / 0.14;
+        ctx!.beginPath();
+        ctx!.arc(ax, ay, 6 + k * 70, 0, Math.PI * 2);
+        ctx!.strokeStyle = `rgba(225,18,31,${(1 - k) * 0.45})`;
+        ctx!.lineWidth = 1;
+        ctx!.stroke();
+      }
+
+      ctx!.restore();
+
+      const vg = ctx!.createRadialGradient(w * 0.5, h * 0.48, Math.min(w, h) * 0.32, w * 0.5, h * 0.48, Math.max(w, h) * 0.72);
+      vg.addColorStop(0, "rgba(10,10,11,0)");
+      vg.addColorStop(1, "rgba(10,10,11,0.55)");
+      ctx!.fillStyle = vg;
+      ctx!.fillRect(0, 0, w, h);
+
+      canvasRaf = requestAnimationFrame(draw);
+    }
+    canvasRaf = requestAnimationFrame(draw);
+  }
+
   if (boot && html.classList.contains("booting")) {
+    startCanvas();
     // Wait for the display font (capped) so the wordmark never flashes in a
     // fallback face mid-animation, then run the timeline: rise + line fill →
     // hold (gated on the hero film when one is on the page) → curtain wipe →

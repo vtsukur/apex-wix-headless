@@ -932,7 +932,8 @@ html.lenis, html.lenis body { height: auto; }
    curve's merge x (--curve-w, minus the container gutter) and the scroller:
    the two 1fr margin tracks around the title are equal, so its midpoint is
    exactly halfway between the offset's end and the scroller's start. The
-   scroller takes the 2fr remainder out to the card's right edge. */
+   scroller takes the 6fr remainder (¾ of the free run) out to the card's
+   right edge. */
 .fleet-head {
   display: grid;
   grid-template-columns: 1fr;
@@ -942,7 +943,7 @@ html.lenis, html.lenis body { height: auto; }
 @media (min-width: 768px) {
   .fleet-head {
     grid-template-columns:
-      calc(var(--curve-w) - clamp(1.25rem, 3vw, 2.75rem)) 1fr auto 1fr 2fr;
+      calc(var(--curve-w) - clamp(1.25rem, 3vw, 2.75rem)) 1fr auto 1fr 6fr;
   }
   .fleet-head > h2 { grid-column: 3; }
   .fleet-head > .pin-progress {
@@ -1002,15 +1003,6 @@ html.lenis, html.lenis body { height: auto; }
   cursor: pointer;
   transition: background-color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
 }
-/* One shape per beat — circle, rectangle, square — same footprint. */
-.pin-dot:nth-of-type(2) {
-  border-radius: 0;
-  width: 21px;
-  height: 11px;
-}
-.pin-dot:nth-of-type(3) {
-  border-radius: 0;
-}
 .pin-dot:hover {
   border-color: var(--color-ink);
 }
@@ -1018,6 +1010,45 @@ html.lenis, html.lenis body { height: auto; }
   background: var(--color-accent);
   border-color: var(--color-accent);
   box-shadow: 0 0 12px rgba(225, 18, 31, 0.55);
+}
+/* One shape per beat — circle, triangle, square — same footprint. */
+.pin-dot:nth-of-type(3) {
+  border-radius: 0;
+}
+/* Beat 2's triangle: clip-path can't sit on the button itself (it would
+   clip the numeral hanging below), so two stacked pseudo-triangles fake
+   the outlined shape — ::before is the rim, ::after the face. */
+.pin-dot:nth-of-type(2),
+.pin-dot:nth-of-type(2).on {
+  width: 19px;
+  height: 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.pin-dot:nth-of-type(2)::before,
+.pin-dot:nth-of-type(2)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: var(--color-mute);
+  transition: background-color 300ms ease;
+}
+.pin-dot:nth-of-type(2)::after {
+  clip-path: polygon(50% 15%, 89% 93%, 11% 93%);
+  background: var(--color-paper-warm);
+}
+.pin-dot:nth-of-type(2):hover::before {
+  background: var(--color-ink);
+}
+.pin-dot:nth-of-type(2).on {
+  filter: drop-shadow(0 0 6px rgba(225, 18, 31, 0.55));
+}
+.pin-dot:nth-of-type(2).on::before,
+.pin-dot:nth-of-type(2).on::after {
+  background: var(--color-accent);
 }
 .pin-dot-num {
   position: absolute;

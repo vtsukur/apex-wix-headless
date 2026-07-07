@@ -987,17 +987,19 @@ html.booting .boot.boot-exit { background-color: transparent; }
 /* ── Exit handoff — the mark flies into the header's brand slot (transform
    set inline from measured rects) while the canvas line morphs onto the
    header curve; at landing (html.boot-landing) the loader layers crossfade
-   out and the real chrome fades in underneath them. The header's brand and
-   curve stay hidden through the boot so there's never a double exposure. */
+   out and the real chrome fades in underneath them. Only the brand and the
+   curve's LINE (svg) hide through the boot — the pocket fill stays, so the
+   veil dissolve reveals the full chrome silhouette with its background and
+   the line lands on reserved space, not bare page. */
 .boot.boot-exit .boot-mark {
   transition: transform 950ms cubic-bezier(0.76, 0, 0.24, 1), opacity 240ms ease;
 }
 html.boot-landing .boot-canvas,
 html.boot-landing .boot-mark { opacity: 0; }
 html.booting .site-nav .brand-mark,
-html.booting .nav-curve { opacity: 0; }
+html.booting .nav-curve-svg { opacity: 0; }
 html.booting.boot-landing .site-nav .brand-mark,
-html.booting.boot-landing .nav-curve {
+html.booting.boot-landing .nav-curve-svg {
   opacity: 1;
   transition: opacity 300ms ease;
 }

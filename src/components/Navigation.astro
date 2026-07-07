@@ -7,9 +7,11 @@
        the BootScreen curve — flat entry off the left edge, apex, exit
        flattening into the bottom rule (the .site-nav::after line takes over
        exactly where the curve merges at x=288). The stroke tapers through the
-       exit — 2 → 1.5 → 1 — so it arrives at the 1px rule thin-to-thin. The
-       loader's pulse keeps lapping here (dashoffset over pathLength=100,
-       3.2s like the boot canvas) and the apex ring flares as it passes. -->
+       exit — 2 → 1.5 → 1 — so it arrives at the 1px rule thin-to-thin. A
+       car-suggestive shape (an abstract wedge, deliberately not a car icon)
+       laps the curve via SMIL animateMotion with a short comet trail behind
+       it; everything animated shares the SMIL clock so the apex ring flares
+       exactly as the shape crosses the corner (~63.5% of the path). -->
   <div class="nav-curve" aria-hidden="true">
     <div class="nav-curve-fill"></div>
     <svg class="nav-curve-svg" viewBox="0 0 288 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -27,9 +29,18 @@
       <path d="M0 44 Q106 50 183 23" stroke="url(#nav-curve-grad)" stroke-width="2" stroke-linecap="round" />
       <path d="M183 23 Q214 12.5 240.25 7.25" stroke="url(#nav-curve-grad)" stroke-width="1.5" stroke-linecap="round" />
       <path d="M240.25 7.25 Q266.5 2 288 2" stroke="url(#nav-curve-grad)" stroke-width="1" stroke-linecap="round" />
-      <path class="nav-curve-pulse" d="M0 44 Q106 50 183 23 Q245 2 288 2" pathLength="100" stroke="rgba(255,92,92,0.85)" stroke-width="1.5" stroke-linecap="round" />
+      <path class="nav-curve-trail" d="M0 44 Q106 50 183 23 Q245 2 288 2" pathLength="100" stroke="rgba(255,92,92,0.6)" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="4 96" stroke-dashoffset="4">
+        <animate attributeName="stroke-dashoffset" from="4" to="-96" dur="5.6s" repeatCount="indefinite" />
+      </path>
+      <g class="nav-curve-car">
+        <path d="M-7 1.2 L-6.4 -0.8 Q-5.6 -1.4 -4.4 -1.6 Q-2.6 -3.3 0.4 -3.3 Q2.6 -3.3 4 -2 Q5.8 -1.6 7 -0.5 L7 1.2 Z" fill="rgba(255,92,92,0.95)" />
+        <animateMotion dur="5.6s" repeatCount="indefinite" rotate="auto" path="M0 44 Q106 50 183 23 Q245 2 288 2" />
+      </g>
       <circle cx="183" cy="23" r="2" fill="rgba(225,18,31,0.9)" />
-      <circle class="nav-curve-ring" cx="183" cy="23" r="5" stroke="rgba(225,18,31,0.45)" stroke-width="1" />
+      <circle class="nav-curve-ring" cx="183" cy="23" r="3" stroke="rgba(225,18,31,0.45)" stroke-width="1" opacity="0">
+        <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.62;0.65;0.74;1" dur="5.6s" repeatCount="indefinite" />
+        <animate attributeName="r" values="3;3;4;13;13" keyTimes="0;0.62;0.65;0.74;1" dur="5.6s" repeatCount="indefinite" />
+      </circle>
     </svg>
   </div>
   <nav class="container-wide flex items-center justify-between gap-6 py-4">

@@ -209,34 +209,17 @@
 .nav-curve-glow {
   filter: blur(5px);
 }
-/* The loader's pulse, still lapping — a bright dash travels the curve every
-   5.6s (pathLength=100 normalizes the dash math), thinning after the apex to
-   match the base stroke's taper, and the apex ring flares as the pulse front
-   crosses the corner (apex sits at ~63.5% of the path, hence the timing). */
-.nav-curve-pulse {
-  stroke-dasharray: 8 92;
-  stroke-dashoffset: 8;
+/* The lap — an abstract car-suggestive wedge rides the curve (SMIL
+   animateMotion, auto-rotating with the tangent) with a short comet trail
+   whose leading edge stays under the shape; the apex ring flare shares the
+   same SMIL clock (markup in Navigation.astro). Only the glow lives here. */
+.nav-curve-trail,
+.nav-curve-car {
   filter: drop-shadow(0 0 3px rgba(225, 18, 31, 0.7));
-  animation: nav-pulse 5600ms linear infinite;
-}
-@keyframes nav-pulse {
-  0% { stroke-dashoffset: 8; stroke-width: 1.5; }
-  60% { stroke-dashoffset: -52; stroke-width: 1.5; }
-  100% { stroke-dashoffset: -92; stroke-width: 0.7; }
-}
-.nav-curve-ring {
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: nav-ring 5600ms linear infinite;
-}
-@keyframes nav-ring {
-  0%, 62% { opacity: 0; transform: scale(0.6); }
-  65% { opacity: 1; transform: scale(0.8); }
-  74%, 100% { opacity: 0; transform: scale(2.6); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .nav-curve-pulse, .nav-curve-ring { animation: none; }
+  /* SMIL ignores the media query, so remove the moving parts outright. */
+  .nav-curve-trail, .nav-curve-car, .nav-curve-ring { display: none; }
 }
 @media (max-width: 1279px) {
   .site-nav { --curve-scale: 0.85; --curve-w: 245px; }

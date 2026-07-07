@@ -1,0 +1,51 @@
+---
+// BootScreen.astro — the entry curtain: red tick + APEX wordmark rising from a
+// masked baseline, a start-line filling beneath, then a full-screen upward
+// wipe. Plays once per session on a hard load; internal ClientRouter
+// navigations never re-trigger it (the overlay is display:none unless the
+// head script set `html.booting` before first paint). Reduced motion skips it
+// entirely, and the head script's watchdog clears it even if this module
+// fails.
+const LETTERS = "APEX".split("");
+---
+<div class="boot" aria-hidden="true">
+  <div class="boot-inner">
+    <div class="boot-mark">
+      <span class="boot-mask"><span class="boot-tick"></span></span>
+      {LETTERS.map((ch, i) => (
+        <span class="boot-mask"><span class="boot-letter" style={`--i:${i + 1}`}>{ch}</span></span>
+      ))}
+    </div>
+    <div class="boot-line"><span class="boot-line-bar"></span></div>
+  </div>
+</div>
+
+<script>
+  const boot = document.querySelector(".boot");
+  const html = document.documentElement;
+
+  function finish() {
+    html.classList.remove("booting");
+    try {
+      sessionStorage.setItem("apex:booted", "1");
+    } catch {}
+    document.dispatchEvent(new CustomEvent("apex:boot-done"));
+  }
+
+  if (boot && html.classList.contains("booting")) {
+    // Wait for the display font (capped) so the wordmark never flashes in a
+    // fallback face mid-animation, then run the timeline: rise + line fill →
+    // hold → curtain wipe → cleanup.
+    const fontsReady: Promise<unknown> = (document as any).fonts?.ready ?? Promise.resolve();
+    Promise.race([fontsReady, new Promise((r) => setTimeout(r, 800))]).then(() => {
+      requestAnimationFrame(() => {
+        boot.classList.add("boot-play");
+        setTimeout(() => boot.classList.add("boot-exit"), 1450);
+        setTimeout(finish, 2250);
+      });
+    });
+  } else if (html.classList.contains("booting")) {
+    // Markup missing but the flag is set — never leave the page covered.
+    finish();
+  }
+</script>

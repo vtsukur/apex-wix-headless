@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import '../styles/components-bookings.css';
 import { ClientRouter } from 'astro:transitions';
+import BootScreen from '../components/BootScreen.astro';
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
 
@@ -17,6 +18,23 @@ const { title, description, hasSeoTags = false } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // Entry-curtain gate — must run before first paint. Shows the boot
+      // overlay only on the first hard load of a session and never under
+      // reduced motion; the 5s watchdog guarantees the page can't stay
+      // covered if anything downstream fails.
+      try {
+        if (
+          !sessionStorage.getItem("apex:booted") &&
+          !matchMedia("(prefers-reduced-motion: reduce)").matches
+        ) {
+          document.documentElement.classList.add("booting");
+          setTimeout(function () {
+            document.documentElement.classList.remove("booting");
+          }, 5000);
+        }
+      } catch (e) {}
+    </script>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -31,6 +49,7 @@ const { title, description, hasSeoTags = false } = Astro.props;
     <ClientRouter />
   </head>
   <body>
+    <BootScreen />
     <div class="film-grain" aria-hidden="true"></div>
     <div class="nav-progress" data-nav-progress aria-hidden="true"></div>
     <Navigation />
@@ -194,7 +213,13 @@ const { title, description, hasSeoTags = false } = Astro.props;
         els.forEach((el) => io.observe(el));
       }
 
-      setupReveals();
+      // Hold the first reveal pass while the boot curtain is up so the hero
+      // rises as the curtain clears, not hidden behind it.
+      if (document.documentElement.classList.contains("booting")) {
+        document.addEventListener("apex:boot-done", () => setupReveals(), { once: true });
+      } else {
+        setupReveals();
+      }
       document.addEventListener("astro:page-load", () => {
         setupReveals();
         scanScrollFx();

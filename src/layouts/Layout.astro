@@ -222,7 +222,7 @@ const { title, description, hasSeoTags = false } = Astro.props;
             }
             const inkCenter = (inkTop + inkBottom) / 2 - pr.top;
             // Dead-center reads slightly high next to the title — bias down.
-            const target = topWithin(carsEl, vp) / 2 - inkCenter + 12;
+            const target = topWithin(carsEl, vp) / 2 - inkCenter + 28;
             const delta = Math.round(target - topWithin(prog, vp));
             prog.style.transform = delta ? `translateY(${delta}px)` : "";
           } else {

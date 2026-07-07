@@ -788,7 +788,9 @@ html.lenis, html.lenis body { height: auto; }
 /* ── Pinned fleet sequence — scroll through the cars one beat at a time ──── */
 .pin-stage {
   position: relative;
-  height: 320svh;
+  /* 100svh pinned viewport + the scroll runway across the three beats —
+     kept short so the sequence turns over quickly. */
+  height: 240svh;
 }
 .pin-viewport {
   position: sticky;

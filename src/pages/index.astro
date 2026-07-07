@@ -45,7 +45,7 @@ const fleet = [
     image: "https://static.wixstatic.com/media/67964a_688bd941058043ffad139b51410e5983~mv2.png/v1/fill/w_1376,h_768,q_85/th-12.jpg",
     alt: "TH-12 hypercar cornering at the apex of a dark circuit at dusk, brake discs glowing",
     specs: [
-      { value: "730", unit: "PS", label: "Power" },
+      { value: "830", unit: "PS", label: "Power" },
       { value: "2.9", unit: "s", label: "0–100 km/h" },
       { value: "340", unit: "km/h", label: "Top speed" },
     ],
@@ -56,7 +56,7 @@ const fleet = [
     image: "https://static.wixstatic.com/media/67964a_75f55bba9ff64d86bfc4d983c9bb8b7e~mv2.png/v1/fill/w_1376,h_768,q_85/rs-launch.jpg",
     alt: "RS-Launch coupe launching from the start line at night, tire smoke trailing",
     specs: [
-      { value: "640", unit: "PS", label: "Power" },
+      { value: "740", unit: "PS", label: "Power" },
       { value: "2.6", unit: "s", label: "0–100 km/h" },
       { value: "305", unit: "km/h", label: "Top speed" },
     ],
@@ -67,7 +67,7 @@ const fleet = [
     image: "https://static.wixstatic.com/media/67964a_98ec9d42fd54409fac49b479d2b0d2d0~mv2.png/v1/fill/w_1376,h_768,q_85/apex-gt.jpg",
     alt: "Apex GT sweeping through an alpine hairpin at blue hour, tail lights tracing the road",
     specs: [
-      { value: "585", unit: "PS", label: "Power" },
+      { value: "700", unit: "PS", label: "Power" },
       { value: "3.4", unit: "s", label: "0–100 km/h" },
       { value: "320", unit: "km/h", label: "Top speed" },
     ],
@@ -83,8 +83,8 @@ const fleet = [
       <video
         data-hero-video
         class="hero-video"
-        src="https://video.wixstatic.com/video/67964a_969a35dc5c2d4172b6fdf41bfdd2b4ad/720p/mp4/file.mp4"
-        poster="https://static.wixstatic.com/media/67964a_969a35dc5c2d4172b6fdf41bfdd2b4adf002.jpg"
+        src="https://video.wixstatic.com/video/67964a_d30f1f2be4584a65924f05e849b1df3a/720p/mp4/file.mp4"
+        poster="https://static.wixstatic.com/media/67964a_d30f1f2be4584a65924f05e849b1df3af002.jpg"
         autoplay
         muted
         loop
@@ -117,19 +117,21 @@ const fleet = [
       <div class="container-wide flex flex-col gap-12">
         <div class="flex flex-col gap-5" data-reveal>
           <p class="eyebrow">The fleet</p>
-          <div class="flex flex-wrap items-center gap-x-12 gap-y-6">
-            <h2 class="display-lg">Three cars. One discipline.</h2>
-            <!-- Scroll progress as a racing curve — the accent line fills with
-                 scroll (data-pin-bar carries --p) and a dot marks each car,
-                 lighting up as its beat arrives. Spans to the image's edge. -->
+          <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-x-12 gap-y-6">
+            <div class="hidden md:block"></div>
+            <h2 class="display-lg text-center">Three cars. One discipline.</h2>
+            <!-- Scroll progress as a racing curve — the accent line fills up to
+                 the active car's circle (data-pin-dot carries each stop's arc
+                 fraction; the scroll driver snaps --p to it) and the numbered
+                 dots light up as their beat arrives. Spans to the image edge. -->
             <div class="pin-progress" aria-hidden="true">
               <svg class="pin-curve" viewBox="0 0 400 40" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path class="pin-curve-base" d="M2 34 Q120 38 210 24 Q320 8 398 6" />
                 <path class="pin-curve-fill" data-pin-bar pathLength="100" d="M2 34 Q120 38 210 24 Q320 8 398 6" />
               </svg>
-              <span class="pin-dot" data-pin-dot style="left:13.75%; top:35px"></span>
-              <span class="pin-dot" data-pin-dot style="left:50.25%; top:25px"></span>
-              <span class="pin-dot" data-pin-dot style="left:88.75%; top:8px"></span>
+              <span class="pin-dot" data-pin-dot="0.12" style="left:13.75%; top:35px"><span class="pin-dot-num">1</span></span>
+              <span class="pin-dot" data-pin-dot="0.5" style="left:50.25%; top:25px"><span class="pin-dot-num">2</span></span>
+              <span class="pin-dot" data-pin-dot="0.88" style="left:88.75%; top:8px"><span class="pin-dot-num">3</span></span>
             </div>
           </div>
         </div>
@@ -209,7 +211,7 @@ const fleet = [
 
   <!-- Scene 5 — final call -->
   <section class="scene" aria-label="Book">
-    <div class="container-wide flex flex-col gap-10 items-start">
+    <div class="container-wide flex flex-col gap-10 items-center text-center">
       <h2 class="display-hero" data-reveal>The grid<br />is open<span class="accent-dot">.</span></h2>
       <a href="/services" class="btn-primary" data-reveal style="--d:200ms">Book a drive</a>
     </div>

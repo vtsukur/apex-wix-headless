@@ -174,13 +174,15 @@ const { title, description, hasSeoTags = false } = Astro.props;
           const cars = stage.querySelectorAll(".pin-car");
           const idx = Math.min(cars.length - 1, Math.floor(p * cars.length));
           cars.forEach((car, i) => car.classList.toggle("is-active", i === idx));
-          const bar = stage.querySelector<HTMLElement>("[data-pin-bar]");
-          if (bar) bar.style.setProperty("--p", String(p));
           const count = stage.querySelector<HTMLElement>("[data-pin-count]");
           if (count) count.textContent = String(idx + 1).padStart(2, "0");
-          stage
-            .querySelectorAll<HTMLElement>("[data-pin-dot]")
-            .forEach((dot, i) => dot.classList.toggle("on", i <= idx));
+          const dots = stage.querySelectorAll<HTMLElement>("[data-pin-dot]");
+          dots.forEach((dot, i) => dot.classList.toggle("on", i <= idx));
+          // The fill parks at the active car's circle (its arc fraction rides
+          // on data-pin-dot) rather than tracking raw scroll.
+          const bar = stage.querySelector<HTMLElement>("[data-pin-bar]");
+          const stop = dots[Math.min(idx, dots.length - 1)]?.dataset.pinDot;
+          if (bar) bar.style.setProperty("--p", stop ?? String(p));
         }
       }
 

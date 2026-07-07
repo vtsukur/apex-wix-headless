@@ -454,8 +454,8 @@ body[data-navigating="true"] .product-grid {
 
 /* Quiet large statement (Aston refinement / philosophy scene). */
 .statement {
-  font-size: clamp(1.5rem, 3vw, 2.375rem);
-  line-height: 1.4;
+  font-size: clamp(1.875rem, 4vw, 3.25rem);
+  line-height: 1.35;
   font-weight: 400;
   color: var(--color-ink);
 }
@@ -748,8 +748,7 @@ html.lenis, html.lenis body { height: auto; }
 }
 .pin-car-head .plate-role {
   margin-left: auto;
-  max-width: 30rem;
-  text-align: right;
+  text-align: right; /* no max-width — runs one line wherever the card allows */
 }
 .pin-car-media {
   position: absolute;
@@ -820,6 +819,8 @@ html.lenis, html.lenis body { height: auto; }
   vector-effect: non-scaling-stroke;
   stroke-dasharray: 100 100;
   stroke-dashoffset: calc((1 - var(--p, 0)) * 100);
+  /* --p snaps between car stops; ease the line between them. */
+  transition: stroke-dashoffset 600ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .pin-dot {
   position: absolute;
@@ -835,6 +836,20 @@ html.lenis, html.lenis body { height: auto; }
   background: var(--color-accent);
   border-color: var(--color-accent);
   box-shadow: 0 0 10px rgba(225, 18, 31, 0.55);
+}
+.pin-dot-num {
+  position: absolute;
+  bottom: calc(100% + 0.375rem);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  color: var(--color-mute);
+  font-variant-numeric: tabular-nums;
+  transition: color 300ms ease;
+}
+.pin-dot.on .pin-dot-num {
+  color: var(--color-ink);
 }
 
 /* Reduced motion (also the no-pin fallback): unpin, stack all three cars. */

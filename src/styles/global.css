@@ -595,6 +595,30 @@ body[data-navigating="true"] .product-grid {
   padding-block: 2rem;
   border-top: 1px solid var(--color-rule);
   transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* Clip the hover film to the row; isolate lets it sit at z:-1 between
+     the row's ground and its text. */
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+/* The car's fleet clip, ghosting behind the row while hovered (playback
+   driven from index.astro; barely-there by design). */
+.index-row-film {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 500ms ease;
+  pointer-events: none;
+}
+.index-row:hover .index-row-film {
+  opacity: 0.16;
+}
+@media (hover: none), (pointer: coarse) {
+  .index-row-film { display: none; }
 }
 .index-row:last-of-type { border-bottom: 1px solid var(--color-rule); }
 .index-row:hover { transform: translateX(0.75rem); }

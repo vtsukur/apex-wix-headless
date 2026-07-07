@@ -221,8 +221,24 @@ const fleet = [
               // Car-led names read "CAR · programme" — paint just the car red.
               const name = s.name ?? "";
               const dot = name.indexOf(" · ");
+              // The car's fleet film ghosts behind its row on hover.
+              const film = fleet.find((c) =>
+                name.toUpperCase().startsWith(c.designation.toUpperCase()),
+              );
               return (
                 <a href={`/services/${getSlug(s)}`} class="index-row" data-roll>
+                  {film && (
+                    <video
+                      class="index-row-film"
+                      src={film.video}
+                      muted
+                      loop
+                      playsinline
+                      preload="metadata"
+                      aria-hidden="true"
+                      style={"pos" in film && film.pos ? `object-position: ${film.pos}` : undefined}
+                    />
+                  )}
                   <span class="index-row-num">{String(i + 1).padStart(2, "0")}</span>
                   <span class="index-row-name">
                     {dot === -1 ? (
@@ -316,4 +332,22 @@ const fleet = [
   }
   initHeroVideo();
   document.addEventListener("astro:page-load", initHeroVideo);
+
+  // Programme-row films — the car's fleet clip ghosts behind its row while
+  // the cursor rests on it (CSS fades it; playback needs JS). Desktop only.
+  function initRowFilms() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(hover: none), (pointer: coarse)").matches) return;
+    document.querySelectorAll<HTMLElement>(".index-row:not([data-film-live])").forEach((row) => {
+      const vid = row.querySelector<HTMLVideoElement>(".index-row-film");
+      if (!vid) return;
+      row.dataset.filmLive = "1";
+      row.addEventListener("pointerenter", () => {
+        vid.play().catch(() => {});
+      });
+      row.addEventListener("pointerleave", () => vid.pause());
+    });
+  }
+  initRowFilms();
+  document.addEventListener("astro:page-load", initRowFilms);
 </script>

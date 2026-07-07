@@ -735,8 +735,17 @@ html.lenis, html.lenis body { height: auto; }
   min-width: 0;
   padding: clamp(1.25rem, 3vw, 2.5rem);
 }
-.pin-car-copy .plate-specs {
+/* Bottom row — specs bottom-left, per-car CTA bottom-right. */
+.pin-car-foot {
   margin-top: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem 2.5rem;
+  flex-wrap: wrap;
+}
+.pin-car-foot .btn-primary {
+  margin-left: auto; /* stays on the right edge even when the row wraps */
 }
 /* Name top-left, role top-right; the role wraps below on narrow cards. */
 .pin-car-head {

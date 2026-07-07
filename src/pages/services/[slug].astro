@@ -192,14 +192,15 @@ try {
 >
   <SeoTags tags={seoTags} slot="head" />
   <section class="container-wide pt-8 pb-24">
-    <!-- Top row rides close under the header: centered eyebrow leads the
-         page, the back link tucks to its left on desktop (above on mobile). -->
-    <div class="relative mb-8" data-reveal>
+    <!-- Top row rides close under the header: the eyebrow centers via equal
+         1fr side tracks, and the back link centers inside the left track —
+         halfway between the container edge and the eyebrow (stacked on mobile). -->
+    <div class="mb-8 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center" data-reveal>
       <a
         href="/services"
-        class="inline-block text-sm text-mute hover:text-ink mb-4 md:mb-0 md:absolute md:left-0 md:top-1/2 md:-translate-y-1/2"
+        class="inline-block text-sm text-mute hover:text-ink mb-4 md:mb-0 md:justify-self-center"
       >← All sessions</a>
-      <p class="eyebrow w-full justify-center">The programme</p>
+      <p class="eyebrow w-full justify-center md:w-auto">The programme</p>
     </div>
 
     <!-- Card hero — the home fleet card, stretched: name top-left with the

@@ -226,9 +226,9 @@
 @media (max-width: 1023px) {
   .site-nav { --curve-scale: 0.72; --curve-w: 207px; }
 }
+/* Mobile keeps the pocket + lap + boot handoff, just smaller. */
 @media (max-width: 767px) {
-  .site-nav { --curve-w: 0px; }
-  .nav-curve { display: none; }
+  .site-nav { --curve-scale: 0.6; --curve-w: 173px; }
 }
 .site-footer {
   border-top: 1px solid var(--color-rule);
@@ -649,13 +649,13 @@ html.lenis, html.lenis body { height: auto; }
   flex: none;
 }
 /* In the header, center the mark in the full chrome silhouette — bar plus the
-   ~40px-deep curve pocket below it — not just the bar rectangle. Transform
-   only, so the bar's height (set by the CTA) is untouched. Mobile has no
-   pocket, so no shift. */
-@media (min-width: 768px) {
-  /* A hair above true center of the silhouette reads better optically. */
-  .site-nav .brand-mark { transform: translateY(calc(15px * var(--curve-scale))); }
-}
+   curve pocket below it — not just the bar rectangle. Transform only, so the
+   bar's height (set by the CTA) is untouched; a hair above true center reads
+   better optically. Scales with the pocket on every breakpoint. */
+.site-nav .brand-mark { transform: translateY(calc(15px * var(--curve-scale))); }
+/* Stores-pack slot — when nothing mounts in it, collapse it so its flex gap
+   doesn't push the CTA off the right padding edge (left/right asymmetry). */
+.nav-actions:empty { display: none; }
 .btn-primary, .btn-secondary, .btn-ghost {
   text-transform: uppercase;
   letter-spacing: 0.18em;

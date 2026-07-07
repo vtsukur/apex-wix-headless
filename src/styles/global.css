@@ -455,6 +455,37 @@ body[data-navigating="true"] .product-grid {
   padding-block: 6rem;
   overflow: hidden;
 }
+/* Mobile — non-hero scenes size to content with tighter padding instead of
+   commanding a full viewport each. */
+@media (max-width: 767px) {
+  .scene:not(.scene-hero) {
+    min-height: 0;
+    padding-block: 4rem;
+  }
+}
+
+/* Why-Apex row — desktop puts the story CTA on the right, vertically
+   centered against the statement, a size up from the base button voice. */
+.why-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2.5rem;
+  width: 100%;
+}
+@media (min-width: 1024px) {
+  .why-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4rem;
+  }
+  .why-row .btn-secondary {
+    flex: none;
+    font-size: 1rem;
+    padding: 1.25rem 2.25rem;
+  }
+}
 .scene-hero { min-height: calc(100svh - 3.75rem); }
 .scene-watermark {
   position: absolute;
@@ -565,11 +596,11 @@ body[data-navigating="true"] .product-grid {
   display: flex;
   gap: 1.75rem;
   align-items: baseline;
-  font-size: 0.8125rem;
+  font-size: clamp(1.125rem, 1.6vw, 1.5rem);
   color: var(--color-mute);
   font-variant-numeric: tabular-nums;
 }
-.index-row-meta .price { color: var(--color-ink); font-weight: 500; }
+.index-row-meta .price { color: var(--color-ink); font-weight: 600; }
 .index-row-arrow {
   color: var(--color-mute);
   transition: color 300ms ease, transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -815,9 +846,12 @@ html.lenis, html.lenis body { height: auto; }
 .pin-nav:hover { color: var(--color-accent); }
 .pin-nav-prev { left: clamp(0.25rem, 1vw, 1rem); }
 .pin-nav-next { right: clamp(0.25rem, 1vw, 1rem); }
+/* Nothing to scroll to → the chevron leaves entirely. */
 .pin-nav[disabled] {
-  opacity: 0.25;
+  opacity: 0;
+  visibility: hidden;
   pointer-events: none;
+  transition: color 200ms ease, opacity 300ms ease, visibility 0s 300ms;
 }
 
 /* Bottom row — specs bottom-left, per-car CTA bottom-right. */

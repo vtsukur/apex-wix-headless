@@ -249,6 +249,33 @@ const { title, description, hasSeoTags = false } = Astro.props;
             car.classList.toggle("is-active", i === idx);
             car.dataset.stack = String(i - idx); // deck position vs the focus card
           });
+          // Fleet films — the focus car's video rolls ~0.5s after its card
+          // settles, and fades in only once playback actually starts (the
+          // still underneath holds the frame until then). Leaving the beat
+          // or scrolling the stage away pauses everything.
+          const onstage = rect.bottom > 0 && rect.top < vh;
+          const beat = onstage ? String(idx) : "off";
+          if (stage.dataset.liveBeat !== beat) {
+            stage.dataset.liveBeat = beat;
+            cars.forEach((car, i) => {
+              const vid = car.querySelector<HTMLVideoElement>(".pin-car-media video");
+              if (!vid) return;
+              clearTimeout(Number(vid.dataset.cue || 0));
+              if (onstage && i === idx) {
+                vid.dataset.cue = String(
+                  window.setTimeout(() => {
+                    vid
+                      .play()
+                      .then(() => car.classList.add("video-live"))
+                      .catch(() => {}); // autoplay blocked / not transcoded yet — still stays
+                  }, 500),
+                );
+              } else {
+                car.classList.remove("video-live");
+                vid.pause();
+              }
+            });
+          }
           const count = stage.querySelector<HTMLElement>("[data-pin-count]");
           if (count) count.textContent = String(idx + 1).padStart(2, "0");
           const dots = stage.querySelectorAll<HTMLElement>("[data-pin-dot]");

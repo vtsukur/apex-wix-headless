@@ -959,6 +959,20 @@ html.lenis, html.lenis body { height: auto; }
   height: 100%;
   object-fit: cover;
 }
+/* The film layer sits over the still and only shows while its car is in
+   focus and the video is actually rolling (.video-live, set on play). */
+.pin-car-media video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+.pin-car.video-live .pin-car-media video {
+  opacity: 1;
+}
 .pin-car.is-active .pin-car-media img {
   animation: media-drift 6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -1148,6 +1162,7 @@ html.lenis, html.lenis body { height: auto; }
     pointer-events: auto;
   }
   .pin-car.is-active .pin-car-media img { animation: none; }
+  .pin-car-media video { display: none; }
   /* No deck in the static stack — every card full-strength and readable. */
   .pin-car[data-stack] {
     opacity: 1;

@@ -46,6 +46,7 @@ const fleet = [
     cta: "Book a thrill",
     role: "The circuit weapon. Mid-engined, downforce-led, honest at the limit.",
     image: "https://static.wixstatic.com/media/67964a_688bd941058043ffad139b51410e5983~mv2.png/v1/fill/w_1376,h_768,q_85/th-12.jpg",
+    video: "https://video.wixstatic.com/video/67964a_6d60600de434486fa612ce9589d9d2f1/720p/mp4/file.mp4",
     alt: "TH-12W hypercar cornering at the apex of a dark circuit at dusk, brake discs glowing",
     specs: [
       { value: "977", unit: "PS", label: "Power" },
@@ -59,6 +60,7 @@ const fleet = [
     cta: "Book a flight",
     role: "The launch specialist. All-wheel drive, telemetry on every run.",
     image: "https://static.wixstatic.com/media/67964a_75f55bba9ff64d86bfc4d983c9bb8b7e~mv2.png/v1/fill/w_1376,h_768,q_85/rs-launch.jpg",
+    video: "https://video.wixstatic.com/video/67964a_27024945f4a848eba030934f3f8e183a/720p/mp4/file.mp4",
     pos: "50% 35%",
     alt: "ROCKET 4S coupe launching from the start line at night, tire smoke trailing",
     specs: [
@@ -73,6 +75,7 @@ const fleet = [
     cta: "Book a drive",
     role: "The grand tourer. Long-legged, unhurried, built for the high passes.",
     image: "https://static.wixstatic.com/media/67964a_98ec9d42fd54409fac49b479d2b0d2d0~mv2.png/v1/fill/w_1376,h_768,q_85/apex-gt.jpg",
+    video: "https://video.wixstatic.com/video/67964a_90326cc4dcfb401490328519e1b5951b/720p/mp4/file.mp4",
     // The car sits low in this frame — bias the cover crop toward the bottom
     // so it isn't clipped in the wide card.
     pos: "50% 85%",
@@ -173,6 +176,19 @@ const fleet = [
                   alt={car.alt}
                   loading={i === 0 ? "eager" : "lazy"}
                   decoding="async"
+                  style={"pos" in car && car.pos ? `object-position: ${car.pos}` : undefined}
+                />
+                {/* The film layer — fades in over the still once the car is
+                    in focus and actually playing (driven in Layout.astro).
+                    Same cover crop as the still; preloads in the background
+                    without gating the boot loader. */}
+                <video
+                  src={car.video}
+                  muted
+                  loop
+                  playsinline
+                  preload="auto"
+                  aria-hidden="true"
                   style={"pos" in car && car.pos ? `object-position: ${car.pos}` : undefined}
                 />
               </div>

@@ -846,6 +846,9 @@ html.booting .boot.boot-exit { transform: translateY(-101%); }
   flex-direction: column;
   align-items: center;
   gap: 2.75rem;
+  /* Sit slightly left of the racing line's corner (apex at 64% width) instead
+     of dead center — the wordmark holds the inside of the bend. */
+  right: clamp(1.75rem, 4vw, 3.5rem);
 }
 .boot-mark {
   display: flex;

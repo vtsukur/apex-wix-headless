@@ -954,8 +954,8 @@ html.lenis, html.lenis body { height: auto; }
 
 /* The fleet scroller — a racing curve stretching to the card's right edge.
    The base line is the track; the accent line fills with scroll progress
-   (pathLength=100 keeps the dash math stretch-proof, non-scaling strokes
-   keep the weight honest under preserveAspectRatio:none); a dot per car
+   (pathLength=100 keeps the dash math stretch-proof under
+   preserveAspectRatio:none); a dot per car
    lights up as its beat arrives (toggled by the pin-stage scroll driver). */
 /* On desktop the box is taller than its row and overflows downward
    (negative margin) so the curve descends toward the image; the scroll
@@ -976,15 +976,19 @@ html.lenis, html.lenis body { height: auto; }
   height: 100%;
   overflow: visible;
 }
+/* No non-scaling-stroke here: Chromium dashes non-scaling strokes along
+   the screen-space path while pathLength/getPointAtLength speak user
+   space, so the fill tip would drift off the shapes as the box stretches.
+   The box height always equals the viewBox height (96px), so plain
+   strokes keep their weight anyway — only x stretches, and the curve is
+   shallow enough that the thickness change is invisible. */
 .pin-curve-base {
   stroke: var(--color-rule);
   stroke-width: 1.5;
-  vector-effect: non-scaling-stroke;
 }
 .pin-curve-fill {
   stroke: var(--color-accent);
   stroke-width: 1.5;
-  vector-effect: non-scaling-stroke;
   /* Gap far larger than the path so the pattern can never wrap a second
      dash copy into view at the right end (pathLength rounding artifact). */
   stroke-dasharray: 100 400;

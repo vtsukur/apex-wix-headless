@@ -178,11 +178,18 @@ const { title, description, hasSeoTags = false } = Astro.props;
           if (count) count.textContent = String(idx + 1).padStart(2, "0");
           const dots = stage.querySelectorAll<HTMLElement>("[data-pin-dot]");
           dots.forEach((dot, i) => dot.classList.toggle("on", i <= idx));
-          // The fill parks at the active car's circle (its arc fraction rides
-          // on data-pin-dot) rather than tracking raw scroll.
+          // Continuous fill that still lands on each circle exactly as its
+          // car's beat arrives: piecewise-linear through the dot stops (arc
+          // fractions on data-pin-dot), completing the line by section end.
           const bar = stage.querySelector<HTMLElement>("[data-pin-bar]");
-          const stop = dots[Math.min(idx, dots.length - 1)]?.dataset.pinDot;
-          if (bar) bar.style.setProperty("--p", stop ?? String(p));
+          if (bar && dots.length > 0) {
+            const stops = Array.from(dots).map((d) => parseFloat(d.dataset.pinDot ?? "0"));
+            const n = stops.length;
+            const k = Math.min(n - 1, Math.floor(p * n));
+            const t = p * n - k;
+            const to = k + 1 < n ? stops[k + 1] : 1;
+            bar.style.setProperty("--p", String(stops[k] + (to - stops[k]) * t));
+          }
         }
       }
 

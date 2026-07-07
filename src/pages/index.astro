@@ -1,11 +1,10 @@
 ---
 // Home — five full-viewport scenes (Pagani pacing · Rimac scale · Aston
-// refinement · Exo Ape motion). The hero carries a generative racing-line
-// canvas (HeroScene) with a parallax exit; the fleet is a pinned scroll
-// sequence (one car per scroll beat). Programmes are queried live from Wix
-// Bookings (non-fatal — the scene degrades to a CTA if the read fails).
+// refinement · Exo Ape motion). The hero carries the TH-12 lap film (streamed
+// from Wix Media, never committed to the repo) with a parallax exit; the
+// fleet is a pinned scroll sequence (one car per scroll beat). Programmes are
+// queried live from Wix Bookings (non-fatal — degrades to a CTA on failure).
 import Layout from '../layouts/Layout.astro';
-import HeroScene from '../components/HeroScene.astro';
 import { services } from "@wix/bookings";
 import { auth } from "@wix/essentials";
 
@@ -76,9 +75,24 @@ const fleet = [
 ];
 ---
 <Layout>
-  <!-- Scene 1 — hero: generative racing line + parallax exit -->
+  <!-- Scene 1 — hero: TH-12 lap film (Wix Media) + parallax exit. The video is
+       NOT in the repo — it lives in the site's Wix Media and streams from the
+       wixstatic CDN. The boot curtain waits for it (BootScreen.astro). -->
   <section class="scene scene-hero" aria-label="Apex">
-    <HeroScene />
+    <div class="hero-scene" aria-hidden="true">
+      <video
+        data-hero-video
+        class="hero-video"
+        src="https://video.wixstatic.com/video/67964a_969a35dc5c2d4172b6fdf41bfdd2b4ad/720p/mp4/file.mp4"
+        poster="https://static.wixstatic.com/media/67964a_969a35dc5c2d4172b6fdf41bfdd2b4adf002.jpg"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+      ></video>
+      <div class="hero-video-scrim"></div>
+    </div>
     <div class="scene-watermark" aria-hidden="true">APEX</div>
     <div class="container-wide flex flex-col gap-8 relative z-10" data-hero-parallax>
       <p class="eyebrow" data-reveal>Supercar driving experiences</p>
@@ -189,3 +203,26 @@ const fleet = [
     </div>
   </section>
 </Layout>
+
+<script>
+  // Hero-video readiness — the boot curtain (BootScreen.astro) holds until
+  // this fires (or its own 8s failsafe). Also parks the film under
+  // prefers-reduced-motion: the poster frame stays, nothing moves.
+  function initHeroVideo() {
+    const video = document.querySelector<HTMLVideoElement>("[data-hero-video]:not([data-init])");
+    if (!video) return;
+    video.dataset.init = "1";
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      video.removeAttribute("autoplay");
+      video.pause();
+    }
+    const announce = () => document.dispatchEvent(new CustomEvent("apex:hero-video-ready"));
+    if (video.readyState >= 3) announce();
+    else {
+      video.addEventListener("canplaythrough", announce, { once: true });
+      video.addEventListener("error", announce, { once: true });
+    }
+  }
+  initHeroVideo();
+  document.addEventListener("astro:page-load", initHeroVideo);
+</script>

@@ -35,13 +35,26 @@ const LETTERS = "APEX".split("");
   if (boot && html.classList.contains("booting")) {
     // Wait for the display font (capped) so the wordmark never flashes in a
     // fallback face mid-animation, then run the timeline: rise + line fill →
-    // hold → curtain wipe → cleanup.
+    // hold (gated on the hero film when one is on the page) → curtain wipe →
+    // cleanup. The video gate is failsafed at 8s so a slow network can never
+    // hold the page hostage.
     const fontsReady: Promise<unknown> = (document as any).fonts?.ready ?? Promise.resolve();
     Promise.race([fontsReady, new Promise((r) => setTimeout(r, 800))]).then(() => {
       requestAnimationFrame(() => {
         boot.classList.add("boot-play");
-        setTimeout(() => boot.classList.add("boot-exit"), 3200);
-        setTimeout(finish, 4000);
+        const minHold = new Promise((r) => setTimeout(r, 3200));
+        const video = document.querySelector("[data-hero-video]") as HTMLVideoElement | null;
+        const videoReady =
+          !video || video.readyState >= 3
+            ? Promise.resolve()
+            : Promise.race([
+                new Promise((r) => document.addEventListener("apex:hero-video-ready", r, { once: true })),
+                new Promise((r) => setTimeout(r, 8000)),
+              ]);
+        Promise.all([minHold, videoReady]).then(() => {
+          boot.classList.add("boot-exit");
+          setTimeout(finish, 800);
+        });
       });
     });
   } else if (html.classList.contains("booting")) {

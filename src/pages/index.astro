@@ -221,10 +221,13 @@ const fleet = [
               // Car-led names read "CAR · programme" — paint just the car red.
               const name = s.name ?? "";
               const dot = name.indexOf(" · ");
-              // The car's fleet film ghosts behind its row on hover.
-              const film = fleet.find((c) =>
-                name.toUpperCase().startsWith(c.designation.toUpperCase()),
-              );
+              // The car's fleet film ghosts behind its row on hover; the
+              // passenger lap brings its own clip (no fleet car to borrow).
+              const film =
+                fleet.find((c) => name.toUpperCase().startsWith(c.designation.toUpperCase())) ??
+                (name.toUpperCase().startsWith("PASSENGER HOT LAP")
+                  ? { video: "https://video.wixstatic.com/video/67964a_837457251f164d0c9e4a08c325afa181/720p/mp4/file.mp4" }
+                  : undefined);
               return (
                 <a href={`/services/${getSlug(s)}`} class="index-row" data-roll>
                   {film && (

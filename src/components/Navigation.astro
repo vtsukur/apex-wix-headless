@@ -6,12 +6,12 @@
        glass), so the header silhouette is the bar ∪ the corner. Geometry is
        the BootScreen curve — flat entry off the left edge, apex, exit
        flattening into the bottom rule (the .site-nav::after line takes over
-       exactly where the curve merges at x=640). Static by design. -->
+       exactly where the curve merges at x=480). Static by design. -->
   <div class="nav-curve" aria-hidden="true">
     <div class="nav-curve-fill"></div>
-    <svg class="nav-curve-svg" viewBox="0 0 640 122" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg class="nav-curve-svg" viewBox="0 0 480 122" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="nav-curve-grad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="640" y2="0">
+        <linearGradient id="nav-curve-grad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="480" y2="0">
           <stop offset="0" stop-color="#E1121F" stop-opacity="0" />
           <stop offset="0.16" stop-color="#E1121F" stop-opacity="0.5" />
           <stop offset="0.56" stop-color="#FF5C5C" stop-opacity="0.95" />
@@ -20,17 +20,17 @@
           <stop offset="1" stop-color="#2A2B2F" stop-opacity="0.9" />
         </linearGradient>
       </defs>
-      <path class="nav-curve-glow" d="M0 86 Q236 98 407 44 Q544 2 640 2" stroke="url(#nav-curve-grad)" stroke-width="6" opacity="0.55" />
-      <path d="M0 86 Q236 98 407 44 Q544 2 640 2" stroke="url(#nav-curve-grad)" stroke-width="2" stroke-linecap="round" />
+      <path class="nav-curve-glow" d="M0 86 Q177 98 305 44 Q408 2 480 2" stroke="url(#nav-curve-grad)" stroke-width="6" opacity="0.55" />
+      <path d="M0 86 Q177 98 305 44 Q408 2 480 2" stroke="url(#nav-curve-grad)" stroke-width="2" stroke-linecap="round" />
       <g stroke-width="2">
-        <path d="M344.3 66.9 L346.1 74.6" stroke="rgba(225,18,31,0.3)" />
-        <path d="M377.6 58.8 L379.7 66.5" stroke="rgba(242,240,235,0.2)" />
-        <path d="M424.7 44.8 L427 52.5" stroke="rgba(225,18,31,0.3)" />
-        <path d="M451.6 37.8 L453.7 45.5" stroke="rgba(242,240,235,0.2)" />
-        <path d="M481.4 29.8 L483.3 37.6" stroke="rgba(225,18,31,0.3)" />
+        <path d="M259.1 67 L261.4 74.7" stroke="rgba(225,18,31,0.3)" />
+        <path d="M283.7 58.8 L286.4 66.4" stroke="rgba(242,240,235,0.2)" />
+        <path d="M319.4 44.7 L322.3 52.1" stroke="rgba(225,18,31,0.3)" />
+        <path d="M339.2 37.3 L342 44.8" stroke="rgba(242,240,235,0.2)" />
+        <path d="M362 29.5 L364.5 37.1" stroke="rgba(225,18,31,0.3)" />
       </g>
-      <circle cx="407" cy="44" r="2.5" fill="rgba(225,18,31,0.9)" />
-      <circle cx="407" cy="44" r="7" stroke="rgba(225,18,31,0.28)" stroke-width="1" />
+      <circle cx="305" cy="44" r="2.5" fill="rgba(225,18,31,0.9)" />
+      <circle cx="305" cy="44" r="7" stroke="rgba(225,18,31,0.28)" stroke-width="1" />
     </svg>
   </div>
   <nav class="container-wide flex items-center justify-between gap-6 py-4">

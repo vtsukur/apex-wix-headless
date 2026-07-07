@@ -1,6 +1,6 @@
 ---
 // BootScreen.astro — the entry curtain: the racing line draws itself through a
-// corner behind the rising APEX wordmark while a start-line fills, then the
+// corner behind the rising APEX wordmark, then the
 // screen wipes upward with the line layer exiting faster than the curtain
 // (layered parallax). The canvas camera drifts with the pointer, lerped,
 // behind the static type. Plays once per session on a hard load; ClientRouter
@@ -20,7 +20,6 @@ const LETTERS = "APEX".split("");
         <span class="boot-mask"><span class="boot-letter" style={`--i:${i + 1}`}>{ch}</span></span>
       ))}
     </div>
-    <div class="boot-line"><span class="boot-line-bar"></span></div>
   </div>
 </div>
 

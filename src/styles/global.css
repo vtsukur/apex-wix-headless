@@ -159,19 +159,10 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  --curve-scale: 1;
-  --curve-w: 480px; /* x where the curve merges into the bottom rule (scaled) */
-}
-/* Bar glass lives on ::before, not the element itself — an ancestor with
-   backdrop-filter becomes the backdrop root, and .nav-curve-fill's own blur
-   would then sample nothing but the header instead of the page behind it. */
-.site-nav::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
   background: color-mix(in srgb, var(--color-paper) 88%, transparent);
   backdrop-filter: saturate(1.1) blur(8px);
+  --curve-scale: 1;
+  --curve-w: 288px; /* x where the curve merges into the bottom rule (scaled) */
 }
 /* The bottom rule starts where the racing line merges into the bar edge; left
    of that point the curve itself is the header's boundary. */
@@ -196,8 +187,8 @@
   position: absolute;
   top: 100%;
   left: 0;
-  width: 480px;
-  height: 122px;
+  width: 288px;
+  height: 64px;
   margin-top: -2px;
   transform-origin: 0 0;
   transform: scale(var(--curve-scale));
@@ -206,9 +197,8 @@
 .nav-curve-fill {
   position: absolute;
   inset: 0;
-  background: color-mix(in srgb, var(--color-paper) 88%, transparent);
-  backdrop-filter: saturate(1.1) blur(8px);
-  clip-path: path("M0 86 Q177 98 305 44 Q408 2 480 2 L480 0 L0 0 Z");
+  background: var(--color-paper); /* header color, deliberately opaque */
+  clip-path: path("M0 44 Q106 50 183 23 Q245 2 288 2 L288 0 L0 0 Z");
 }
 .nav-curve-svg {
   position: absolute;
@@ -219,11 +209,40 @@
 .nav-curve-glow {
   filter: blur(5px);
 }
+/* The loader's pulse, still lapping — a bright dash travels the curve every
+   5.6s (pathLength=100 normalizes the dash math), thinning after the apex to
+   match the base stroke's taper, and the apex ring flares as the pulse front
+   crosses the corner (apex sits at ~63.5% of the path, hence the timing). */
+.nav-curve-pulse {
+  stroke-dasharray: 8 92;
+  stroke-dashoffset: 8;
+  filter: drop-shadow(0 0 3px rgba(225, 18, 31, 0.7));
+  animation: nav-pulse 5600ms linear infinite;
+}
+@keyframes nav-pulse {
+  0% { stroke-dashoffset: 8; stroke-width: 1.5; }
+  60% { stroke-dashoffset: -52; stroke-width: 1.5; }
+  100% { stroke-dashoffset: -92; stroke-width: 0.7; }
+}
+.nav-curve-ring {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nav-ring 5600ms linear infinite;
+}
+@keyframes nav-ring {
+  0%, 62% { opacity: 0; transform: scale(0.6); }
+  65% { opacity: 1; transform: scale(0.8); }
+  74%, 100% { opacity: 0; transform: scale(2.6); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-curve-pulse, .nav-curve-ring { animation: none; }
+}
 @media (max-width: 1279px) {
-  .site-nav { --curve-scale: 0.85; --curve-w: 408px; }
+  .site-nav { --curve-scale: 0.85; --curve-w: 245px; }
 }
 @media (max-width: 1023px) {
-  .site-nav { --curve-scale: 0.72; --curve-w: 346px; }
+  .site-nav { --curve-scale: 0.72; --curve-w: 207px; }
 }
 @media (max-width: 767px) {
   .site-nav { --curve-w: 0px; }
@@ -605,8 +624,8 @@ html.lenis, html.lenis body { height: auto; }
 
 /* Refined chrome — tracked caps nav + premium button voice. */
 .nav-link {
-  font-size: 0.6875rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 700;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--color-ink-soft);
@@ -614,12 +633,12 @@ html.lenis, html.lenis body { height: auto; }
 }
 .nav-link:hover, .nav-link[aria-current="page"] { color: var(--color-ink); }
 .nav-cta {
-  font-size: 0.6875rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 700;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--color-ink);
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--color-accent);
   padding: 0.625rem 1.25rem;
   border-radius: var(--radius-sm);
   transition: border-color 200ms ease, color 200ms ease, background-color 200ms ease;
@@ -627,10 +646,13 @@ html.lenis, html.lenis body { height: auto; }
 .nav-cta:hover { border-color: var(--color-accent); color: var(--color-accent); }
 /* Sized to sit inside the curved pocket the racing line carves out of the
    header's left side (line-height 1 keeps the bar height set by the CTA). */
+/* Tick and gap in em so the mark keeps identical proportions at any size —
+   the boot screen's wordmark mirrors these ratios, which is what lets the
+   loader-to-header flight land without a style jump. */
 .brand-mark {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.43em;
   font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -639,10 +661,18 @@ html.lenis, html.lenis body { height: auto; }
 }
 .brand-mark::before {
   content: "";
-  width: 0.625rem;
-  height: 0.625rem;
+  width: 0.36em;
+  height: 0.36em;
   background: var(--color-accent);
   flex: none;
+}
+/* In the header, center the mark in the full chrome silhouette — bar plus the
+   ~40px-deep curve pocket below it — not just the bar rectangle. Transform
+   only, so the bar's height (set by the CTA) is untouched. Mobile has no
+   pocket, so no shift. */
+@media (min-width: 768px) {
+  /* A hair above true center of the silhouette reads better optically. */
+  .site-nav .brand-mark { transform: translateY(calc(15px * var(--curve-scale))); }
 }
 .btn-primary, .btn-secondary, .btn-ghost {
   text-transform: uppercase;
@@ -847,16 +877,28 @@ html.booting .boot.boot-exit { background-color: transparent; }
      right shoulder. */
   right: clamp(2.5rem, 8vw, 7.5rem);
 }
+/* The wordmark is a scaled-up copy of .brand-mark — same tracking, same
+   em-relative tick and gap — so the exit flight into the header brand is a
+   pure uniform scale with no style jump at the crossfade. Letters keep their
+   own masks for the staggered rise; spacing between them comes from tracking
+   alone (no flex gap). */
 .boot-mark {
   display: flex;
   align-items: center;
-  gap: clamp(0.625rem, 1.5vw, 1rem);
+  font-size: clamp(3.25rem, 8.5vw, 6.5rem);
+  line-height: 1;
   /* FLIP flight into the header brand — measured from the top-left corner. */
   transform-origin: 0 0;
 }
+/* Flex, not inline-block — collapses each mask to its content's height (no
+   1em text strut), so the tick mask is tick-sized and .boot-mark's centering
+   lands the red square exactly like the header brand's ::before. */
 .boot-mask {
-  display: inline-block;
+  display: flex;
   overflow: hidden;
+}
+.boot-mask:first-child {
+  margin-right: 0.43em; /* tick-to-letters gap, same ratio as .brand-mark */
 }
 .boot-letter,
 .boot-tick {
@@ -869,14 +911,13 @@ html.booting .boot.boot-exit { background-color: transparent; }
   font-family: var(--font-display);
   font-weight: 600;
   text-transform: uppercase;
-  font-size: clamp(3.25rem, 8.5vw, 6.5rem);
-  letter-spacing: 0.12em; /* matches .brand-mark so the exit flight lands clean */
+  letter-spacing: 0.12em;
   line-height: 1;
   color: var(--color-ink);
 }
 .boot-tick {
-  width: clamp(1.125rem, 2.4vw, 1.75rem);
-  height: clamp(1.125rem, 2.4vw, 1.75rem);
+  width: 0.36em;
+  height: 0.36em;
   background: var(--color-accent);
 }
 .boot.boot-play .boot-letter,
@@ -891,9 +932,9 @@ html.booting .boot.boot-exit { background-color: transparent; }
 }
 html.boot-landing .boot-canvas,
 html.boot-landing .boot-mark { opacity: 0; }
-html.booting .brand-mark,
+html.booting .site-nav .brand-mark,
 html.booting .nav-curve { opacity: 0; }
-html.booting.boot-landing .brand-mark,
+html.booting.boot-landing .site-nav .brand-mark,
 html.booting.boot-landing .nav-curve {
   opacity: 1;
   transition: opacity 300ms ease;

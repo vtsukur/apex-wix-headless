@@ -91,11 +91,11 @@ const LETTERS = "APEX".split("");
         const scale = parseFloat(getComputedStyle(nav).getPropertyValue("--curve-scale")) || 1;
         const top = nav.getBoundingClientRect().bottom - 2;
         morphTarget = [
-          [0, 86],
-          [177, 98],
-          [305, 44],
-          [408, 2],
-          [480, 2],
+          [0, 44],
+          [106, 50],
+          [183, 23],
+          [245, 2],
+          [288, 2],
         ].map(([x, y]) => [x * scale, top + y * scale]);
       }
       morphT0 = performance.now();
@@ -299,7 +299,7 @@ const LETTERS = "APEX".split("");
           // FLIP — measure the flight from the loader mark to the header
           // brand before anything moves; the CSS transition carries it.
           const mark = boot.querySelector(".boot-mark") as HTMLElement | null;
-          const brand = document.querySelector(".brand-mark") as HTMLElement | null;
+          const brand = document.querySelector(".site-nav .brand-mark") as HTMLElement | null;
           let flight = "";
           if (mark && brand) {
             const s = mark.getBoundingClientRect();

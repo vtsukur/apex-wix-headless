@@ -822,22 +822,18 @@ html.booting .boot {
   align-items: center;
   justify-content: center;
   background: var(--color-paper);
-  transition: transform 780ms cubic-bezier(0.76, 0, 0.24, 1);
+  /* Exit is a dissolve, not a wipe — the wordmark and racing line fly into
+     their header counterparts while the veil clears beneath them. */
+  transition: background-color 720ms ease 150ms;
 }
-html.booting .boot.boot-exit { transform: translateY(-101%); }
+html.booting .boot.boot-exit { background-color: transparent; }
 .boot-canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   z-index: 0;
-  will-change: transform;
-  transition: transform 780ms cubic-bezier(0.76, 0, 0.24, 1), opacity 500ms ease;
-}
-/* On exit the line layer travels faster than the curtain — layered parallax. */
-.boot.boot-exit .boot-canvas {
-  transform: translateY(-10rem) scale(1.02);
-  opacity: 0.35;
+  transition: opacity 260ms ease;
 }
 .boot-inner {
   position: relative;
@@ -855,6 +851,8 @@ html.booting .boot.boot-exit { transform: translateY(-101%); }
   display: flex;
   align-items: center;
   gap: clamp(0.625rem, 1.5vw, 1rem);
+  /* FLIP flight into the header brand — measured from the top-left corner. */
+  transform-origin: 0 0;
 }
 .boot-mask {
   display: inline-block;
@@ -872,7 +870,7 @@ html.booting .boot.boot-exit { transform: translateY(-101%); }
   font-weight: 600;
   text-transform: uppercase;
   font-size: clamp(3.25rem, 8.5vw, 6.5rem);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em; /* matches .brand-mark so the exit flight lands clean */
   line-height: 1;
   color: var(--color-ink);
 }
@@ -883,11 +881,22 @@ html.booting .boot.boot-exit { transform: translateY(-101%); }
 }
 .boot.boot-play .boot-letter,
 .boot.boot-play .boot-tick { transform: none; }
-/* The mark drifts up ahead of the curtain for a beat of parallax on exit. */
-.boot.boot-exit .boot-inner {
-  transform: translateY(-2.5rem);
-  opacity: 0.65;
-  transition: transform 780ms cubic-bezier(0.76, 0, 0.24, 1), opacity 600ms ease;
+/* ── Exit handoff — the mark flies into the header's brand slot (transform
+   set inline from measured rects) while the canvas line morphs onto the
+   header curve; at landing (html.boot-landing) the loader layers crossfade
+   out and the real chrome fades in underneath them. The header's brand and
+   curve stay hidden through the boot so there's never a double exposure. */
+.boot.boot-exit .boot-mark {
+  transition: transform 950ms cubic-bezier(0.76, 0, 0.24, 1), opacity 240ms ease;
+}
+html.boot-landing .boot-canvas,
+html.boot-landing .boot-mark { opacity: 0; }
+html.booting .brand-mark,
+html.booting .nav-curve { opacity: 0; }
+html.booting.boot-landing .brand-mark,
+html.booting.boot-landing .nav-curve {
+  opacity: 1;
+  transition: opacity 300ms ease;
 }
 
 /* ── Film grain — one static noise pass over everything (cinema, not dust) ── */

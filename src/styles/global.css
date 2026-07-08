@@ -444,6 +444,14 @@ body[data-navigating="true"] .product-grid {
   background: var(--color-accent);
   border-radius: 0 0 100% 0;
 }
+/* On the smaller display sizes the hero's 0.14em ratio reads as a speck —
+   step the dot (and its gap) up so it lands with the same visual weight
+   the home headings carry. */
+.display-lg .accent-dot {
+  width: 0.22em;
+  height: 0.22em;
+  margin-left: 0.09em;
+}
 
 /* Full-viewport scene (Pagani pacing — one idea per screen). */
 .scene {

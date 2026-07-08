@@ -951,9 +951,9 @@ html.lenis, html.lenis body { height: auto; }
   opacity: 0;
   transform: translateY(2.5rem);
   transition:
-    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
-    filter 700ms cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 1050ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1050ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1050ms cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
 }
 /* The deck — the cards stack under one another. data-stack is the card's
@@ -974,7 +974,7 @@ html.lenis, html.lenis body { height: auto; }
   gap: 1.25rem;
   min-width: 0;
   padding: clamp(1.25rem, 3vw, 2.5rem);
-  transition: opacity 400ms ease;
+  transition: opacity 600ms ease;
 }
 /* Ghost cards show only their image edge — no copy bleeding through. */
 .pin-car:not(.is-active) .pin-car-copy {

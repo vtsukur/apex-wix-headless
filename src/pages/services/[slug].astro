@@ -241,7 +241,7 @@ try {
             {nameDot === -1 ? (
               // No car prefix — stack the name one word per line
               // ("Passenger Hot Lap" → three lines).
-              serviceName.split(" ").map((word, i) => (
+              serviceName.split(" ").map((word: string, i: number) => (
                 <>
                   {i > 0 && <br />}
                   {word}
@@ -291,9 +291,11 @@ try {
            bottom-centre (page ground shows through, red line tracing the
            edge); duration and price sneak up into it. -->
       <div class="detail-apex-cut">
-        <svg viewBox="0 0 380 104" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M0 104 Q70 32 190 22 Q310 32 380 104 Z" fill="var(--color-paper)" />
-          <path d="M0 104 Q70 32 190 22 Q310 32 380 104" fill="none" stroke="var(--color-accent)" stroke-width="2" />
+        {/* Flat crest with horizontal-tangent shoulders — one seamless
+            sweep, no visible stitch; the edge matches the card border. */}
+        <svg viewBox="0 0 800 180" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 180 C 55 90 75 56 130 56 L 670 56 C 725 56 745 90 800 180 Z" fill="var(--color-paper)" />
+          <path d="M0 180 C 55 90 75 56 130 56 L 670 56 C 725 56 745 90 800 180" fill="none" stroke="var(--color-rule)" stroke-width="1" vector-effect="non-scaling-stroke" />
         </svg>
         <div class="detail-apex-figures">
           <div>

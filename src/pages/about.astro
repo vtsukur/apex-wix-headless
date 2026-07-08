@@ -60,27 +60,48 @@ try {
   title="About"
   description="APEX puts you behind the wheel of a supercar on a closed circuit — one car, one line, one timed session."
 >
-  <article class="max-w-3xl mx-auto px-6 py-24">
-    <header class="flex flex-col gap-5 mb-10">
+  <article class="max-w-4xl mx-auto px-6 py-24">
+    <header class="flex flex-col items-center text-center gap-5 mb-10" data-reveal>
       <p class="eyebrow">The outfit</p>
       <h1 class="display-lg">
-        {about?.title ?? "The point of maximum commitment"}
+        {about?.title ?? "The point of maximum commitment"}<span class="accent-dot" aria-hidden="true"></span>
       </h1>
     </header>
 
-    <figure class="mb-12">
+    <!-- The garage at first light — cinematic card with an atmosphere plate. -->
+    <figure class="about-figure mb-10" data-reveal>
       <img
         src="https://static.wixstatic.com/media/67964a_9db8ffeab8184766862166c5c3ab41bd~mv2.png/v1/fill/w_1440,h_760,q_85/apex-garage.jpg"
         alt="A carbon-fiber racing helmet on a workbench in a dark garage bay, lit by a single beam"
-        class="w-full aspect-[2/1] object-cover border border-rule rounded-sm"
         loading="eager"
         decoding="async"
       />
+      <figcaption class="eyebrow about-figure-plate">Bay 3 · before first light</figcaption>
     </figure>
+
+    <!-- The outfit in numbers — same instrument voice as the service pages. -->
+    <div class="detail-figures" data-reveal>
+      <div>
+        <span class="plate-value">3</span>
+        <span class="plate-label">Cars</span>
+      </div>
+      <div>
+        <span class="plate-value">4</span>
+        <span class="plate-label">Programmes</span>
+      </div>
+      <div>
+        <span class="plate-value">2</span>
+        <span class="plate-label">Circuits</span>
+      </div>
+      <div>
+        <span class="plate-value">340<span class="plate-unit">km/h</span></span>
+        <span class="plate-label">Ceiling</span>
+      </div>
+    </div>
 
     {
       about && about.bodyHtml ? (
-        <div class="prose-body" set:html={about.bodyHtml} />
+        <div class="prose-body" data-reveal set:html={about.bodyHtml} />
       ) : (
         <div class="flex flex-col gap-4">
           <p class="text-ink-soft leading-relaxed">
@@ -95,7 +116,7 @@ try {
       )
     }
 
-    <aside class="mt-16 pt-8 border-t border-rule flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+    <aside class="mt-16 pt-8 border-t border-rule flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6" data-reveal>
       <p class="text-sm text-mute max-w-prose">
         Questions before you commit to the corner? The briefing covers
         sessions, circuits, and what happens on the day.
@@ -109,6 +130,34 @@ try {
   /* Prose treatment for the CMS-rendered body. The HTML arrives via set:html,
      so Astro's scoping attributes never reach it — style through :global()
      descendants of the locally-scoped wrapper. Tokens only; no new palette. */
+  /* The garage figure — taller, scrimmed, with an atmosphere plate riding
+     the bottom-left (the eyebrow class brings the red dash). */
+  .about-figure {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+  }
+  .about-figure img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 21 / 10;
+    object-fit: cover;
+  }
+  .about-figure::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10, 10, 11, 0.72), rgba(10, 10, 11, 0) 45%);
+  }
+  .about-figure-plate {
+    position: absolute;
+    left: 1.5rem;
+    bottom: 1.25rem;
+    z-index: 1;
+    color: var(--color-ink-soft);
+  }
+
   .prose-body {
     color: var(--color-ink-soft);
   }
@@ -118,8 +167,21 @@ try {
   }
   .prose-body :global(> p:first-child) {
     margin-top: 0;
-    font-size: 1.1875rem;
+    font-size: 1.375rem;
+    line-height: 1.6;
     color: var(--color-ink);
+  }
+  /* Magazine spread on desktop: the lead line runs full measure, the rest
+     of the story flows in two columns. */
+  @media (min-width: 768px) {
+    .prose-body {
+      columns: 2;
+      column-gap: 3rem;
+    }
+    .prose-body :global(> p:first-child) {
+      column-span: all;
+      margin-bottom: 1.75rem;
+    }
   }
   .prose-body :global(h2),
   .prose-body :global(h3),

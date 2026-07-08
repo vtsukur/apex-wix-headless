@@ -60,7 +60,7 @@ try {
   title="About"
   description="APEX puts you behind the wheel of a supercar on a closed circuit — one car, one line, one timed session."
 >
-  <article class="max-w-4xl mx-auto px-6 py-24">
+  <article class="max-w-4xl mx-auto px-6 pt-8 pb-24">
     <header class="flex flex-col items-center text-center gap-5 mb-10" data-reveal>
       <p class="eyebrow">The outfit</p>
       <h1 class="display-lg">
@@ -116,7 +116,9 @@ try {
       )
     }
 
-    <aside class="mt-16 pt-8 border-t border-rule flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6" data-reveal>
+    {/* mt-7 + the columns' own 1.25rem paragraph tail = 3rem — the same
+        air the lead keeps above the columns. */}
+    <aside class="mt-7 pt-8 border-t border-rule flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6" data-reveal>
       <p class="text-sm text-mute max-w-prose">
         Questions before you commit to the corner? The briefing covers
         sessions, circuits, and what happens on the day.
@@ -186,7 +188,7 @@ try {
     }
     .prose-body :global(> p:first-child) {
       column-span: all;
-      margin-bottom: 1.75rem;
+      margin-bottom: 3rem;
     }
   }
   .prose-body :global(h2),

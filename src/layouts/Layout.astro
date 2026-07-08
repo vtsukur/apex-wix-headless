@@ -196,6 +196,19 @@ const { title, description, hasSeoTags = false } = Astro.props;
             dot.style.left = `${(pt.x / box.width) * 100}%`;
             dot.style.top = `${pt.y}px`;
           });
+          // Deck slide-in span — distance from the card's right edge back to
+          // the screen's left edge (layout offsets, so transform-immune).
+          // applyScrollFx reads it hot every frame; recomputed on resize.
+          const carsBox = stage.querySelector<HTMLElement>(".pin-cars");
+          if (carsBox) {
+            let px = 0;
+            let node: Element | null = carsBox;
+            while (node) {
+              px += (node as HTMLElement).offsetLeft;
+              node = (node as HTMLElement).offsetParent;
+            }
+            carsBox.dataset.slideSpan = String(px + carsBox.offsetWidth);
+          }
           // Center the scroller vertically in the band between the pinned
           // viewport's top (where the hero ends) and the car image's top.
           // Centered by its visible ink (curve + circles + numerals), not
@@ -243,6 +256,18 @@ const { title, description, hasSeoTags = false } = Astro.props;
           const rect = stage.getBoundingClientRect();
           const total = rect.height - vh;
           const p = total > 0 ? Math.min(Math.max(-rect.top / total, 0), 1) : 0;
+          // Roll the deck in from the screen's left edge as the stage scrolls
+          // up into place — eased, settling just before the pin engages, and
+          // rolling back out on the way up (scroll-linked both ways).
+          const carsWrap = stage.querySelector<HTMLElement>(".pin-cars");
+          if (carsWrap?.dataset.slideSpan) {
+            const e = Math.min(Math.max(1 - rect.top / (vh * 0.85), 0), 1);
+            const k = 1 - Math.pow(1 - e, 3);
+            carsWrap.style.transform =
+              k < 1
+                ? `translateX(${(-Number(carsWrap.dataset.slideSpan) * (1 - k)).toFixed(1)}px)`
+                : "";
+          }
           const cars = stage.querySelectorAll<HTMLElement>(".pin-car");
           const idx = Math.min(cars.length - 1, Math.floor(p * cars.length));
           cars.forEach((car, i) => {

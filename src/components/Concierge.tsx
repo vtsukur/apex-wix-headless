@@ -77,6 +77,9 @@ export default function Concierge() {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+  // Mirror of `messages` readable synchronously inside send() — state updaters
+  // are batched in React 18, so the request body must not depend on them.
+  const messagesRef = useRef<Msg[]>([]);
   const transcriptRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -88,6 +91,7 @@ export default function Concierge() {
     } catch {}
   }, []);
   useEffect(() => {
+    messagesRef.current = messages;
     try {
       if (messages.length) sessionStorage.setItem(STORE_KEY, JSON.stringify(messages));
     } catch {}
@@ -122,11 +126,11 @@ export default function Concierge() {
       setBusy(true);
       setInput("");
 
-      let history: Msg[] = [];
-      setMessages((prev) => {
-        history = [...prev, { role: "user", content: text }];
-        return [...history, { role: "assistant", content: "", tools: [] }];
-      });
+      // Build the request history synchronously — never inside a state
+      // updater (React batches them, so the fetch would see an empty array).
+      const history: Msg[] = [...messagesRef.current, { role: "user", content: text }];
+      messagesRef.current = [...history, { role: "assistant", content: "", tools: [] }];
+      setMessages(messagesRef.current);
 
       const patchReply = (patch: (m: Msg) => Msg) =>
         setMessages((prev) => {

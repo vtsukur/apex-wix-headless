@@ -115,7 +115,7 @@ ${catalogBlock(entries)}
 Site pages: ${SITE_URL}/services (all sessions), ${SITE_URL}/about (who we are), ${SITE_URL}/faq (requirements, 30% deposit, cancellation policy, what happens on the day).
 
 Tools:
-- check_availability — THE way to check live slots for a session. Call it with the service slug and a date range; report the best few concrete options (weekday, date, time). All times are ${TIME_ZONE}.
+- check_availability — THE way to check live slots. ONE call handles several sessions: pass every relevant slug in service_slugs at once (e.g. all four for "what's free this weekend?"). Never call it once per service. Report the best few concrete options (weekday, date, time). All times are ${TIME_ZONE}.
 - The site's MCP tools (SearchInSite, GetBusinessDetails, …) for site content questions the catalog can't answer and business facts. Do NOT use CallWixSiteAPI for availability — check_availability is faster and authoritative.
 
 House rules:
@@ -130,18 +130,68 @@ Today is ${now} (${TIME_ZONE}).`;
 }
 
 // The native availability tool — same elevated queries the calendar island
-// makes (APPOINTMENT vs CLASS shapes per AvailabilityCalendar.tsx).
+// makes (APPOINTMENT vs CLASS shapes per AvailabilityCalendar.tsx). Batched:
+// several services resolve in ONE tool round trip, queried in parallel — the
+// platform kills requests at ~15s, so "what's free this weekend?" must not
+// cost one model iteration per service.
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+async function slotsForService(
+  service: CatalogEntry,
+  from: string,
+  to: string,
+): Promise<object> {
+  try {
+    let slots: { start: string }[];
+    if (service.type === "CLASS") {
+      const result = await auth.elevate(eventTimeSlots.listEventTimeSlots)({
+        serviceIds: [service.id],
+        fromLocalDate: from,
+        toLocalDate: to,
+        timeZone: TIME_ZONE,
+        includeNonBookable: false,
+        cursorPaging: { limit: 100 },
+      });
+      slots = (result.timeSlots ?? []).map((s: any) => ({ start: s.localStartDate }));
+    } else {
+      const result = await auth.elevate(availabilityTimeSlots.listAvailabilityTimeSlots)({
+        serviceId: service.id,
+        fromLocalDate: from,
+        toLocalDate: to,
+        timeZone: TIME_ZONE,
+        bookable: true,
+        cursorPaging: { limit: 100 },
+      });
+      slots = (result.timeSlots ?? []).map((s: any) => ({ start: s.localStartDate }));
+    }
+    const starts = [...new Set(slots.map((s) => s.start).filter(Boolean))];
+    return {
+      service: service.name,
+      url: `${SITE_URL}/services/${service.slug}`,
+      slot_count: starts.length,
+      slots: starts.slice(0, 25),
+    };
+  } catch (err) {
+    console.error(`[concierge] availability query failed (${service.slug}):`, err);
+    return {
+      service: service.name,
+      error: `Lookup failed — the live calendar is at ${SITE_URL}/services/${service.slug}.`,
+    };
+  }
+}
+
 async function checkAvailability(input: {
-  service_slug: string;
+  service_slugs: string[];
   from_date: string;
   to_date?: string;
 }): Promise<string> {
   const entries = await catalog();
-  const service = entries.find((e) => e.slug === input.service_slug);
-  if (!service) {
+  const slugs = Array.isArray(input.service_slugs) ? input.service_slugs.slice(0, 8) : [];
+  const services = slugs.map((slug) => entries.find((e) => e.slug === slug));
+  const unknown = slugs.filter((_, i) => !services[i]);
+  if (!slugs.length || unknown.length) {
     return JSON.stringify({
-      error: `Unknown service slug "${input.service_slug}". Valid slugs: ${entries.map((e) => e.slug).join(", ")}`,
+      error: `Unknown or missing service slugs${unknown.length ? ` (${unknown.join(", ")})` : ""}. Valid slugs: ${entries.map((e) => e.slug).join(", ")}`,
     });
   }
   if (!DATE_RE.test(input.from_date) || (input.to_date && !DATE_RE.test(input.to_date))) {
@@ -155,67 +205,36 @@ async function checkAvailability(input: {
       .slice(0, 10);
   const to = `${toDate}T23:59:59`;
 
-  try {
-    let slots: { start: string; end?: string }[];
-    if (service.type === "CLASS") {
-      const result = await auth.elevate(eventTimeSlots.listEventTimeSlots)({
-        serviceIds: [service.id],
-        fromLocalDate: from,
-        toLocalDate: to,
-        timeZone: TIME_ZONE,
-        includeNonBookable: false,
-        cursorPaging: { limit: 100 },
-      });
-      slots = (result.timeSlots ?? []).map((s: any) => ({
-        start: s.localStartDate,
-        end: s.localEndDate,
-      }));
-    } else {
-      const result = await auth.elevate(availabilityTimeSlots.listAvailabilityTimeSlots)({
-        serviceId: service.id,
-        fromLocalDate: from,
-        toLocalDate: to,
-        timeZone: TIME_ZONE,
-        bookable: true,
-        cursorPaging: { limit: 100 },
-      });
-      slots = (result.timeSlots ?? []).map((s: any) => ({
-        start: s.localStartDate,
-        end: s.localEndDate,
-      }));
-    }
-    return JSON.stringify({
-      service: service.name,
-      url: `${SITE_URL}/services/${service.slug}`,
-      timezone: TIME_ZONE,
-      from: input.from_date,
-      to: toDate,
-      slot_count: slots.length,
-      slots: slots.filter((s) => s.start).slice(0, 40),
-    });
-  } catch (err) {
-    console.error("[concierge] availability query failed:", err);
-    return JSON.stringify({
-      error: `Availability lookup failed — send the visitor to ${SITE_URL}/services/${service.slug} for the live calendar.`,
-    });
-  }
+  const results = await Promise.all(
+    (services as CatalogEntry[]).map((s) => slotsForService(s, from, to)),
+  );
+  return JSON.stringify({
+    timezone: TIME_ZONE,
+    from: input.from_date,
+    to: toDate,
+    results,
+  });
 }
 
 const availabilityTool = betaTool({
   name: "check_availability",
   description:
-    "Check live bookable time slots for an APEX session. Use the service slug from the catalog. Returns local start times in the site timezone.",
+    "Check live bookable time slots for one or MORE APEX sessions in a single call. Always batch: pass every service slug you need in `service_slugs` at once. Returns local start times in the site timezone.",
   inputSchema: {
     type: "object",
     properties: {
-      service_slug: { type: "string", description: "The service slug from the catalog" },
+      service_slugs: {
+        type: "array",
+        items: { type: "string" },
+        description: "Service slugs from the catalog — pass all services of interest at once",
+      },
       from_date: { type: "string", description: "Start of the window, YYYY-MM-DD (local)" },
       to_date: {
         type: "string",
         description: "End of the window, YYYY-MM-DD (local). Defaults to from_date + 6 days.",
       },
     },
-    required: ["service_slug", "from_date"],
+    required: ["service_slugs", "from_date"],
   },
   run: (input: any) => checkAvailability(input),
 });

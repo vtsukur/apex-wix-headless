@@ -122,14 +122,13 @@ const fleet = [
        wixstatic CDN. The boot curtain waits for it (BootScreen.astro). -->
   <section class="scene scene-hero" aria-label="Apex">
     <div class="hero-scene" aria-hidden="true">
-      {/* Original 720p master — the 480p/24fps low-bitrate variant read
-          blurry; it stays in Wix Media if ever needed:
-          67964a_2dd127b224b046da8724993f4a134464 */}
+      {/* Improved 480p/24fps encode; the original 720p master stays in Wix
+          Media for easy revert: 67964a_d30f1f2be4584a65924f05e849b1df3a */}
       <video
         data-hero-video
         class="hero-video"
-        src="https://video.wixstatic.com/video/67964a_d30f1f2be4584a65924f05e849b1df3a/720p/mp4/file.mp4"
-        poster="https://static.wixstatic.com/media/67964a_d30f1f2be4584a65924f05e849b1df3af002.jpg"
+        src="https://video.wixstatic.com/video/67964a_bab789da01e040619705a8490222cc5e/480p/mp4/file.mp4"
+        poster="https://static.wixstatic.com/media/67964a_bab789da01e040619705a8490222cc5ef002.jpg"
         autoplay
         muted
         loop

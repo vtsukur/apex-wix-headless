@@ -1,11 +1,13 @@
 ---
 import '../styles/global.css';
 import '../styles/components-bookings.css';
+import '../styles/components-concierge.css';
 import { ClientRouter } from 'astro:transitions';
 import BootScreen from '../components/BootScreen.astro';
 import CtaFluid from '../components/CtaFluid.astro';
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
+import Concierge from '../components/Concierge';
 
 interface Props {
   title?: string;
@@ -85,6 +87,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <Navigation />
     <main><slot /></main>
     <Footer />
+    <Concierge client:idle transition:persist="concierge" />
     <script>
       // Persisted rail aria-current sync + top loading bar + rail-anchored
       // scroll across listing-to-listing navigation. Stores pack relies on

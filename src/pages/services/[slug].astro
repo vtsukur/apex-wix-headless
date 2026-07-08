@@ -239,7 +239,14 @@ try {
         <div class="pin-car-head">
           <h1 class="pin-designation">
             {nameDot === -1 ? (
-              serviceName
+              // No car prefix — stack the name one word per line
+              // ("Passenger Hot Lap" → three lines).
+              serviceName.split(" ").map((word, i) => (
+                <>
+                  {i > 0 && <br />}
+                  {word}
+                </>
+              ))
             ) : (
               <>
                 {serviceName.slice(0, nameDot)}

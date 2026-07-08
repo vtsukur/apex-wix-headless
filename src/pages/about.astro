@@ -172,11 +172,17 @@ try {
     color: var(--color-ink);
   }
   /* Magazine spread on desktop: the lead line runs full measure, the rest
-     of the story flows in two columns. */
+     of the story flows in two columns. Bottom-only paragraph margins keep
+     both column tops flush — a top margin on the paragraph that opens
+     column two would sink it below column one's first line. */
   @media (min-width: 768px) {
     .prose-body {
       columns: 2;
       column-gap: 3rem;
+    }
+    .prose-body :global(p) {
+      margin-top: 0;
+      margin-bottom: 1.25rem;
     }
     .prose-body :global(> p:first-child) {
       column-span: all;

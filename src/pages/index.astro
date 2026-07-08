@@ -68,7 +68,8 @@ const fleet = [
     cta: "Book a thrill",
     role: "The circuit weapon. Mid-engined, downforce-led, honest at the limit.",
     image: "https://static.wixstatic.com/media/67964a_688bd941058043ffad139b51410e5983~mv2.png/v1/fill/w_1376,h_768,q_85/th-12.jpg",
-    video: "https://video.wixstatic.com/video/67964a_93694f1c75a24e5c834e543b42f37299/480p/mp4/file.mp4",
+    video: "https://video.wixstatic.com/video/67964a_6d60600de434486fa612ce9589d9d2f1/720p/mp4/file.mp4",
+    videoMobile: "https://video.wixstatic.com/video/67964a_93694f1c75a24e5c834e543b42f37299/480p/mp4/file.mp4",
     alt: "TH-12W hypercar cornering at the apex of a dark circuit at dusk, brake discs glowing",
     specs: [
       { value: "977", unit: "PS", label: "Power" },
@@ -82,7 +83,8 @@ const fleet = [
     cta: "Book a flight",
     role: "The launch specialist. All-wheel drive, telemetry on every run.",
     image: "https://static.wixstatic.com/media/67964a_75f55bba9ff64d86bfc4d983c9bb8b7e~mv2.png/v1/fill/w_1376,h_768,q_85/rs-launch.jpg",
-    video: "https://video.wixstatic.com/video/67964a_516a9a89852942b082597a46de9f5024/480p/mp4/file.mp4",
+    video: "https://video.wixstatic.com/video/67964a_27024945f4a848eba030934f3f8e183a/720p/mp4/file.mp4",
+    videoMobile: "https://video.wixstatic.com/video/67964a_516a9a89852942b082597a46de9f5024/480p/mp4/file.mp4",
     pos: "50% 35%",
     alt: "ROCKET 4S coupe launching from the start line at night, tire smoke trailing",
     specs: [
@@ -97,7 +99,8 @@ const fleet = [
     cta: "Book a drive",
     role: "The grand tourer. Long-legged, unhurried, built for the high passes.",
     image: "https://static.wixstatic.com/media/67964a_98ec9d42fd54409fac49b479d2b0d2d0~mv2.png/v1/fill/w_1376,h_768,q_85/apex-gt.jpg",
-    video: "https://video.wixstatic.com/video/67964a_3575fd32d8594e429b0062445fd5ac47/480p/mp4/file.mp4",
+    video: "https://video.wixstatic.com/video/67964a_90326cc4dcfb401490328519e1b5951b/720p/mp4/file.mp4",
+    videoMobile: "https://video.wixstatic.com/video/67964a_3575fd32d8594e429b0062445fd5ac47/480p/mp4/file.mp4",
     // The car sits low in this frame — bias the cover crop toward the bottom
     // so it isn't clipped in the wide card.
     pos: "50% 85%",
@@ -122,17 +125,17 @@ const fleet = [
        wixstatic CDN. The boot curtain waits for it (BootScreen.astro). -->
   <section class="scene scene-hero" aria-label="Apex">
     <div class="hero-scene" aria-hidden="true">
-      {/* 720p/24fps low-bitrate encode; the original 720p master stays in
-          Wix Media for easy revert: 67964a_d30f1f2be4584a65924f05e849b1df3a.
-          No src in markup — the inline script below picks the rendition
-          synchronously (480p on phones, 720p otherwise) before any video
-          bytes are fetched. */}
+      {/* Desktop: 720p/24fps low-bitrate encode; phones: the purpose-made
+          480p encode. The original 720p master stays in Wix Media for easy
+          revert: 67964a_d30f1f2be4584a65924f05e849b1df3a. No src in markup —
+          the inline script right below picks the rendition synchronously
+          before any video bytes are fetched. */}
       <video
         data-hero-video
         class="hero-video"
         poster="https://static.wixstatic.com/media/67964a_26a86398939b49f6b591c8dc0a03c37af002.jpg"
         data-src-desktop="https://video.wixstatic.com/video/67964a_26a86398939b49f6b591c8dc0a03c37a/720p/mp4/file.mp4"
-        data-src-mobile="https://video.wixstatic.com/video/67964a_26a86398939b49f6b591c8dc0a03c37a/480p/mp4/file.mp4"
+        data-src-mobile="https://video.wixstatic.com/video/67964a_bab789da01e040619705a8490222cc5e/480p/mp4/file.mp4"
         autoplay
         muted
         loop
@@ -140,13 +143,10 @@ const fleet = [
         preload="auto"
       ></video>
       <script is:inline data-astro-rerun>
-        {
-          const v = document.querySelector("[data-hero-video]:not([src])");
-          if (v) {
-            v.src = matchMedia("(max-width: 767px)").matches
-              ? v.dataset.srcMobile
-              : v.dataset.srcDesktop;
-          }
+        for (const v of document.querySelectorAll("video[data-src-desktop]:not([src])")) {
+          v.src = matchMedia("(max-width: 767px)").matches
+            ? v.dataset.srcMobile
+            : v.dataset.srcDesktop;
         }
       </script>
       <div class="hero-video-scrim"></div>
@@ -225,9 +225,11 @@ const fleet = [
                 {/* The film layer — fades in over the still once the car is
                     in focus and actually playing (driven in Layout.astro).
                     Same cover crop as the still; preloads in the background
-                    without gating the boot loader. */}
+                    without gating the boot loader. Src is picked by the
+                    inline rendition script (480p phones / 720p desktop). */}
                 <video
-                  src={car.video}
+                  data-src-desktop={car.video}
+                  data-src-mobile={car.videoMobile}
                   muted
                   loop
                   playsinline
@@ -270,14 +272,18 @@ const fleet = [
               const film =
                 fleet.find((c) => name.toUpperCase().startsWith(c.designation.toUpperCase())) ??
                 (name.toUpperCase().startsWith("PASSENGER HOT LAP")
-                  ? { video: "https://video.wixstatic.com/video/67964a_b1d850576a8b4a7d8e9e2130f3a8d17d/480p/mp4/file.mp4" }
+                  ? {
+                      video: "https://video.wixstatic.com/video/67964a_837457251f164d0c9e4a08c325afa181/720p/mp4/file.mp4",
+                      videoMobile: "https://video.wixstatic.com/video/67964a_b1d850576a8b4a7d8e9e2130f3a8d17d/480p/mp4/file.mp4",
+                    }
                   : undefined);
               return (
                 <a href={`/services/${getSlug(s)}`} class="index-row" data-roll>
                   {film && (
                     <video
                       class="index-row-film"
-                      src={film.video}
+                      data-src-desktop={film.video}
+                      data-src-mobile={film.videoMobile}
                       muted
                       loop
                       playsinline
@@ -341,6 +347,16 @@ const fleet = [
       <a href="/services" class="btn-primary" data-reveal style="--d:200ms">Book a drive</a>
     </div>
   </section>
+
+  {/* Rendition pick for the fleet + programme films parsed after the hero's
+      own script ran (480p on phones, 720p on desktop). */}
+  <script is:inline data-astro-rerun>
+    for (const v of document.querySelectorAll("video[data-src-desktop]:not([src])")) {
+      v.src = matchMedia("(max-width: 767px)").matches
+        ? v.dataset.srcMobile
+        : v.dataset.srcDesktop;
+    }
+  </script>
 </Layout>
 
 <script>

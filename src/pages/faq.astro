@@ -174,12 +174,22 @@ const faqStructuredData =
     line-height: 1.35;
     color: var(--color-ink);
     list-style: none;
-    transition: color 160ms ease;
   }
   .faq-question::-webkit-details-marker {
     display: none;
   }
-  .faq-question:hover {
+  /* Hover keeps the text ink — accent red is too dark to read on the black
+     page — and signals through the underline and chevron instead. */
+  .faq-question span {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 160ms ease;
+  }
+  .faq-question:hover span {
+    text-decoration-color: var(--color-accent);
+  }
+  .faq-question:hover .faq-toggle {
     color: var(--color-accent);
   }
   .faq-question:focus-visible {
@@ -197,9 +207,6 @@ const faqStructuredData =
   .faq-item[open] .faq-toggle {
     transform: rotate(180deg);
     color: var(--color-accent);
-  }
-  .faq-item[open] .faq-question {
-    color: var(--color-ink);
   }
   .faq-answer {
     padding-bottom: 1.5rem;

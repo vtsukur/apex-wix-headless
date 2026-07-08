@@ -246,8 +246,11 @@ const LETTERS = "APEX".split("");
       // The line thickens toward the header stroke's weight as it lands.
       strokeSegment(0, 1, `rgba(225,18,31,${(0.3 + 0.25 * m) * keep})`, 1.5 + 0.5 * m, 14, `rgba(225,18,31,${0.5 * keep})`);
       if (fade > 0.02) {
-        // Same lap pace as the header curve (5.6s).
-        const p = (t / 5600) % 1;
+        // Same lap pace and speed profile as the header curve (5.6s,
+        // pos = 0.55t + 0.45t² — building speed through the lap). The ring
+        // window below keys off position, so it fires on the pass as before.
+        const lap = (t / 5600) % 1;
+        const p = lap * (0.55 + 0.45 * lap);
         // The TH-12 silhouette laps the corner — same simplified shape the
         // header curve carries (spoiler lip, teardrop canopy, splitter,
         // wheel-arch notches). No trail; just the car.

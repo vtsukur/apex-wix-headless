@@ -11,6 +11,28 @@ import { auth } from "@wix/essentials";
 
 const BOOKING_APP_ID = "13d21c63-b5ec-5912-8397-c3a5ddb27a97";
 
+// Organization + WebSite structured data — home page only.
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": new URL("/#organization", Astro.site).href,
+      name: "APEX",
+      url: Astro.site?.href,
+      description:
+        "Supercar driving experiences — book a session behind the wheel of a specific supercar on a specific circuit at a specific time.",
+      logo: new URL("/favicon.svg", Astro.site).href,
+    },
+    {
+      "@type": "WebSite",
+      name: "APEX",
+      url: Astro.site?.href,
+      publisher: { "@id": new URL("/#organization", Astro.site).href },
+    },
+  ],
+};
+
 const result = await auth
   .elevate(services.queryServices)()
   .eq("appId", BOOKING_APP_ID)
@@ -89,6 +111,12 @@ const fleet = [
 ];
 ---
 <Layout>
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(structuredData)}
+  />
   <!-- Scene 1 — hero: TH-12 lap film (Wix Media) + parallax exit. The video is
        NOT in the repo — it lives in the site's Wix Media and streams from the
        wixstatic CDN. The boot curtain waits for it (BootScreen.astro). -->

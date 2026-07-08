@@ -11,6 +11,7 @@ const isBuild =
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://www.apex-drive.co",
   vite: { plugins: [tailwindcss()] },
   integrations: [wix(), wixPages(), react()],
   security: { checkOrigin: false },

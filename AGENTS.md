@@ -3,7 +3,7 @@
 A Wix headless site built with the `wix-headless` skill. Fictional supercar driving-experience outfit — book a session behind the wheel of a specific supercar on a specific circuit at a specific time.
 
 ## Live site
-- **Site:** https://threshold-1e91281d-vladimirtsukur.wix-site-host.com
+- **Site:** https://www.apex-drive.co (canonical; threshold-1e91281d-vladimirtsukur.wix-site-host.com 301s here)
 - **Dashboard:** https://manage.wix.com/dashboard/13a36de2-a167-4d86-ad48-725124891763
 
 ## Frontend

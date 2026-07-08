@@ -106,6 +106,12 @@ const imageUrl = !rawUrl
       ? rawUrl
       : `https://static.wixstatic.com/media/${rawUrl}`;
 const serviceName = service.name ?? "Session";
+// Social-card variant — Wix Media fill-crops a bare media URL to the
+// 1200×630 OG frame (skip URLs that already carry a /v1/ transform).
+const ogImage =
+  imageUrl?.startsWith("https://static.wixstatic.com/media/") && !imageUrl.includes("/v1/")
+    ? `${imageUrl}/v1/fill/w_1200,h_630,q_85/social.jpg`
+    : imageUrl;
 const seoTags = service.seoData?.tags ?? [];
 const hasTitleTag = seoTags.some((t: any) => t.type === "title" && !t.disabled);
 
@@ -188,6 +194,7 @@ try {
 <Layout
   title={serviceName}
   description={service.tagLine ?? service.description}
+  image={ogImage}
   hasSeoTags={hasTitleTag}
 >
   <SeoTags tags={seoTags} slot="head" />

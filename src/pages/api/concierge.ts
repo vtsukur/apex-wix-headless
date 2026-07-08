@@ -24,6 +24,9 @@ import { betaTool } from "@anthropic-ai/sdk/helpers/beta/json-schema";
 import { availabilityTimeSlots, eventTimeSlots, services } from "@wix/bookings";
 import { auth } from "@wix/essentials";
 
+// Injected at build time by the Vite `define` in astro.config.mjs.
+declare const __ANTHROPIC_API_KEY__: string | undefined;
+
 const BOOKING_APP_ID = "13d21c63-b5ec-5912-8397-c3a5ddb27a97";
 const SITE_URL = "https://www.apex-drive.co";
 const MCP_URL = `${SITE_URL}/_api/mcp`;
@@ -258,8 +261,11 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({ error: "invalid messages" }), { status: 400 });
   }
 
+  // Build-time inlined via Vite define (see astro.config.mjs) — the deployed
+  // Wix runtime has no user env vars, so runtime lookups are dev-only backup.
   const apiKey =
-    import.meta.env.ANTHROPIC_API_KEY ??
+    (typeof __ANTHROPIC_API_KEY__ !== "undefined" && __ANTHROPIC_API_KEY__) ||
+    import.meta.env.ANTHROPIC_API_KEY ||
     (globalThis as any).process?.env?.ANTHROPIC_API_KEY;
   if (!apiKey) {
     // Graceful degrade — the widget shows this as a normal radio message.

@@ -95,13 +95,12 @@ const faqStructuredData =
   {faqStructuredData && (
     <script slot="head" type="application/ld+json" is:inline set:html={faqStructuredData} />
   )}
-  <section class="max-w-4xl mx-auto px-6 py-24">
-    <header class="flex flex-col gap-4 mb-12">
-      <p class="text-xs uppercase tracking-[0.2em] text-mute">The briefing</p>
-      <h1 class="font-display text-4xl md:text-5xl leading-tight">
-        Frequently asked questions
+  <section class="max-w-4xl mx-auto px-6 pt-8 pb-24">
+    <header class="flex flex-col items-center text-center gap-5 mb-12" data-reveal>
+      <p class="eyebrow">The briefing</p>
+      <h1 class="display-lg">
+        Frequently asked questions<span class="accent-dot" aria-hidden="true"></span>
       </h1>
-      <hr class="editorial-rule w-16 ml-0" />
       <p class="text-lg text-mute">
         Everything to know before you take the wheel — read it once, then all
         that's left is the line.

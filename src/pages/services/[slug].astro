@@ -287,6 +287,27 @@ try {
           )}
         </div>
       )}
+      <!-- The apex cut — a modest curved notch carved out of the card's
+           bottom-centre (page ground shows through, red line tracing the
+           edge); duration and price sneak up into it. -->
+      <div class="detail-apex-cut">
+        <svg viewBox="0 0 380 104" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 104 Q70 32 190 22 Q310 32 380 104 Z" fill="var(--color-paper)" />
+          <path d="M0 104 Q70 32 190 22 Q310 32 380 104" fill="none" stroke="var(--color-accent)" stroke-width="2" />
+        </svg>
+        <div class="detail-apex-figures">
+          <div>
+            <span class="plate-value">{duration}<span class="plate-unit">min</span></span>
+            <span class="plate-label">Duration</span>
+          </div>
+          {price && (
+            <div>
+              <span class="plate-value">{price}</span>
+              <span class="plate-label">Session</span>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
 
     {/* Rendition pick — 480p on phones, 720p on desktop — before the film
@@ -298,20 +319,6 @@ try {
           : v.dataset.srcDesktop;
       }
     </script>
-
-    <!-- Duration and price — big, centered, straight under the film. -->
-    <div class="detail-figures" data-reveal>
-      <div>
-        <span class="plate-value">{duration}<span class="plate-unit">min</span></span>
-        <span class="plate-label">Duration</span>
-      </div>
-      {price && (
-        <div>
-          <span class="plate-value">{price}</span>
-          <span class="plate-label">Session</span>
-        </div>
-      )}
-    </div>
 
     {/* The seed duplicates description into tagLine — only render it when
         it actually says something new. */}

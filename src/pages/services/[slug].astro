@@ -233,8 +233,11 @@ try {
     <!-- Card hero — the home fleet card, stretched: name top-left with the
          programme line as its subline, service tagline top-right, car stats
          bottom-left, book CTA bottom-right, the film fading in over the
-         still. Image-less services fall back to the warm-paper ground. -->
-    <div class="detail-card" data-detail-media data-reveal>
+         still. Image-less services fall back to the warm-paper ground.
+         The frame is unclipped so the apex cut can straddle the card's
+         bottom edge; the card itself keeps the overflow clip. -->
+    <div class="detail-card-frame" data-reveal>
+    <div class="detail-card" data-detail-media>
       <div class="pin-car-copy">
         <div class="pin-car-head">
           <h1 class="pin-designation">
@@ -287,29 +290,31 @@ try {
           )}
         </div>
       )}
-      <!-- The apex cut — a modest curved notch carved out of the card's
-           bottom-centre (page ground shows through, red line tracing the
-           edge); duration and price sneak up into it. -->
-      <div class="detail-apex-cut">
-        {/* Flat crest with horizontal-tangent shoulders — one seamless
-            sweep, no visible stitch; the edge matches the card border. */}
-        <svg viewBox="0 0 800 180" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M0 180 C 55 90 75 56 130 56 L 670 56 C 725 56 745 90 800 180 Z" fill="var(--color-paper)" />
-          <path d="M0 180 C 55 90 75 56 130 56 L 670 56 C 725 56 745 90 800 180" fill="none" stroke="var(--color-rule)" stroke-width="1" vector-effect="non-scaling-stroke" />
-        </svg>
-        <div class="detail-apex-figures">
-          <div>
-            <span class="plate-value">{duration}<span class="plate-unit">min</span></span>
-            <span class="plate-label">Duration</span>
-          </div>
-          {price && (
-            <div>
-              <span class="plate-value">{price}</span>
-              <span class="plate-label">Session</span>
-            </div>
-          )}
+    </div>
+    <!-- The apex cut — a curved notch carved out of the card's bottom-centre
+         (page ground fills it, the notch line continues the card frame and
+         replaces the bottom border along its span); duration and price sit
+         centered ON the original border line. -->
+    <div class="detail-apex-cut">
+      {/* Flat crest with horizontal-tangent shoulders — one seamless
+          sweep, no visible stitch; the edge matches the card border. */}
+      <svg viewBox="0 0 800 180" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 180 C 55 90 75 56 130 56 L 670 56 C 725 56 745 90 800 180 Z" fill="var(--color-paper)" />
+        <path d="M0 180 C 55 90 75 56 130 56 L 670 56 C 725 56 745 90 800 180" fill="none" stroke="var(--color-rule)" stroke-width="1" vector-effect="non-scaling-stroke" />
+      </svg>
+      <div class="detail-apex-figures">
+        <div>
+          <span class="plate-value">{duration}<span class="plate-unit">min</span></span>
+          <span class="plate-label">Duration</span>
         </div>
+        {price && (
+          <div>
+            <span class="plate-value">{price}</span>
+            <span class="plate-label">Session</span>
+          </div>
+        )}
       </div>
+    </div>
     </div>
 
     {/* Rendition pick — 480p on phones, 720p on desktop — before the film

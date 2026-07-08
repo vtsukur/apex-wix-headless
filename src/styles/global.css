@@ -476,6 +476,12 @@ body[data-navigating="true"] .product-grid {
 /* Reuses the card anatomy (.pin-car-copy/head/foot/media): name top-left,
    tagline top-right, stats bottom-left, book CTA bottom-right; the film
    fades in over the still (.video-live, cued in the page script). */
+/* Unclipped wrapper — hosts the apex cut so it can straddle the card's
+   bottom edge; the bottom margin also clears the figures' overhang. */
+.detail-card-frame {
+  position: relative;
+  margin-bottom: 6rem;
+}
 .detail-card {
   position: relative;
   overflow: hidden;
@@ -483,7 +489,6 @@ body[data-navigating="true"] .product-grid {
   border-radius: var(--radius-sm);
   min-height: clamp(24rem, 66svh, 44rem);
   background: var(--color-paper-warm); /* image-less fallback ground */
-  margin-bottom: 3rem;
 }
 .detail-card.video-live .pin-car-media video {
   opacity: 1;
@@ -503,10 +508,10 @@ body[data-navigating="true"] .product-grid {
   bottom: 0;
   transform: translateX(-50%);
   width: clamp(24rem, 54vw, 42rem);
-  height: 180px;
+  height: 140px;
   z-index: 2;
   pointer-events: none;
-  animation: apex-cut-rise 900ms cubic-bezier(0.16, 1, 0.3, 1) 700ms both;
+  animation: apex-cut-rise 800ms cubic-bezier(0.16, 1, 0.3, 1) 700ms both;
 }
 .detail-apex-cut svg {
   position: absolute;
@@ -515,15 +520,16 @@ body[data-navigating="true"] .product-grid {
   height: 100%;
 }
 /* Figures keep the full instrument sizing (the old under-card band's) and
-   sit under the notch's flat crest, fully inside the carve. */
+   straddle the card's edge — the block's midpoint rides the original
+   border line, upper half inside the carve, lower half on the page. */
 .detail-apex-figures {
   position: absolute;
-  inset: 0;
+  inset-inline: 0;
+  bottom: 0;
+  transform: translateY(50%);
   display: flex;
   justify-content: center;
-  align-items: flex-end;
   gap: 2.5rem;
-  padding-bottom: 1.125rem;
   text-align: center;
 }
 .detail-apex-figures .plate-value {
@@ -533,18 +539,25 @@ body[data-navigating="true"] .product-grid {
   font-size: 0.75rem;
   margin-top: 0.75rem;
 }
+/* No clip to rise out of anymore — a soft lift-and-fade sells the sneak. */
 @keyframes apex-cut-rise {
-  from { transform: translateX(-50%) translateY(102%); }
-  to { transform: translateX(-50%) translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(1.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 @media (max-width: 1023px) {
   .detail-apex-cut {
     width: min(30rem, 92vw);
-    height: 150px;
+    height: 120px;
   }
   /* The foot rides above the cut — no specs/CTA collision. */
   .detail-card .pin-car-foot {
-    margin-bottom: 10.5rem;
+    margin-bottom: 9rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {

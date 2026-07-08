@@ -142,10 +142,16 @@ export default function Concierge() {
           signal: controller.signal,
           body: JSON.stringify({
             // Error transmissions stay visible but out of the model context.
-            messages: history
-              .filter((m) => !m.error && m.content)
-              .slice(-16)
-              .map(({ role, content }) => ({ role, content })),
+            // Truncate round-tripped replies and keep the window starting on
+            // a user turn — the API (and the endpoint) require it.
+            messages: (() => {
+              const wire = history
+                .filter((m) => !m.error && m.content)
+                .map(({ role, content }) => ({ role, content: content.slice(0, 2000) }))
+                .slice(-16);
+              while (wire.length && wire[0].role === "assistant") wire.shift();
+              return wire;
+            })(),
           }),
         });
         if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);

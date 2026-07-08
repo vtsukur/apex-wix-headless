@@ -222,23 +222,25 @@ const availabilityTool = betaTool({
 
 type WireMessage = { role: "user" | "assistant"; content: string };
 
+// Normalize, don't nitpick: real transcripts round-trip through the widget
+// (error bubbles filtered out, history sliced), so leading assistant turns or
+// over-long assistant replies are expected shapes — repair them. Reject only
+// structurally hostile input (wrong types/roles, oversize count).
 function validateMessages(body: unknown): WireMessage[] | null {
-  const messages = (body as any)?.messages;
-  if (!Array.isArray(messages) || messages.length === 0 || messages.length > MAX_MESSAGES) {
-    return null;
-  }
+  const raw = (body as any)?.messages;
+  if (!Array.isArray(raw) || raw.length === 0 || raw.length > MAX_MESSAGES) return null;
   const clean: WireMessage[] = [];
-  for (const m of messages) {
+  for (const m of raw) {
     const role = m?.role;
-    const content = m?.content;
     if (role !== "user" && role !== "assistant") return null;
-    if (typeof content !== "string" || !content.trim() || content.length > MAX_MESSAGE_CHARS) {
-      return null;
-    }
-    clean.push({ role, content });
+    if (typeof m?.content !== "string") return null;
+    const content = m.content.trim().slice(0, MAX_MESSAGE_CHARS);
+    if (content) clean.push({ role, content });
   }
-  if (clean[0].role !== "user" || clean[clean.length - 1].role !== "user") return null;
-  return clean;
+  // The API requires the conversation to start (and sensibly end) on user.
+  while (clean.length && clean[0].role === "assistant") clean.shift();
+  while (clean.length && clean[clean.length - 1].role === "assistant") clean.pop();
+  return clean.length ? clean : null;
 }
 
 const sse = (payload: object) => `data: ${JSON.stringify(payload)}\n\n`;

@@ -19,9 +19,11 @@
  */
 
 /* ── Service grid + card ────────────────────────────────────────────────────── */
+/* auto-fit (not auto-fill) collapses unused tracks, so when every card fits
+   one row they stretch proportionally to the page's full width. */
 .service-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   transition: opacity 200ms ease;
 }
@@ -50,9 +52,35 @@ body[data-navigating="true"] .service-grid {
 }
 
 .service-card-image {
+  position: relative; /* anchors the hover film */
   aspect-ratio: 3 / 2;
   overflow: hidden;
   background: var(--color-paper-warm, var(--color-surface-secondary, var(--color-cream)));
+}
+/* The card's film — fades in over the still while the card is hovered
+   (playback driven from services/index.astro). */
+.service-card-film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 400ms ease;
+  pointer-events: none;
+}
+.service-card:hover .service-card-film {
+  opacity: 1;
+}
+@media (hover: none), (pointer: coarse) {
+  .service-card-film {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .service-card-film {
+    display: none;
+  }
 }
 .service-card-image img {
   width: 100%;

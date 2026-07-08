@@ -15,6 +15,7 @@ import ServiceCard from "../../components/ServiceCard.astro";
 import { services } from "@wix/bookings";
 import { auth } from "@wix/essentials";
 import { media as wixMedia } from "@wix/sdk";
+import { filmFor } from "../../data/fleetFilms";
 
 // Wix Bookings app id — the base filter must scope queryServices to it.
 const BOOKING_APP_ID = "13d21c63-b5ec-5912-8397-c3a5ddb27a97";
@@ -104,8 +105,8 @@ const locationName = (loc: any): string => loc?.business?.name ?? loc?.calculate
 ---
 
 <Layout title="Sessions" description="Book a drive behind the wheel — a supercar, a circuit, a window of time.">
-  <section class="container-wide py-24">
-    <header class="flex flex-col gap-5 mb-16" data-reveal>
+  <section class="container-wide pt-8 pb-24">
+    <header class="flex flex-col items-center text-center gap-5 mb-16" data-reveal>
       <p class="eyebrow">The programmes</p>
       <h1 class="display-xl">Sessions</h1>
       <p class="text-lg text-mute leading-relaxed max-w-prose">
@@ -137,29 +138,64 @@ const locationName = (loc: any): string => loc?.business?.name ?? loc?.calculate
 
     {
       serviceList.length === 0 ? (
-        <p class="text-mute">
+        <p class="text-mute text-center">
           {filterActive
             ? "No sessions match that selection — try a different filter."
             : "The grid opens soon — sessions are being scheduled."}
         </p>
       ) : (
         <div class="service-grid">
-          {serviceList.map((s) => (
-            <ServiceCard
-              id={s._id}
-              slug={getSlug(s)}
-              name={s.name ?? "Untitled"}
-              tagLine={s.tagLine ?? s.description}
-              durationMinutes={getDuration(s)}
-              price={formatPrice(s)}
-              imageUrl={absMedia(s.media?.mainMedia?.image ?? s.media?.items?.[0]?.image)}
-              type={s.type ?? "APPOINTMENT"}
-              locationId={selectedLocation || undefined}
-              locationType={selectedLocationType || undefined}
-            />
-          ))}
+          {serviceList.map((s) => {
+            const film = filmFor(s.name ?? "");
+            return (
+              <ServiceCard
+                id={s._id}
+                slug={getSlug(s)}
+                name={s.name ?? "Untitled"}
+                tagLine={s.tagLine ?? s.description}
+                durationMinutes={getDuration(s)}
+                price={formatPrice(s)}
+                imageUrl={absMedia(s.media?.mainMedia?.image ?? s.media?.items?.[0]?.image)}
+                videoUrl={film?.video}
+                videoUrlMobile={film?.videoMobile}
+                videoPos={film?.pos}
+                type={s.type ?? "APPOINTMENT"}
+                locationId={selectedLocation || undefined}
+                locationType={selectedLocationType || undefined}
+              />
+            );
+          })}
         </div>
       )
     }
+
+    {/* Rendition pick — 480p on phones, 720p on desktop. */}
+    <script is:inline data-astro-rerun>
+      for (const v of document.querySelectorAll("video[data-src-desktop]:not([src])")) {
+        v.src = matchMedia("(max-width: 767px)").matches
+          ? v.dataset.srcMobile
+          : v.dataset.srcDesktop;
+      }
+    </script>
   </section>
 </Layout>
+
+<script>
+  // Card films — a card's clip plays while the cursor rests on it (CSS fades
+  // it over the still). Desktop pointers only; reduced motion sits out.
+  function initCardFilms() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(hover: none), (pointer: coarse)").matches) return;
+    document.querySelectorAll<HTMLElement>(".service-card:not([data-film-live])").forEach((card) => {
+      const vid = card.querySelector<HTMLVideoElement>(".service-card-film");
+      if (!vid) return;
+      card.dataset.filmLive = "1";
+      card.addEventListener("pointerenter", () => {
+        vid.play().catch(() => {});
+      });
+      card.addEventListener("pointerleave", () => vid.pause());
+    });
+  }
+  initCardFilms();
+  document.addEventListener("astro:page-load", initCardFilms);
+</script>

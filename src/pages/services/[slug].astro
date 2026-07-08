@@ -173,7 +173,7 @@ type Spec = { value: string; unit: string; label: string };
 const FLEET_FILMS: { car: string; video: string; pos?: string; specs?: Spec[] }[] = [
   {
     car: "TH-12W",
-    video: "https://video.wixstatic.com/video/67964a_6971271592994a208ea0bc5ecb83ffd9/480p/mp4/file.mp4",
+    video: "https://video.wixstatic.com/video/67964a_6d60600de434486fa612ce9589d9d2f1/720p/mp4/file.mp4",
     specs: [
       { value: "977", unit: "PS", label: "Power" },
       { value: "2.5", unit: "s", label: "0–60 mph" },
@@ -182,7 +182,7 @@ const FLEET_FILMS: { car: string; video: string; pos?: string; specs?: Spec[] }[
   },
   {
     car: "ROCKET 4S",
-    video: "https://video.wixstatic.com/video/67964a_5f2dc8f69151420e841161d7ebc2af60/480p/mp4/file.mp4",
+    video: "https://video.wixstatic.com/video/67964a_27024945f4a848eba030934f3f8e183a/720p/mp4/file.mp4",
     pos: "50% 35%",
     specs: [
       { value: "1130", unit: "PS", label: "Power" },
@@ -192,7 +192,7 @@ const FLEET_FILMS: { car: string; video: string; pos?: string; specs?: Spec[] }[
   },
   {
     car: "APEX GT",
-    video: "https://video.wixstatic.com/video/67964a_6802eb72f21f455abf9f24132960b1a4/480p/mp4/file.mp4",
+    video: "https://video.wixstatic.com/video/67964a_90326cc4dcfb401490328519e1b5951b/720p/mp4/file.mp4",
     pos: "50% 85%",
     specs: [
       { value: "850", unit: "PS", label: "Power" },
@@ -200,7 +200,7 @@ const FLEET_FILMS: { car: string; video: string; pos?: string; specs?: Spec[] }[
       { value: "320", unit: "km/h", label: "Top speed" },
     ],
   },
-  { car: "PASSENGER HOT LAP", video: "https://video.wixstatic.com/video/67964a_02608133326141168de14dcda96eee1c/480p/mp4/file.mp4" },
+  { car: "PASSENGER HOT LAP", video: "https://video.wixstatic.com/video/67964a_837457251f164d0c9e4a08c325afa181/720p/mp4/file.mp4" },
 ];
 const film = FLEET_FILMS.find((f) => serviceName.toUpperCase().startsWith(f.car));
 const mediaPos = film?.pos ? `object-position: ${film.pos}` : undefined;

@@ -68,7 +68,7 @@ const fleet = [
     cta: "Book a thrill",
     role: "The circuit weapon. Mid-engined, downforce-led, honest at the limit.",
     image: "https://static.wixstatic.com/media/67964a_688bd941058043ffad139b51410e5983~mv2.png/v1/fill/w_1376,h_768,q_85/th-12.jpg",
-    video: "https://video.wixstatic.com/video/67964a_6971271592994a208ea0bc5ecb83ffd9/480p/mp4/file.mp4",
+    video: "https://video.wixstatic.com/video/67964a_6d60600de434486fa612ce9589d9d2f1/720p/mp4/file.mp4",
     alt: "TH-12W hypercar cornering at the apex of a dark circuit at dusk, brake discs glowing",
     specs: [
       { value: "977", unit: "PS", label: "Power" },
@@ -82,7 +82,7 @@ const fleet = [
     cta: "Book a flight",
     role: "The launch specialist. All-wheel drive, telemetry on every run.",
     image: "https://static.wixstatic.com/media/67964a_75f55bba9ff64d86bfc4d983c9bb8b7e~mv2.png/v1/fill/w_1376,h_768,q_85/rs-launch.jpg",
-    video: "https://video.wixstatic.com/video/67964a_5f2dc8f69151420e841161d7ebc2af60/480p/mp4/file.mp4",
+    video: "https://video.wixstatic.com/video/67964a_27024945f4a848eba030934f3f8e183a/720p/mp4/file.mp4",
     pos: "50% 35%",
     alt: "ROCKET 4S coupe launching from the start line at night, tire smoke trailing",
     specs: [
@@ -97,7 +97,7 @@ const fleet = [
     cta: "Book a drive",
     role: "The grand tourer. Long-legged, unhurried, built for the high passes.",
     image: "https://static.wixstatic.com/media/67964a_98ec9d42fd54409fac49b479d2b0d2d0~mv2.png/v1/fill/w_1376,h_768,q_85/apex-gt.jpg",
-    video: "https://video.wixstatic.com/video/67964a_6802eb72f21f455abf9f24132960b1a4/480p/mp4/file.mp4",
+    video: "https://video.wixstatic.com/video/67964a_90326cc4dcfb401490328519e1b5951b/720p/mp4/file.mp4",
     // The car sits low in this frame — bias the cover crop toward the bottom
     // so it isn't clipped in the wide card.
     pos: "50% 85%",
@@ -122,14 +122,14 @@ const fleet = [
        wixstatic CDN. The boot curtain waits for it (BootScreen.astro). -->
   <section class="scene scene-hero" aria-label="Apex">
     <div class="hero-scene" aria-hidden="true">
-      {/* Lighter 480p/24fps encode; object-fit:cover fills the same viewport.
-          Previous 720p master stays in Wix Media for easy revert:
-          67964a_d30f1f2be4584a65924f05e849b1df3a */}
+      {/* Original 720p master — the 480p/24fps low-bitrate variant read
+          blurry; it stays in Wix Media if ever needed:
+          67964a_2dd127b224b046da8724993f4a134464 */}
       <video
         data-hero-video
         class="hero-video"
-        src="https://video.wixstatic.com/video/67964a_2dd127b224b046da8724993f4a134464/480p/mp4/file.mp4"
-        poster="https://static.wixstatic.com/media/67964a_2dd127b224b046da8724993f4a134464f002.jpg"
+        src="https://video.wixstatic.com/video/67964a_d30f1f2be4584a65924f05e849b1df3a/720p/mp4/file.mp4"
+        poster="https://static.wixstatic.com/media/67964a_d30f1f2be4584a65924f05e849b1df3af002.jpg"
         autoplay
         muted
         loop
@@ -257,7 +257,7 @@ const fleet = [
               const film =
                 fleet.find((c) => name.toUpperCase().startsWith(c.designation.toUpperCase())) ??
                 (name.toUpperCase().startsWith("PASSENGER HOT LAP")
-                  ? { video: "https://video.wixstatic.com/video/67964a_02608133326141168de14dcda96eee1c/480p/mp4/file.mp4" }
+                  ? { video: "https://video.wixstatic.com/video/67964a_837457251f164d0c9e4a08c325afa181/720p/mp4/file.mp4" }
                   : undefined);
               return (
                 <a href={`/services/${getSlug(s)}`} class="index-row" data-roll>

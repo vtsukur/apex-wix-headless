@@ -115,6 +115,57 @@ const ogImage =
 const seoTags = service.seoData?.tags ?? [];
 const hasTitleTag = seoTags.some((t: any) => t.type === "title" && !t.disabled);
 
+// Service + BreadcrumbList structured data — machine-readable price, duration,
+// and a declared booking entry point for answer engines and agents. Rendered
+// regardless of hasSeoTags (Wix seoData carries meta tags, not JSON-LD).
+const pageUrl = new URL(`/services/${slug}`, Astro.site).href;
+const fixedPrice = service.payment?.rateType === "FIXED" ? service.payment?.fixed?.price : undefined;
+const serviceStructuredData = JSON.stringify({
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "@id": `${pageUrl}#service`,
+      name: serviceName,
+      description: service.tagLine ?? service.description ?? undefined,
+      url: pageUrl,
+      image: ogImage,
+      provider: {
+        "@type": "Organization",
+        "@id": new URL("/#organization", Astro.site).href,
+        name: "APEX",
+      },
+      ...(fixedPrice?.value && {
+        offers: {
+          "@type": "Offer",
+          price: fixedPrice.value,
+          priceCurrency: fixedPrice.currency ?? "EUR",
+          url: pageUrl,
+          availability: "https://schema.org/InStock",
+        },
+      }),
+      additionalProperty: {
+        "@type": "PropertyValue",
+        name: "Session duration",
+        value: `${duration} minutes`,
+      },
+      potentialAction: {
+        "@type": "ReserveAction",
+        target: { "@type": "EntryPoint", urlTemplate: pageUrl },
+        result: { "@type": "Reservation", name: serviceName },
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: new URL("/", Astro.site).href },
+        { "@type": "ListItem", position: 2, name: "Sessions", item: new URL("/services", Astro.site).href },
+        { "@type": "ListItem", position: 3, name: serviceName, item: pageUrl },
+      ],
+    },
+  ],
+}).replace(/</g, "\\u003c");
+
 // Fleet films — the same Wix Media clips the home deck plays, keyed by the
 // car the service name leads with (and the same cover crops). The service
 // image stays the poster; the film fades in over it once actually playing.
@@ -198,6 +249,7 @@ try {
   hasSeoTags={hasTitleTag}
 >
   <SeoTags tags={seoTags} slot="head" />
+  <script slot="head" type="application/ld+json" is:inline set:html={serviceStructuredData} />
   <section class="container-wide pt-8 pb-24">
     <!-- Top row rides close under the header: the eyebrow centers via equal
          1fr side tracks, and the back link centers inside the left track —

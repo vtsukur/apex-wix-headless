@@ -701,11 +701,11 @@ body[data-navigating="true"] .product-grid {
     transform 600ms cubic-bezier(0.16, 1, 0.3, 1),
     padding 500ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-/* Hovered programme row swells to roughly twice its height — more stage
-   for the ghost film behind it. Hover-capable pointers only. */
+/* Hovered programme row swells to roughly three times its height — more
+   stage for the ghost film behind it. Hover-capable pointers only. */
 @media (hover: hover) {
   .index-row:hover {
-    padding-block: 5rem;
+    padding-block: 8.25rem;
   }
 }
 [data-roll].in {

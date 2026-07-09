@@ -217,8 +217,22 @@ lazy-mount (item 8 candidate).
 - Rejected: skipping the boot for `navigator.webdriver` — adaptive serving
   for bots would game the challenge's entry criteria.
 
-### 1+2 follow-up: self-hosted right-sized poster — 🔄 shipped 2026-07-09
+### 1+2 follow-up: self-hosted right-sized poster — ✅ shipped 2026-07-09
 
 The LCP resource moved from static.wixstatic.com (third-party DNS+TLS on
 the critical path) to `public/media/hero-poster.webp` on our origin, and
-from 1600×900/35KB to 1366×768/29KB. Result: _pending measurement._
+from 1600×900/35KB to 1366×768/29KB. Result: FCP improved (1.4–1.6s, was
+1.8–2.2s); keep. Batch scores 87/80/80 vs prior 90/95/88 — the swing is
+NOT this change: filmstrips show the boot canvas/wordmark first frame
+painting at ~0.9s (good runs) vs a pinned ~2.4s (bad runs) on identical
+builds. While the curtain is up, the boot's own first paint IS FCP/LCP,
+and its timing is bimodal in the local headless environment.
+
+**Measurement conclusion: local Lighthouse carries ±7 pts of environment
+noise centered ~87–91. Ground truth needs the real PSI (pagespeed.web.dev
+or an API key) before further optimization — risk of fitting noise.**
+
+Next candidate that attacks the observed failure mode directly: drop the
+boot's 800ms fonts-race gate (obsolete now that the woff2s are preloaded)
+so `boot-play` — and with it the first contentful frame — fires
+immediately instead of after fonts→rAF scheduling.

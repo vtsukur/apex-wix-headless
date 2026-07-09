@@ -18,7 +18,7 @@ in action. Divergences are concentrated in the typography-and-copy rules.
 | Image ↔ headline one message | ✅ pass |
 | Images show the business | ✅ pass (AI caveat accepted — item 6) |
 | Kickers earn their place | ✅ fixed 2026-07-09 (item 7) |
-| Captions describe what's seen | ❌ miss (item 5) |
+| Captions describe what's seen | ✅ fixed 2026-07-09 (item 5) |
 | Simple, understandable copy | ✅ fixed 2026-07-09 — About rewritten (item 4) |
 | No period on titles/subtitles | ✅ fixed 2026-07-09 (item 2) |
 | CTAs: short industry verbs | ✅ pass primary; noun secondaries accepted (item 7) |
@@ -126,12 +126,12 @@ untouched. Verified live.
   alongside, cool-down lap to finish. Safety sets the limits; you drive up
   to them."
 
-### 5. Caption kale — ⬜ open
+### 5. Caption kale — ✅ shipped 2026-07-09
 
-About figure caption "Bay 3 · before first light"
-(`src/pages/about.astro:66`) is atmosphere; the image shows a helmet on a
-workbench. Deck: "Captions describe what is seen. Not more, not less, no
-kale."
+About figure caption rewritten "Bay 3 · before first light" → "Helmet
+bench · Bay 3" (`src/pages/about.astro:67`) — names what's in the frame,
+keeps the plate voice. Deck: "Captions describe what is seen. Not more,
+not less, no kale."
 
 ### 6. AI-generated imagery — 🚫 accepted 2026-07-09
 

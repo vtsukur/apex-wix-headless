@@ -17,11 +17,11 @@ in action. Divergences are concentrated in the typography-and-copy rules.
 | Say what you are in 3 s | ✅ fixed 2026-07-09 — kicker restored (item 3) |
 | Image ↔ headline one message | ✅ pass |
 | Images show the business | ✅ pass (AI caveat — item 6) |
-| Kickers earn their place | ⚠️ terminology drift (item 7) |
+| Kickers earn their place | ✅ fixed 2026-07-09 (item 7) |
 | Captions describe what's seen | ❌ miss (item 5) |
 | Simple, understandable copy | ⚠️ FAQ strong; About opening brochure-speak (item 4) |
 | No period on titles/subtitles | ✅ fixed 2026-07-09 (item 2) |
-| CTAs: short industry verbs | ✅ pass primary; minor secondary misses (item 7) |
+| CTAs: short industry verbs | ✅ pass primary; noun secondaries accepted (item 7) |
 | Avoid ALL CAPS | ❌ miss, site-wide by design (item 1) |
 
 ## Items
@@ -127,13 +127,21 @@ the marque is fictional, nothing real to photograph. Mitigated: badge-free
 original designs, consistent grade, motion-backed. Structural tension, not
 fixable without changing the premise.
 
-### 7. Terminology drift + noun-phrase secondary CTAs — ⬜ open
+### 7. Terminology drift + noun-phrase secondary CTAs — ✅ shipped 2026-07-09
 
-Same offering named four ways: "programmes" (kickers), "Sessions" (H1),
-"drives" (CTAs), "experiences" (meta). Kicker "The programmes" sits directly
-above H1 "Sessions" (`src/pages/services/index.astro:110-111`). Minor:
-secondary CTAs as noun phrases ("The programmes", "The story behind APEX")
-vs the deck's short verbs.
+"Programme" retired site-wide (commit `ecc4ecd`, verified live): home
+section/eyebrow/button/anchor now "The sessions" / `#sessions`, detail
+eyebrow "The session", About stat "Sessions", llms.txt + comments swept.
+Catalog kicker became "The line-up" — renaming it "The sessions" above the
+H1 "Sessions" would have been the deck's literal redundant-kicker example.
+The remaining vocabulary is a deliberate hierarchy, not drift: "supercar
+driving experiences" = the category (hero kicker), "session" = the bookable
+unit, "drive" = the act ("Book a drive"). Secondary CTAs stay noun-phrase
+("The sessions", "The story") — accepted; it's the site's kicker voice.
+
+Original finding: same offering named four ways — "programmes" (kickers),
+"Sessions" (H1), "drives" (CTAs), "experiences" (meta), with kicker "The
+programmes" directly above H1 "Sessions".
 
 ## Passed — no action
 

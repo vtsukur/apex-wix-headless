@@ -2,7 +2,7 @@
 // Home — five full-viewport scenes (Pagani pacing · Rimac scale · Aston
 // refinement · Exo Ape motion). The hero carries the TH-12 lap film (streamed
 // from Wix Media, never committed to the repo) with a parallax exit; the
-// fleet is a pinned scroll sequence (one car per scroll beat). Programmes are
+// fleet is a pinned scroll sequence (one car per scroll beat). Sessions are
 // queried live from Wix Bookings (non-fatal — degrades to a CTA on failure).
 import Layout from '../layouts/Layout.astro';
 import HeroFluid from '../components/HeroFluid.astro';
@@ -46,15 +46,15 @@ const structuredData = {
 
 // Cached across requests (5-min TTL, stale-while-revalidate) — the live
 // Bookings read was most of the ~1s in-grid SSR time on a warm pod.
-const result = await cached("home:programmes", 5 * 60_000, () =>
+const result = await cached("home:sessions", 5 * 60_000, () =>
   auth
     .elevate(services.queryServices)()
     .eq("appId", BOOKING_APP_ID)
     .limit(8)
     .find(),
-).catch((err: any) => { console.error("[home] programmes query failed:", err); return null; });
+).catch((err: any) => { console.error("[home] sessions query failed:", err); return null; });
 
-const programmes: any[] = (result?.items ?? []).filter((s: any) => !s.hidden);
+const sessions: any[] = (result?.items ?? []).filter((s: any) => !s.hidden);
 
 const getSlug = (s: any): string => s.mainSlug?.name ?? s.supportedSlugs?.[0]?.name ?? s._id;
 const getDuration = (s: any): number => s.schedule?.availabilityConstraints?.sessionDurations?.[0] ?? 60;
@@ -216,11 +216,11 @@ const carSrcset = (url: string): string =>
         Commit to<br />the corner<span class="accent-dot" aria-hidden="true"></span>
       </h1>
       <p class="text-xl md:text-2xl text-mute max-w-prose leading-relaxed" data-reveal style="--d:220ms">
-        A supercar, a circuit, a time slot — book and drive the racing line yourself
+        The car, the circuit, the time slot — book and drive the racing line yourself
       </p>
       <div class="flex flex-wrap gap-4 mt-2" data-reveal style="--d:340ms">
         <a href="/services" class="btn-primary">Book a drive</a>
-        <a href="#programmes" class="btn-secondary">The programmes</a>
+        <a href="#sessions" class="btn-secondary">The sessions</a>
       </div>
     </div>
     <div class="scroll-cue z-10" aria-hidden="true">Scroll</div>
@@ -313,18 +313,18 @@ const carSrcset = (url: string): string =>
   </section>
 
   <!-- home:bookings -->
-  <!-- Scene 3 — the programmes (live from Wix Bookings) -->
-  <section id="programmes" class="scene cv-auto" aria-label="The programmes">
+  <!-- Scene 3 — the sessions (live from Wix Bookings) -->
+  <section id="sessions" class="scene cv-auto" aria-label="The sessions">
     <div class="container-wide flex flex-col gap-14">
       <div class="flex flex-col gap-5" data-reveal>
-        <p class="eyebrow w-full justify-center">The programmes</p>
+        <p class="eyebrow w-full justify-center">The sessions</p>
         <h2 class="display-xl text-center">Pick your drive</h2>
       </div>
       {
-        programmes.length > 0 ? (
+        sessions.length > 0 ? (
           <div>
-            {programmes.map((s, i) => {
-              // Car-led names read "CAR · programme" — paint just the car red.
+            {sessions.map((s, i) => {
+              // Car-led names read "CAR · session" — paint just the car red.
               const name = s.name ?? "";
               const dot = name.indexOf(" · ");
               // The car's fleet film ghosts behind its row on hover; the
@@ -408,7 +408,7 @@ const carSrcset = (url: string): string =>
     </div>
   </section>
 
-  {/* Rendition pick for the fleet + programme films (480p on phones, 720p on
+  {/* Rendition pick for the fleet + session films (480p on phones, 720p on
       desktop). The hero is excluded — its rendition attaches after load+idle
       via the deferral script next to it. */}
   <script is:inline data-astro-rerun>
@@ -468,7 +468,7 @@ const carSrcset = (url: string): string =>
   initFleetWarm();
   document.addEventListener("astro:page-load", initFleetWarm);
 
-  // Programme-row films — the car's fleet clip ghosts behind its row while
+  // Session-row films — the car's fleet clip ghosts behind its row while
   // the cursor rests on it (CSS fades it; playback needs JS). Desktop only.
   function initRowFilms() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;

@@ -5,17 +5,10 @@
 import Layout from "../layouts/Layout.astro";
 
 Astro.response.status = 404;
-
-// Echo the missed line back to the driver — truncated so a hostile-length
-// URL can't distort the layout (Astro escapes the interpolation).
-const path = Astro.url.pathname;
-const shownPath = path.length > 48 ? `${path.slice(0, 48)}…` : path;
 ---
 
 <Layout title="Off track" noindex>
   <section class="max-w-3xl mx-auto px-6 pt-8 pb-24 flex flex-col items-center text-center gap-6">
-    <p class="eyebrow" data-reveal>Run-off area</p>
-
     <!-- The scene: a ghost 404 board behind the racing line. The line sweeps
          the corner; one dashed trail misses it and dies in the gravel, where
          the marker pulses. Draw-in keys off the reveal class so it plays
@@ -32,14 +25,16 @@ const shownPath = path.length > 48 ? `${path.slice(0, 48)}…` : path;
           <line x1="488" y1="121" x2="493" y2="130" class="kerb-a" />
         </g>
 
-        <!-- the racing line — glow underlay + line share one draw animation -->
+        <!-- the racing line — glow underlay + line share one draw animation.
+             The exit is tuned to leave through the RIGHT edge (y≈6 at x=720)
+             so the viewport never cuts the curve mid-frame along the top. -->
         <path
-          d="M -20 250 Q 260 265 430 150 Q 560 60 720 -20"
+          d="M -20 250 Q 260 265 430 150 Q 570 62 748 -5"
           pathLength="100"
           class="offtrack-line offtrack-line-glow"
         />
         <path
-          d="M -20 250 Q 260 265 430 150 Q 560 60 720 -20"
+          d="M -20 250 Q 260 265 430 150 Q 570 62 748 -5"
           pathLength="100"
           class="offtrack-line offtrack-line-core"
         />
@@ -88,15 +83,10 @@ const shownPath = path.length > 48 ? `${path.slice(0, 48)}…` : path;
       You've gone off track<span class="accent-dot" aria-hidden="true"></span>
     </h1>
 
-    <div class="flex flex-col items-center gap-3" data-reveal>
-      <p class="text-lg text-mute leading-relaxed max-w-prose">
-        There's nothing down this line but gravel. Rejoin where the tarmac
-        starts.
-      </p>
-      <p class="text-sm text-mute">
-        No timing data for <span class="offtrack-path">{shownPath}</span>
-      </p>
-    </div>
+    <p class="text-lg text-mute leading-relaxed max-w-prose" data-reveal>
+      There's nothing down this line but gravel. Rejoin where the tarmac
+      starts.
+    </p>
 
     <div class="flex flex-col sm:flex-row items-center gap-4 mt-2" data-reveal>
       <a href="/" class="btn-primary">Back to the grid</a>
@@ -179,13 +169,6 @@ const shownPath = path.length > 48 ? `${path.slice(0, 48)}…` : path;
     text-transform: uppercase;
     fill: var(--color-ink-soft);
   }
-  .offtrack-path {
-    font-family: var(--font-display);
-    letter-spacing: 0.08em;
-    color: var(--color-ink-soft);
-    overflow-wrap: anywhere;
-  }
-
   /* Choreography — keyed to the reveal's .in (post-curtain): the line draws
      the corner, the trail and gravel fade up where it was missed, the marker
      lands last and its ring keeps pulsing. Reduced motion shows it all

@@ -39,14 +39,14 @@ rollback is per-selector. Note: caps on car designations (TH-12W) and tiny
 letterspaced kickers are arguably fine — the deck's own "Good" kicker
 example is uppercase. The bite is sentence-length headlines and buttons.
 
-### 2. Periods at the end of titles/subtitles — ✅ fixed 2026-07-09
+### 2. Periods at the end of titles/subtitles — ✅ shipped 2026-07-09
 
-All 14 instances fixed: 10 repo edits (below) + 4 CMS taglines updated via
-the Bookings REST API (`tagLine` AND `description` kept in sync — the seed
-duplicated one into the other, and the detail page renders `description`
-only when it differs, so both had to move together). CMS side verified live
-on /services. Repo side sits in the working tree — goes live with the next
-commit + `wix release`. Deliberately left: the footer tagline (borderline — body
+All 14 instances fixed: 10 repo edits (below, commit `39e8fd8`, released
+same day and curl-verified live with `?rv=` busting) + 4 CMS taglines
+updated via the Bookings REST API (`tagLine` AND `description` kept in
+sync — the seed duplicated one into the other, and the detail page renders
+`description` only when it differs, so both had to move together; verified
+live on /services). Deliberately left: the footer tagline (borderline — body
 copy, not a title) and the accent-dots (kept as the brand's period; with
 the literal periods gone they are now the single consistent title-ending
 device — item 1's caps decision may revisit).

@@ -114,6 +114,43 @@ fold but still get full style/layout/paint at startup. `content-visibility`
 skips that work until approached. Caution: the pinned fleet section drives
 scroll math — apply scene-by-scene and re-test the pin behavior.
 
+## Incident 2026-07-09: releases purge assets; edge-cached HTML goes toxic
+
+Every `wix release` **404s the previous build's hashed `_astro` assets**.
+With `s-maxage=1800`, edge pops kept serving pre-release HTML for up to
+30 min — HTML referencing now-dead chunks. A dead BootScreen chunk meant
+`apex:boot-done` never fired, so after the 13s watchdog cleared the veil,
+every `data-reveal` element stayed at opacity 0: black screen, then an
+empty page. **Both "site is broken" reports today were this**, not the
+code shipped alongside — the item-1 revert was likely chasing a ghost
+(item 1 is a retry candidate, with the unbound-`requestIdleCallback` bug
+fixed). Verification blind spot: my post-release checks re-primed my own
+pop, so I kept seeing a healthy site while other pops served poison.
+
+Mitigations shipped:
+- HTML `s-maxage` 1800 → **300, no stale-while-revalidate** — a release's
+  breakage window is now ≤5 min per pop.
+- The head watchdog now dispatches `apex:boot-done` itself, and the reveal
+  gate has a 13.5s timer fallback — even stale HTML with a dead boot chunk
+  shows full content at ~13s instead of never.
+- Protocol: right after a release, plain URLs may legitimately serve the
+  previous build for ≤5 min. Verify with a cache-buster (`?rv=...`); do
+  NOT diagnose code from a poisoned pop.
+
+### 6. Drop Lenis + event-driven scroll FX — ✅ shipped 2026-07-09
+
+No direct score change (82–88), but it unmasked the real blocker: with
+Lenis gone the trace attribution moved to the BootScreen canvas.
+
+### 6b. Boot canvas off the critical path — ✅ shipped 2026-07-09
+
+No shadowBlur (whole-surface convolution/frame), DPR cap 1, cached
+vignette, loop starts two frames after first paint. **Result: 95 / 88 /
+82** — first-ever 95, observed LCP 915 ms when the paint lands early.
+Remaining variance: during boot the LCP element is the boot wordmark, and
+its paint waits on the initial style/layout of five viewport-tall scenes
+(the `/`-attributed 1.5–2.4 s). That is item 7's target.
+
 ## Measurement protocol
 
 Local Lighthouse (same engine as PSI): 3 runs, mobile default preset,

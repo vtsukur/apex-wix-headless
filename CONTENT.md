@@ -160,6 +160,27 @@ Original finding: same offering named four ways — "programmes" (kickers),
 "Sessions" (H1), "drives" (CTAs), "experiences" (meta), with kicker "The
 programmes" directly above H1 "Sessions".
 
+## Re-audit — 2026-07-09 (post items 2–5, 7; accepted rules skipped)
+
+Full re-sweep of source (pages + interactive components, which the original
+audit hadn't covered) and all live pages. Result: **clean** — no new
+violations.
+
+- Headings/subtitles: zero trailing periods in source or live HTML.
+- Kickers: all nine earn their place, none redundant ("The line-up" over
+  "Sessions", "The sessions" over "Pick your drive", etc.).
+- Captions: the About plate now names the frame ("Helmet bench · Bay 3").
+- Title tags: descriptive across the site ("APEX — Supercar driving
+  experiences" on home).
+- Booking flow + calendar: buttons verb-led ("Find the next open session",
+  "Choose another time"), labels plain ("Circuit", "Instructor"); error
+  strings are body copy, periods correct.
+- Terminology: zero "programme" anywhere, live or source.
+- Deliberately left, noted: footer tagline "The point of maximum
+  commitment. The car, the circuit, the time slot." (body-register brand
+  line, trailing period fine); Concierge placeholder "Radio the pit wall…"
+  (jargon-flavored but the chat UI makes the function self-evident).
+
 ## Passed — no action
 
 - Uniqueness: custom lap-film hero, fluid canvas, pinned fleet scroll,

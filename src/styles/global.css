@@ -882,8 +882,9 @@ body[data-navigating="true"] .product-grid {
   transition: color 300ms ease;
 }
 .index-row:hover .index-row-arrow { color: var(--color-accent); }
-/* "Book" rides the cursor over session rows (element created and moved in
-   index.astro) — the Book a drive button's text voice, in accent red. */
+/* "Book!" rides the cursor over session rows (element created and moved in
+   index.astro) — the Book a drive button's text voice, sized up, in accent
+   red. */
 .cursor-book {
   position: fixed;
   top: 0;
@@ -892,7 +893,7 @@ body[data-navigating="true"] .product-grid {
   pointer-events: none;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  font-size: 0.8125rem;
+  font-size: 1.125rem;
   font-weight: 500;
   color: var(--color-accent);
   opacity: 0;

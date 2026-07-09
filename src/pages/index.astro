@@ -490,15 +490,16 @@ const carSrcset = (url: string): string =>
   initRowFilms();
   document.addEventListener("astro:page-load", initRowFilms);
 
-  // "Book" rides the cursor across the session rows — the Book a drive
-  // button's voice, in accent red, trailing just right of the pointer.
+  // "Book!" rides the cursor across the session rows — the Book a drive
+  // button's voice, sized up, in accent red, trailing just right of the
+  // pointer (flipping to its left near the viewport edge).
   function initBookCursor() {
     if (document.querySelector(".cursor-book")) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (window.matchMedia("(hover: none), (pointer: coarse)").matches) return;
     const tag = document.createElement("span");
     tag.className = "cursor-book";
-    tag.textContent = "Book";
+    tag.textContent = "Book!";
     tag.setAttribute("aria-hidden", "true");
     document.body.appendChild(tag);
     window.addEventListener(
@@ -506,7 +507,13 @@ const carSrcset = (url: string): string =>
       (e) => {
         const over = (e.target as Element | null)?.closest?.(".index-row");
         tag.classList.toggle("on", !!over);
-        if (over) tag.style.transform = `translate3d(${e.clientX + 22}px, ${e.clientY - 7}px, 0)`;
+        if (over) {
+          // Near the right edge the tag would run off-screen and sit on the
+          // row's → arrow — flip it to the left of the pointer instead.
+          const w = tag.offsetWidth;
+          const x = e.clientX + 22 + w > window.innerWidth - 8 ? e.clientX - 22 - w : e.clientX + 22;
+          tag.style.transform = `translate3d(${x}px, ${e.clientY - tag.offsetHeight / 2}px, 0)`;
+        }
       },
       { passive: true },
     );

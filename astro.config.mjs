@@ -30,6 +30,11 @@ export default defineConfig({
       __ANTHROPIC_API_KEY__: JSON.stringify(secretEnv.ANTHROPIC_API_KEY ?? ""),
     },
   },
+  // Ship the (single, site-wide) stylesheet inside the HTML instead of as a
+  // render-blocking /_astro/*.css request — one less critical-path round
+  // trip (~600ms mobile), and styles can't 404 from a stale edge-cached
+  // page after a release purges old hashed assets.
+  build: { inlineStylesheets: "always" },
   integrations: [wix(), wixPages(), react()],
   security: { checkOrigin: false },
   ...(isBuild && { adapter: cloudProviderFetchAdapter({}) }),

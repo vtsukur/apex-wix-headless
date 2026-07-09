@@ -4,6 +4,11 @@
 // mobile — two third-party connections on the critical path.
 import '@fontsource-variable/oswald';
 import '@fontsource-variable/inter';
+// Latin subsets preloaded from <head>: text paint (incl. the boot wordmark,
+// which is the LCP while the curtain is up) chains on these two files —
+// without the hint they queue behind everything the parser finds first.
+import oswaldLatinUrl from '@fontsource-variable/oswald/files/oswald-latin-wght-normal.woff2?url';
+import interLatinUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 import '../styles/global.css';
 import '../styles/components-bookings.css';
 import '../styles/components-concierge.css';
@@ -65,6 +70,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <!-- The brand tick — the red corner-apex mark (heavy top-left round).
          Transparent margin keeps it tick-sized in the tab, not a full tile. -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M13 3 A10 10 0 0 0 3 13 L13 13 Z' fill='%23E1121F'/%3E%3C/svg%3E" />
+    <link rel="preload" as="font" type="font/woff2" href={oswaldLatinUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={interLatinUrl} crossorigin />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     {!hasSeoTags && (
       <>

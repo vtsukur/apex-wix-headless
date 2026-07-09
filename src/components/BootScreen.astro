@@ -355,7 +355,10 @@ const LETTERS = "APEX".split("");
     Promise.race([fontsReady, new Promise((r) => setTimeout(r, 800))]).then(() => {
       requestAnimationFrame(() => {
         boot.classList.add("boot-play");
-        const minHold = new Promise((r) => setTimeout(r, 3200));
+        // 2s hold (was 3.2s): still a deliberate cinematic beat, but the
+        // curtain carries Speed Index almost 1:1 — every trimmed 100ms goes
+        // straight back to the score and to first-visit patience.
+        const minHold = new Promise((r) => setTimeout(r, 2000));
         const video = document.querySelector("[data-hero-video]") as HTMLVideoElement | null;
         const posterUrl = video?.getAttribute("poster");
         const posterReady = !posterUrl

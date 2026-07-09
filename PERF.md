@@ -20,7 +20,26 @@ CLS 0.011 · doc 90 ms. Desktop: 81 (TBT/main-thread-bound).
 
 ## Items
 
-### 1. Defer the hero video out of the measurement window — ✅ shipped 2026-07-09 (partial win)
+### 1. Defer the hero video out of the measurement window — ⛔ REVERTED 2026-07-09
+
+Shipped, measured, then **reverted the same day** (`f6aa5ff`): in production
+the boot curtain stopped playing its timeline — visitors saw a black veil
+until the 13s watchdog cleared it. Root cause not fully isolated before
+reverting; one definite bug found post-hoc: the deferral script called
+`requestIdleCallback` unbound (`(window.requestIdleCallback || ...)(fn)` →
+"Illegal invocation" TypeError in Chrome), which silently killed the hero
+attach. Whether that alone explains the stuck veil is unconfirmed.
+
+**Lesson / protocol change:** any change touching BootScreen or the hero
+pipeline must be validated in `wix dev` with a real browser and a cleared
+`sessionStorage` (boot runs once per session) BEFORE releasing. Headless
+screenshots need `--run-all-compositor-stages-before-draw` or rAF never
+ticks and every boot looks broken.
+
+The measured findings below remain valid (SI stabilization, render-delay
+diagnosis) — the item is worth re-attempting with local validation.
+
+#### Original approach (for the retry)
 
 `preload="none"`, no `src` at parse time; the rendition is attached after
 `window.load` + idle (skipped entirely under `prefers-reduced-motion`).

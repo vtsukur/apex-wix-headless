@@ -17,6 +17,7 @@ import BootScreen from '../components/BootScreen.astro';
 import CtaFluid from '../components/CtaFluid.astro';
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
+import GhostLap from '../components/GhostLap.astro';
 import Concierge from '../components/Concierge';
 
 interface Props {
@@ -102,6 +103,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <main><slot /></main>
     <Footer />
     <Concierge client:idle transition:persist="concierge" />
+    <GhostLap />
     <script>
       // Persisted rail aria-current sync + top loading bar + rail-anchored
       // scroll across listing-to-listing navigation. Stores pack relies on
@@ -206,6 +208,70 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       };
       window.addEventListener("scroll", heroGate, { passive: true });
       heroGate();
+
+      // RPM gauge — the top hairline doubles as a rev counter: scroll
+      // velocity revs it (redline ≈ 3500px/s), lift-off decays it like a
+      // closed throttle, and holding redline bangs a shift (revs drop, climb
+      // again). Idle = invisible. The bar's loading states own it during
+      // navigation: inline rev styles are cleared on astro:before-preparation
+      // so the [data-state] rules are never shadowed.
+      const rpmBar = document.querySelector<HTMLElement>("[data-nav-progress]");
+      let rev = 0;
+      let rpmRaf = 0;
+      let rpmLastY = 0;
+      let rpmLastT = 0;
+      let redlineAt = 0;
+      function rpmTick(now: number) {
+        const dt = Math.max(now - rpmLastT, 1);
+        rpmLastT = now;
+        const y = window.scrollY;
+        const v = Math.abs(y - rpmLastY) / dt; // px per ms
+        rpmLastY = y;
+        const target = Math.min(v / 3.5, 1);
+        rev = target > rev ? rev + (target - rev) * 0.35 : rev * Math.pow(0.994, dt);
+        if (rev > 0.92) {
+          if (!redlineAt) redlineAt = now;
+          else if (now - redlineAt > 350) {
+            rev = 0.52; // the shift — next gear, revs climb again
+            redlineAt = 0;
+          }
+        } else {
+          redlineAt = 0;
+        }
+        if (rpmBar && !rpmBar.dataset.state && !document.body.dataset.navigating) {
+          rpmBar.style.opacity = rev > 0.02 ? "1" : "0";
+          rpmBar.style.transform = `scaleX(${rev.toFixed(4)})`;
+          rpmBar.classList.toggle("redline", rev > 0.85);
+        }
+        if (rev > 0.005) {
+          rpmRaf = requestAnimationFrame(rpmTick);
+        } else {
+          rpmRaf = 0;
+          if (rpmBar && !rpmBar.dataset.state) {
+            rpmBar.style.opacity = "0";
+            rpmBar.classList.remove("redline");
+          }
+        }
+      }
+      if (!reduced && rpmBar) {
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (rpmRaf) return;
+            rpmLastY = window.scrollY;
+            rpmLastT = performance.now();
+            rpmRaf = requestAnimationFrame(rpmTick);
+          },
+          { passive: true },
+        );
+        // Hand the element back to the loading states clean.
+        document.addEventListener("astro:before-preparation", () => {
+          rev = 0;
+          rpmBar.classList.remove("redline");
+          rpmBar.style.removeProperty("transform");
+          rpmBar.style.removeProperty("opacity");
+        });
+      }
 
       // Scroll-driven effects — hero parallax-exit + pinned fleet progress.
       // Re-scanned after every ClientRouter swap; a no-op on pages without the

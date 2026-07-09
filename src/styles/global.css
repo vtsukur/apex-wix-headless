@@ -281,6 +281,13 @@
   transform: scaleX(1);
   transition: transform 200ms ease, opacity 240ms ease 60ms;
 }
+/* Rev-counter mode (Layout motion layer drives transform from scroll
+   velocity): near redline the hairline flares. */
+.nav-progress.redline {
+  box-shadow:
+    0 0 12px rgba(225, 18, 31, 0.8),
+    0 1px 6px rgba(225, 18, 31, 0.55);
+}
 
 /* Dim the product grid while ClientRouter fetches/swaps for immediate feedback. */
 body[data-navigating="true"] .product-grid {

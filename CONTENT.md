@@ -14,7 +14,7 @@ in action. Divergences are concentrated in the typography-and-copy rules.
 | Deck rule | Fit |
 |---|---|
 | Not generic / unique | ✅ strong pass |
-| Say what you are in 3 s | ⚠️ pass, carried by subtitle alone (item 3) |
+| Say what you are in 3 s | ✅ fixed 2026-07-09 — kicker restored (item 3) |
 | Image ↔ headline one message | ✅ pass |
 | Images show the business | ✅ pass (AI caveat — item 6) |
 | Kickers earn their place | ⚠️ terminology drift (item 7) |
@@ -87,7 +87,15 @@ Design device (decide deliberately, one policy):
   (H1), `about.astro:55` (H1). If kept as the brand's "period", literal
   periods on other titles become doubly inconsistent.
 
-### 3. Hero 3-second test carried by subtitle alone — ⬜ open
+### 3. Hero 3-second test carried by subtitle alone — ✅ fixed 2026-07-09
+
+Kicker "Supercar driving experiences" restored above the H1 (uncommented in
+`src/pages/index.astro`) after weighing H1 alternatives ("Drive the thrill"
+rejected as generic-abstract; "Commit to the corner" kept — concrete,
+matches the film, explains the APEX name, echoed site-wide). The meaning
+now sits in two of the deck's three slots (kicker + subtitle first clause).
+
+Original finding:
 
 H1 "Commit to the corner" is evocative, not descriptive. The meaning lands
 only in the subtitle's first clause ("A supercar, a circuit, a time slot —

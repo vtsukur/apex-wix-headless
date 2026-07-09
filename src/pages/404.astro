@@ -80,11 +80,15 @@ Astro.response.status = 404;
         </g>
 
         <!-- where you ended up — label below the dot, anchored away from the
-             line so it can't read as labeling the track -->
+             line so it can't read as labeling the track. Two anchorings: the
+             centered one clips at the frame's right edge once the label is
+             counter-scaled up on small screens, so narrow viewports swap to
+             an end-anchored variant that grows leftward instead. -->
         <g class="offtrack-marker">
           <circle cx="645" cy="127" r="8" class="offtrack-ring" />
           <circle cx="645" cy="127" r="4" class="offtrack-dot" />
-          <text x="645" y="160" text-anchor="middle" class="offtrack-label">You are here</text>
+          <text x="645" y="160" text-anchor="middle" class="offtrack-label offtrack-label-wide">You are here</text>
+          <text x="700" y="160" text-anchor="end" class="offtrack-label offtrack-label-narrow">You are here</text>
         </g>
       </svg>
     </div>
@@ -210,8 +214,11 @@ Astro.response.status = 404;
   /* Counter-scale the story for small screens — SVG text and radii live in
      viewBox units, so at phone widths they shrink into noise unless pushed
      back up (the strokes are already non-scaling above). */
+  .offtrack-label-narrow { display: none; }
   @media (max-width: 767px) {
     .offtrack-label { font-size: 15px; }
+    .offtrack-label-wide { display: none; }
+    .offtrack-label-narrow { display: inline; }
     .offtrack-dot { r: 6px; }
     .offtrack-ring { r: 11px; }
     .offtrack-trail { stroke-dasharray: 5 6; }

@@ -7,7 +7,7 @@ import Layout from "../layouts/Layout.astro";
 Astro.response.status = 404;
 ---
 
-<Layout title="Off track" noindex>
+<Layout title="404 — Off track" noindex>
   <section class="max-w-3xl mx-auto px-6 pt-8 pb-24 flex flex-col items-center text-center gap-6">
     <!-- The scene, framed as a cropped telemetry plate (the About figure's
          hairline-border treatment): ghost 404 holding the quiet top-left,
@@ -113,6 +113,18 @@ Astro.response.status = 404;
     </div>
   </section>
 </Layout>
+
+<style is:global>
+  /* This page runs the plain bar — the same collapse past-hero applies on
+     mobile, here page-wide: the scene below draws its own racing curve, and
+     two sweeps in one viewport compete. Page-scoped global style: it leaves
+     with this page's head on client navigation, so the chrome's curve
+     returns everywhere else. display:none also tells the boot handoff there
+     is no curve to morph onto (it fades instead). */
+  .site-nav .nav-curve { display: none; }
+  .site-nav { --curve-w: 0px; }
+  .site-nav .brand-mark { transform: none; }
+</style>
 
 <style>
   /* The framed plate — the scene reads as a cropped telemetry frame, so the

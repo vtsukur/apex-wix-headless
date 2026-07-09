@@ -882,6 +882,24 @@ body[data-navigating="true"] .product-grid {
   transition: color 300ms ease;
 }
 .index-row:hover .index-row-arrow { color: var(--color-accent); }
+/* "Book" rides the cursor over session rows (element created and moved in
+   index.astro) — the Book a drive button's text voice, in accent red. */
+.cursor-book {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  pointer-events: none;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  opacity: 0;
+  transition: opacity 200ms ease;
+  will-change: transform;
+}
+.cursor-book.on { opacity: 1; }
 
 /* Scroll cue (hero). */
 .scroll-cue {

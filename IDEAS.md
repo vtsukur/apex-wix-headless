@@ -34,17 +34,17 @@ Registered in the sitemap, llms.txt, and the footer.
 ## Make the functional core the design flex
 
 ### 3. The timing-tower calendar
-Everyone's availability picker looks like a calendar. Restyle ours as an F1
-timing tower — days as race sessions, slots as laps, the chosen instructor as
-your race engineer. Moving the site's existing craft (boot curtain, apex cuts)
-into the *transactional UI* is what "best headless site" means — beautiful AND
-wired to real Bookings data.
+✅ **Shipped.** The availability picker is an F1 timing tower: days run down
+the left column (position, three-letter code, date, laps in hand), the picked
+day's slots are the laps on the right, and the filters read Circuit + Race
+engineer. Same Bookings wiring underneath — only the instrument changed.
 
 ### 4. The Grid Pass confirmation
-Post-booking, generate a designed "grid pass" — car designation, circuit,
-session time, a QR code — with an `.ics` download and, ambitiously, Apple/Google
-Wallet passes. Judges book a test session and get a souvenir; that's the
-screenshot that circulates in Slack.
+✅ **Shipped** (wallet passes left on the table). The confirmation prints a
+designed pass: livery stripe, deterministic pass number and gate/bay, plated
+date/time/engineer, a perforated stub with an SSR QR that carries the pass to
+a phone, and an `.ics` download (`/api/grid-pass.ics`, with a leave-for-the-
+circuit alarm). Both booking paths carry end time + instructor through.
 
 ### 5. Conditions at the circuit
 A live weather strip on service pages ("Dry · air 22° · track 31°") from a
@@ -117,12 +117,10 @@ published and the only CI workflow is the cache warmer.
 ~~The Concierge (#1)~~ — ✅ shipped; the headline is live.
 
 1. **Colophon (#13)** — the last cheap-leverage item; the story it tells
-   keeps getting better (#1, #2, #10 ✅ done).
-2. **Timing-tower calendar + Grid Pass (#3, #4)** — the core flow becomes the
-   portfolio piece.
-3. **The Paddock (#6)** — biggest breadth unlock.
-4. **Debrief reviews (#8)** if time allows — compounds with the SEO/LLM work
+   keeps getting better (#1, #2, #3, #4, #10, #11, #12 ✅ done).
+2. **The Paddock (#6)** — biggest breadth unlock.
+3. **Debrief reviews (#8)** if time allows — compounds with the SEO/LLM work
    already shipped.
 
-Next build recommendation: **the polish trio (#2, #10, #13)** — cheapest
-leverage now that the Concierge proves the story they document.
+Next build recommendation: **the Colophon (#13)** — seven shipped features
+now deserve their scorecard page.

@@ -13,11 +13,11 @@ import { cached } from "../utils/ssr-cache";
 const BOOKING_APP_ID = "13d21c63-b5ec-5912-8397-c3a5ddb27a97";
 
 // The page is identical for every visitor and its data changes rarely — let
-// the Wix edge (Varnish/Fastly) serve HTML hits for 5 minutes, then a stale
+// the Wix edge (Varnish/Fastly) serve HTML hits for 30 minutes, then a stale
 // copy while it revalidates. Ignored harmlessly if the edge doesn't cache.
 Astro.response.headers.set(
   "Cache-Control",
-  "public, max-age=0, s-maxage=300, stale-while-revalidate=86400",
+  "public, max-age=0, s-maxage=1800, stale-while-revalidate=86400",
 );
 
 // Organization + WebSite structured data — home page only.

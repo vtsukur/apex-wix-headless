@@ -10,10 +10,10 @@ import { cached } from "../utils/ssr-cache";
 const ABOUT_COLLECTION_ID = "About";
 
 // Same-for-everyone page, rarely-changing CMS content — cacheable at the
-// Wix edge for 5 minutes (stale-while-revalidate beyond that).
+// Wix edge for 30 minutes (stale-while-revalidate beyond that).
 Astro.response.headers.set(
   "Cache-Control",
-  "public, max-age=0, s-maxage=300, stale-while-revalidate=86400",
+  "public, max-age=0, s-maxage=1800, stale-while-revalidate=86400",
 );
 
 interface AboutContent {

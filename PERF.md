@@ -72,7 +72,7 @@ not the boot screen — it is the **simulated main-thread critical path**
 
 New items 6–7 below target this directly.
 
-### 2. Trim the boot-curtain minimum hold — ⏸ pending (taste decision)
+### 2. Trim the boot-curtain minimum hold — ✅ shipped 2026-07-09 (3.2s → 2.0s, user-approved)
 
 3,200 ms min-hold → ~1,800–2,000 ms keeps the cinematic beat but returns
 ~1.4 s of Speed Index. SI is the weakest remaining metric. Curtain owner
@@ -180,3 +180,17 @@ same day: 92–94 (solved). Remaining gap is Lantern's simulated LCP
 font requests. Candidates: preload the two latin woff2 files (hashed
 URLs importable via Vite `?url`), and item 2 (trim the 3.2s curtain
 hold), which also carries most of what's left of SI.
+
+## Post-font-preload + curtain-trim measurement (2026-07-09)
+
+Mobile 90 / 95 / 88. Latin woff2 preloads put the hero poster back as the
+LCP element (wordmark text no longer wins); LCP render delay 21–819 ms
+(was 1,800 pinned); SI 1.3–2.8 s. Floor run (88): residual ~800 ms
+render-delay scheduling noise. Mean ≈ 91; floor still 88.
+
+Next floor-lifters, by risk: item 4 cache warmer (the challenge bot most
+likely hits an edge MISS → ~1.4 s doc → real-world score dips below the
+lab numbers — this is the biggest remaining gap between our runs and what
+the bot sees); then optionally fleet-stage content-visibility with a
+contentvisibilityautostatechange-triggered rescan, or the Concierge
+lazy-mount (item 8 candidate).

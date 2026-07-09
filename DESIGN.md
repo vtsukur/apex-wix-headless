@@ -67,3 +67,21 @@ sparingly — like a brake light flaring in the dark — under bone-white type
 Corners near-sharp (`2px` / `4px` equivalents) — precision, not softness.
 Reading column ~42rem; wide compositions run to the 72rem page width with
 negative space doing the framing.
+
+## Deliberate content divergences — do not "fix"
+
+Decisions from the 2026-07-09 content audit (full record: CONTENT.md,
+removed at `7de2ffa` — see git history). These intentionally diverge from
+generic content guidance and should survive future audits:
+
+- **ALL CAPS display type** is the motorsport identity (livery/timing-screen
+  voice), applied via CSS `text-transform` only — source strings stay
+  sentence case so the decision is reversible per-selector.
+- **AI-generated imagery** is structural: the marque is fictional, nothing
+  real exists to photograph. Mitigations: badge-free original designs,
+  one consistent grade, motion-backed, honest alt text.
+- The **accent-dot** is the brand's title-ending period; literal trailing
+  periods on titles/subtitles are banned instead.
+- The vocabulary is a fixed hierarchy: "supercar driving experiences" =
+  category, "session" = the bookable unit, "drive" = the act. The word
+  "programme" is retired.

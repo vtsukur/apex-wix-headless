@@ -20,7 +20,7 @@ CLS 0.011 · doc 90 ms. Desktop: 81 (TBT/main-thread-bound).
 
 ## Items
 
-### 1. Defer the hero video out of the measurement window — ⛔ REVERTED 2026-07-09
+### 1. Defer the hero video out of the measurement window — ✅ re-shipped 2026-07-09 (see incident: original revert was chasing stale-edge HTML, not this code; the unbound requestIdleCallback bug is fixed in the retry)
 
 Shipped, measured, then **reverted the same day** (`f6aa5ff`): in production
 the boot curtain stopped playing its timeline — visitors saw a black veil
@@ -78,7 +78,7 @@ New items 6–7 below target this directly.
 ~1.4 s of Speed Index. SI is the weakest remaining metric. Curtain owner
 call — explicitly NOT done until approved.
 
-### 3. Teaser-card videos: `preload="none"` + IntersectionObserver — ⬜ todo
+### 3. Teaser-card videos: `preload="none"` + IntersectionObserver — ✅ shipped 2026-07-09
 
 The three fleet films (~1.76 MB) still download at startup, several
 viewports below the fold. Attach `src` when the pinned fleet section
@@ -107,7 +107,7 @@ page — this sits in the LCP critical path. Move the expensive setup behind
 ~1.8 s render delay collapses; this is the direct fix for what item 1
 turned out not to be.
 
-### 7. `content-visibility: auto` on below-fold scenes — ⬜ todo
+### 7. `content-visibility: auto` on below-fold scenes — ✅ shipped 2026-07-09 (programmes/philosophy/book; pinned fleet stage excluded — its scroll math needs real layout)
 
 Scenes 2–5 (fleet, programmes, philosophy, CTA) are viewports below the
 fold but still get full style/layout/paint at startup. `content-visibility`
@@ -170,3 +170,13 @@ spot-check on https://pagespeed.web.dev before submitting to the bot.
 Remember the edge cache: `curl -s "https://www.apex-drive.co/?rv=$RANDOM"`
 bypasses it (release verification), plain `/` measures the cached path the
 bot sees.
+
+## Post-1+3+7 measurement (2026-07-09, verified fresh copy)
+
+Mobile 92 / 84 / 86 · byte weight 5MB → 0.8–2.2MB · observed LCP
+2,412ms-pinned → 953–1,467ms · SI 3.0–5.0s · TBT 0ms. Desktop earlier
+same day: 92–94 (solved). Remaining gap is Lantern's simulated LCP
+(~4s in weak runs) — the boot wordmark's text paint chains on the woff2
+font requests. Candidates: preload the two latin woff2 files (hashed
+URLs importable via Vite `?url`), and item 2 (trim the 3.2s curtain
+hold), which also carries most of what's left of SI.

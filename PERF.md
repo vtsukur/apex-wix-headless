@@ -85,12 +85,15 @@ viewports below the fold. Attach `src` when the pinned fleet section
 approaches. Expected: −1.76 MB startup weight, removes the residual
 network contention, helps mobile main-thread and desktop TBT.
 
-### 4. Cache warmer — ⬜ todo
+### 4. Cache warmer — ✅ shipped 2026-07-09
 
-Edge cache TTL is 30 min; a bot testing at a quiet moment lands on a MISS
-(~1.5–2 s TTFB → LCP back to ~4 s → score < 90). A GitHub Actions cron
-hitting `/`, `/about`, `/faq` every ~15 min makes the 90 ms document a
-guarantee instead of a coincidence.
+A bot testing at a quiet moment lands on an edge MISS (~1.4 s TTFB →
+LCP back up → score dips below the lab numbers). `.github/workflows/
+cache-warmer.yml`: cron every 5 min, two passes 2.5 min apart over `/`,
+`/about`, `/faq`, `/llms-full.txt` — the 5-min TTL never lapses. Non-200
+fails the run (free uptime alerting). Required making the repo public for
+unlimited Actions minutes (history secret-scanned first: the only value
+found, WIX_CLIENT_ID, is public by design — it ships in the client JS).
 
 ### 5. CTA band background image — ⬜ todo
 

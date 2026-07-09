@@ -53,6 +53,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           document.documentElement.classList.add("booting");
           setTimeout(function () {
             document.documentElement.classList.remove("booting");
+            // The boot module normally dispatches this from finish(); fire it
+            // here too so content gated on it (reveals) can never be stranded
+            // if that chunk failed to load (e.g. stale edge HTML referencing
+            // a purged asset hash).
+            document.dispatchEvent(new CustomEvent("apex:boot-done"));
           }, 13000);
         }
       } catch (e) {}
@@ -504,9 +509,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       }
 
       // Hold the first reveal pass while the boot curtain is up so the hero
-      // rises as the curtain clears, not hidden behind it.
+      // rises as the curtain clears, not hidden behind it. Failsafed: if the
+      // boot module never runs (dead chunk from stale edge HTML), reveal
+      // anyway right after the head watchdog clears the veil — a page with
+      // no visible content is the one unacceptable outcome.
       if (document.documentElement.classList.contains("booting")) {
         document.addEventListener("apex:boot-done", () => setupReveals(), { once: true });
+        setTimeout(() => setupReveals(), 13500);
       } else {
         setupReveals();
       }

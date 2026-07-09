@@ -19,15 +19,6 @@ Astro.response.status = 404;
     <div class="offtrack-scene w-full" data-reveal aria-hidden="true">
       <span class="offtrack-ghost">404</span>
       <svg viewBox="0 0 720 300" fill="none" preserveAspectRatio="xMidYMid meet">
-        <!-- kerb ticks pushed just outside the glow at the apex -->
-        <g class="offtrack-kerbs" stroke-width="3.5">
-          <line x1="363" y1="202" x2="368" y2="213" class="kerb-a" />
-          <line x1="401" y1="182" x2="407" y2="193" class="kerb-b" />
-          <line x1="437" y1="160" x2="444" y2="170" class="kerb-a" />
-          <line x1="465" y1="143" x2="471" y2="153" class="kerb-b" />
-          <line x1="493" y1="126" x2="499" y2="137" class="kerb-a" />
-        </g>
-
         <!-- the racing line — glow underlay + core share one draw animation.
              The exit is tuned to leave through the RIGHT edge (y≈6 at x=720)
              so the viewport never cuts the curve mid-frame along the top. -->
@@ -162,7 +153,6 @@ Astro.response.status = 404;
   .offtrack-line-core,
   .offtrack-trail,
   .offtrack-lip,
-  .offtrack-kerbs line,
   .offtrack-skid line {
     vector-effect: non-scaling-stroke;
   }
@@ -177,8 +167,6 @@ Astro.response.status = 404;
     stroke-width: 2;
     stroke-linecap: round;
   }
-  .kerb-a { stroke: rgba(225, 18, 31, 0.55); }
-  .kerb-b { stroke: rgba(242, 240, 235, 0.35); }
   .offtrack-skid line {
     stroke: rgba(242, 240, 235, 0.3);
     stroke-linecap: round;

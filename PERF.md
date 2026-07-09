@@ -197,3 +197,28 @@ lab numbers — this is the biggest remaining gap between our runs and what
 the bot sees); then optionally fleet-stage content-visibility with a
 contentvisibilityautostatechange-triggered rescan, or the Concierge
 lazy-mount (item 8 candidate).
+
+## Backlog (suggested 2026-07-09, not yet approved for build-out)
+
+- **9. Boot canvas later start** — currently 2 frames; start ~300–400ms in
+  (or on a first-paint signal) to free the exact frames where the poster
+  rasters. Tiny visual cost.
+- **10. Fleet stills all `loading="lazy"`** — the first car is `eager` but
+  sits two viewports down (leftover from before the pinned redesign).
+- **11. Fleet stage `content-visibility`** — the largest remaining initial
+  layout block; needs a `contentvisibilityautostatechange`-triggered
+  rescan of the pin scroll math. Moderate risk, re-test the pin behavior.
+- **12. Concierge lazy-mount** (a.k.a. item 8) — ~44KB gz React + hydration
+  off startup; needs hand-rolled persist across ClientRouter navigations
+  and a first-tap loading state. Only if the floor still touches 88.
+- **13. Curtain 2.0s → ~1.5s** — SI carries the hold ~1:1; pure taste call.
+- **14. Real-user (not score): re-encode the 2.4MB mobile hero MP4; honor
+  `Save-Data` by never attaching films.**
+- Rejected: skipping the boot for `navigator.webdriver` — adaptive serving
+  for bots would game the challenge's entry criteria.
+
+### 1+2 follow-up: self-hosted right-sized poster — 🔄 shipped 2026-07-09
+
+The LCP resource moved from static.wixstatic.com (third-party DNS+TLS on
+the critical path) to `public/media/hero-poster.webp` on our origin, and
+from 1600×900/35KB to 1366×768/29KB. Result: _pending measurement._

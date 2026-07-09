@@ -633,10 +633,22 @@ body[data-navigating="true"] .product-grid {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: url("https://static.wixstatic.com/media/67964a_9db8ffeab8184766862166c5c3ab41bd~mv2.png/v1/fill/w_1920,h_1080,q_80/apex-garage.jpg") center / cover no-repeat;
+  /* Ghosted at 8% opacity behind copy — small crops are indistinguishable,
+     so phones get 828px instead of the fixed 1920px (~120KB saved). */
+  background: url("https://static.wixstatic.com/media/67964a_9db8ffeab8184766862166c5c3ab41bd~mv2.png/v1/fill/w_828,h_466,q_80/apex-garage.jpg") center / cover no-repeat;
   opacity: 0.08;
   filter: grayscale(0.5);
   pointer-events: none;
+}
+@media (min-width: 768px) {
+  .scene-why::before {
+    background-image: url("https://static.wixstatic.com/media/67964a_9db8ffeab8184766862166c5c3ab41bd~mv2.png/v1/fill/w_1440,h_810,q_80/apex-garage.jpg");
+  }
+}
+@media (min-width: 1440px) {
+  .scene-why::before {
+    background-image: url("https://static.wixstatic.com/media/67964a_9db8ffeab8184766862166c5c3ab41bd~mv2.png/v1/fill/w_1920,h_1080,q_80/apex-garage.jpg");
+  }
 }
 
 /* Why-Apex row — desktop floats the story CTA right of the statement,
@@ -1374,8 +1386,9 @@ html.booting .boot {
   justify-content: center;
   background: var(--color-paper);
   /* Exit is a dissolve, not a wipe — the wordmark and racing line fly into
-     their header counterparts while the veil clears beneath them. */
-  transition: background-color 720ms ease 150ms;
+     their header counterparts while the veil clears beneath them. Timed to
+     complete within the 600ms flight. */
+  transition: background-color 500ms ease 100ms;
 }
 html.booting .boot.boot-exit { background-color: transparent; }
 .boot-canvas {
@@ -1452,7 +1465,7 @@ html.booting .boot.boot-exit { background-color: transparent; }
    veil dissolve reveals the full chrome silhouette with its background and
    the line lands on reserved space, not bare page. */
 .boot.boot-exit .boot-mark {
-  transition: transform 950ms cubic-bezier(0.76, 0, 0.24, 1), opacity 240ms ease;
+  transition: transform 600ms cubic-bezier(0.76, 0, 0.24, 1), opacity 240ms ease;
 }
 html.boot-landing .boot-canvas,
 html.boot-landing .boot-mark { opacity: 0; }

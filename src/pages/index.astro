@@ -276,7 +276,7 @@ const carSrcset = (url: string): string =>
                   srcset={carSrcset(car.image)}
                   sizes="100vw"
                   alt={car.alt}
-                  loading={i === 0 ? "eager" : "lazy"}
+                  loading="lazy"
                   decoding="async"
                   style={"pos" in car && car.pos ? `object-position: ${car.pos}` : undefined}
                 />

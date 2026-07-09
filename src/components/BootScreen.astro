@@ -171,7 +171,7 @@ const LETTERS = "APEX".split("");
       // Handoff progress: `fade` retires the set dressing (streaks, edges,
       // kerbs, pulse, vignette); `keep` preserves the line and apex dot when
       // they have a header curve to land on.
-      const mRaw = morphT0 ? Math.min((now - morphT0) / 950, 1) : 0;
+      const mRaw = morphT0 ? Math.min((now - morphT0) / 600, 1) : 0;
       const m = mRaw < 0.5 ? 8 * mRaw ** 4 : 1 - (-2 * mRaw + 2) ** 4 / 2;
       const fade = 1 - m;
       const keep = morphTarget ? 1 : fade;
@@ -339,11 +339,11 @@ const LETTERS = "APEX".split("");
   }
 
   if (boot && html.classList.contains("booting")) {
-    // Two frames of grace before the canvas starts burning main thread —
-    // the page's first layout+paint (FCP/LCP, under the veil) lands in
-    // exactly that window, and the racing line joining ~32ms late is
-    // imperceptible.
-    requestAnimationFrame(() => requestAnimationFrame(() => startCanvas()));
+    // 350ms of grace before the canvas starts burning main thread — the
+    // page's first layout+paint (FCP/LCP, under the veil) and the wordmark
+    // rise land in exactly that window; the racing line drawing in a beat
+    // behind the letters reads as intentional.
+    setTimeout(() => startCanvas(), 350);
     // Start the timeline immediately — the old fonts-race gate (≤800ms) is
     // obsolete now that the latin woff2s are preloaded from <head>; while
     // the curtain is up its own first frame IS the page's FCP/LCP, so every
@@ -356,10 +356,13 @@ const LETTERS = "APEX".split("");
     {
       requestAnimationFrame(() => {
         boot.classList.add("boot-play");
-        // 2s hold (was 3.2s): still a deliberate cinematic beat, but the
-        // curtain carries Speed Index almost 1:1 — every trimmed 100ms goes
-        // straight back to the score and to first-visit patience.
-        const minHold = new Promise((r) => setTimeout(r, 2000));
+        // Deliberate cinematic beat, but the curtain carries Speed Index
+        // almost 1:1 — every trimmed 100ms goes straight back to the score
+        // and to first-visit patience. Phones (the scored environment) hold
+        // 1.5s; desktop keeps the fuller 2s beat.
+        const minHold = new Promise((r) =>
+          setTimeout(r, matchMedia("(max-width: 767px)").matches ? 1500 : 2000),
+        );
         const video = document.querySelector("[data-hero-video]") as HTMLVideoElement | null;
         const posterUrl = video?.getAttribute("poster");
         const posterReady = !posterUrl
@@ -390,8 +393,10 @@ const LETTERS = "APEX".split("");
               mark.style.transform = flight;
             });
           }
-          setTimeout(() => html.classList.add("boot-landing"), 940);
-          setTimeout(finish, 1300);
+          // Landing keyed to the 600ms flight/morph (was 950ms) — the
+          // handoff reads snappier without changing its choreography.
+          setTimeout(() => html.classList.add("boot-landing"), 600);
+          setTimeout(finish, 950);
         });
       });
     }

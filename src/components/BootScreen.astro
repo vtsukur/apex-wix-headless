@@ -53,13 +53,18 @@ const LETTERS = "APEX".split("");
 
     let w = 0;
     let h = 0;
+    let vg: CanvasGradient | null = null; // vignette — rebuilt on resize only
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      // DPR capped at 1 — the loader is soft glows and hairlines over a dark
+      // veil; extra device pixels are invisible here but multiply the raster
+      // cost of every frame (this loop runs during the LCP window).
+      const dpr = Math.min(window.devicePixelRatio || 1, 1);
       w = canvas.clientWidth;
       h = canvas.clientHeight;
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      vg = null;
     };
     new ResizeObserver(resize).observe(canvas);
     resize();
@@ -140,14 +145,21 @@ const LETTERS = "APEX".split("");
       ctx!.beginPath();
       ctx!.moveTo(pts[i0][0], pts[i0][1]);
       for (let i = i0 + 1; i <= i1; i++) ctx!.lineTo(pts[i][0], pts[i][1]);
-      ctx!.strokeStyle = style;
-      ctx!.lineWidth = width;
       ctx!.lineCap = "round";
       ctx!.lineJoin = "round";
-      ctx!.shadowBlur = blur;
-      ctx!.shadowColor = blurColor;
+      // Glow as a wide translucent underlay stroke — canvas shadowBlur
+      // convolves the whole surface per stroke per frame; this reads the
+      // same at a fraction of the cost.
+      if (blur > 0 && blurColor) {
+        ctx!.strokeStyle = blurColor;
+        ctx!.lineWidth = width + blur * 0.8;
+        ctx!.globalAlpha = 0.45;
+        ctx!.stroke();
+        ctx!.globalAlpha = 1;
+      }
+      ctx!.strokeStyle = style;
+      ctx!.lineWidth = width;
       ctx!.stroke();
-      ctx!.shadowBlur = 0;
     }
 
     const t0 = performance.now();
@@ -280,11 +292,15 @@ const LETTERS = "APEX".split("");
         ctx!.lineTo(-3.2, 1.2);
         ctx!.quadraticCurveTo(-4.9, -0.75, -6.6, 1.2);
         ctx!.closePath();
+        // Glow disc under the car instead of shadowBlur (whole-surface
+        // convolution per frame) — at this size they read identically.
+        const cg = ctx!.createRadialGradient(0, 0, 2, 0, 0, 22);
+        cg.addColorStop(0, glow);
+        cg.addColorStop(1, "rgba(225,18,31,0)");
+        ctx!.fillStyle = cg;
+        ctx!.fillRect(-24, -24, 48, 48);
         ctx!.fillStyle = `rgba(255,92,92,${0.95 * fade})`;
-        ctx!.shadowBlur = 18;
-        ctx!.shadowColor = glow;
         ctx!.fill();
-        ctx!.shadowBlur = 0;
         ctx!.restore();
         const [ax, ay] = pts[midIdx];
         if (p > MID_U && p < MID_U + 0.14) {
@@ -305,11 +321,15 @@ const LETTERS = "APEX".split("");
       ctx!.restore();
 
       if (fade > 0.02) {
-        const vg = ctx!.createRadialGradient(w * 0.5, h * 0.48, Math.min(w, h) * 0.32, w * 0.5, h * 0.48, Math.max(w, h) * 0.72);
-        vg.addColorStop(0, "rgba(10,10,11,0)");
-        vg.addColorStop(1, `rgba(10,10,11,${0.55 * fade})`);
+        if (!vg) {
+          vg = ctx!.createRadialGradient(w * 0.5, h * 0.48, Math.min(w, h) * 0.32, w * 0.5, h * 0.48, Math.max(w, h) * 0.72);
+          vg.addColorStop(0, "rgba(10,10,11,0)");
+          vg.addColorStop(1, "rgba(10,10,11,0.55)");
+        }
+        ctx!.globalAlpha = fade;
         ctx!.fillStyle = vg;
         ctx!.fillRect(0, 0, w, h);
+        ctx!.globalAlpha = 1;
       }
 
       canvasRaf = requestAnimationFrame(draw);
@@ -318,7 +338,11 @@ const LETTERS = "APEX".split("");
   }
 
   if (boot && html.classList.contains("booting")) {
-    startCanvas();
+    // Two frames of grace before the canvas starts burning main thread —
+    // the page's first layout+paint (FCP/LCP, under the veil) lands in
+    // exactly that window, and the racing line joining ~32ms late is
+    // imperceptible.
+    requestAnimationFrame(() => requestAnimationFrame(() => startCanvas()));
     // Wait for the display font (capped) so the wordmark never flashes in a
     // fallback face mid-animation, then run the timeline: rise → hold (gated
     // on the hero film when one is on the page) → handoff: wordmark flies to

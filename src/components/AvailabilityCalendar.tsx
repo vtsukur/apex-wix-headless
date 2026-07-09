@@ -69,8 +69,9 @@ const localDateString = (d: Date) =>
   `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 const tz = () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
 const dateKey = (iso: string) => iso.slice(0, 10); // group slots by calendar day
+// 24h clock — the timing tower speaks instrument time, not AM/PM.
 const timeLabel = (iso: string) =>
-  new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
 
 const startOfDay = (d: Date) => { const n = new Date(d); n.setHours(0, 0, 0, 0); return n; };
 // Monday-start week containing `d`.
@@ -265,7 +266,14 @@ export default function AvailabilityCalendar({
   const weekLabel = `${days[0].toLocaleDateString([], { month: "short", day: "numeric" })} – ${days[6].toLocaleDateString([], { month: "short", day: "numeric" })}`;
   const daySlots = selectedDay ? byDay[selectedDay] ?? [] : [];
   const weekIsEmpty = status === "ready" && Object.keys(byDay).length === 0;
+  const selectedDayLabel = selectedDay
+    ? new Date(`${selectedDay}T12:00:00`).toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" })
+    : "";
 
+  // The timing tower: days run down the left column like a timing screen —
+  // position, three-letter code, date, laps in hand — and the picked day's
+  // slots (the laps) fill the right panel. Same behavior as the old week
+  // strip; only the instrument changed.
   return (
     <div className="availability-calendar">
       {(showLocationPicker || showStaffPicker) && (
@@ -287,14 +295,14 @@ export default function AvailabilityCalendar({
           )}
           {showStaffPicker && (
             <div className="availability-staff">
-              <label className="availability-staff-label" htmlFor="staff-select">Instructor</label>
+              <label className="availability-staff-label" htmlFor="staff-select">Race engineer</label>
               <select
                 id="staff-select"
                 className="availability-staff-select"
                 value={selectedResource}
                 onChange={(e) => { setSelectedResource(e.target.value); setSelectedKey(null); }}
               >
-                <option value={ANY_STAFF}>Any instructor</option>
+                <option value={ANY_STAFF}>Any engineer</option>
                 {staffOptions.map((o) => (
                   <option key={o.id} value={o.id}>{o.name}</option>
                 ))}
@@ -304,67 +312,79 @@ export default function AvailabilityCalendar({
         </div>
       )}
 
-      <div className="availability-week-nav">
-        <button type="button" className="availability-nav-btn" onClick={() => shiftWeek(-1)} disabled={atFirstWeek} aria-label="Previous week">← Prev week</button>
-        <span className="availability-week-label">{weekLabel}</span>
-        <button type="button" className="availability-nav-btn" onClick={() => shiftWeek(1)} aria-label="Next week">Next week →</button>
+      <div className="tower-head">
+        <button type="button" className="tower-nav" onClick={() => shiftWeek(-1)} disabled={atFirstWeek} aria-label="Previous week">◀</button>
+        <span className="tower-title">Week · {weekLabel}</span>
+        <button type="button" className="tower-nav" onClick={() => shiftWeek(1)} aria-label="Next week">▶</button>
       </div>
 
-      <div className="availability-day-strip" role="group" aria-label="Pick a day">
-        {days.map((d) => {
-          const key = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-          const has = (byDay[key]?.length ?? 0) > 0;
-          const isSelected = key === selectedDay;
-          return (
-            <button
-              key={key}
-              type="button"
-              className={["availability-day", isSelected ? "availability-day--selected" : "", has ? "availability-day--has-slots" : "availability-day--empty"].filter(Boolean).join(" ")}
-              disabled={!has}
-              aria-pressed={isSelected}
-              onClick={() => { setSelectedDay(key); setSelectedKey(null); }}
-            >
-              <span className="availability-day-name">{d.toLocaleDateString([], { weekday: "short" })}</span>
-              <span className="availability-day-num">{d.getDate()}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {status === "loading" && <p className="availability-loading">Checking track time…</p>}
-      {status === "searching" && <p className="availability-loading">Scanning ahead for the next open session…</p>}
-      {status === "error" && (
-        <>
-          <p className="availability-error">Could not load availability — please try again.</p>
-          <button type="button" className="availability-nav-btn" onClick={() => void load(weekStart)}>Retry</button>
-        </>
-      )}
-      {weekIsEmpty && (
-        <div className="availability-empty">
-          <p>No open sessions this week.</p>
-          <button type="button" className="availability-nav-btn" onClick={() => void checkNextAvailability()}>Find the next open session</button>
-        </div>
-      )}
-      {status === "ready" && daySlots.length > 0 && (
-        <div className="availability-slots" role="group" aria-label={`Available times for ${serviceName}`}>
-          {daySlots.map((s) => {
-            const id = s.serviceType === "CLASS" ? s.eventId : s.scheduleId;
-            const key = `${s.localStartDate}|${id}`;
-            const isSelected = key === selectedKey;
+      <div className="tower-body">
+        <div className="tower" role="group" aria-label="Pick a day">
+          {days.map((d, i) => {
+            const key = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+            const count = byDay[key]?.length ?? 0;
+            const isSelected = key === selectedDay;
             return (
               <button
                 key={key}
                 type="button"
-                className={["time-slot", isSelected ? "time-slot--selected" : "time-slot--available"].join(" ")}
+                className={["tower-row", isSelected ? "tower-row--selected" : ""].filter(Boolean).join(" ")}
+                disabled={count === 0}
                 aria-pressed={isSelected}
-                onClick={() => handleSelect(s)}
+                onClick={() => { setSelectedDay(key); setSelectedKey(null); }}
               >
-                <span className="time-slot-time">{timeLabel(s.localStartDate)}</span>
+                <span className="tower-pos" aria-hidden="true">{pad(i + 1)}</span>
+                <span className="tower-code">{d.toLocaleDateString([], { weekday: "short" })}</span>
+                <span className="tower-date">{d.toLocaleDateString([], { day: "numeric", month: "short" })}</span>
+                <span className="tower-laps">
+                  {count > 0 ? `${count} ${count === 1 ? "lap" : "laps"}` : "—"}
+                </span>
               </button>
             );
           })}
         </div>
-      )}
+
+        <div className="lap-panel">
+          {status === "loading" && <p className="availability-loading">Checking track time…</p>}
+          {status === "searching" && <p className="availability-loading">Scanning ahead for the next open session…</p>}
+          {status === "error" && (
+            <div className="availability-empty">
+              <p className="availability-error">Could not load availability — please try again.</p>
+              <button type="button" className="availability-nav-btn" onClick={() => void load(weekStart)}>Retry</button>
+            </div>
+          )}
+          {weekIsEmpty && (
+            <div className="availability-empty">
+              <p>No open sessions this week.</p>
+              <button type="button" className="availability-nav-btn" onClick={() => void checkNextAvailability()}>Find the next open session</button>
+            </div>
+          )}
+          {status === "ready" && daySlots.length > 0 && (
+            <>
+              <p className="lap-panel-label">Laps · {selectedDayLabel}</p>
+              <div className="lap-grid" role="group" aria-label={`Available times for ${serviceName}`}>
+                {daySlots.map((s, i) => {
+                  const id = s.serviceType === "CLASS" ? s.eventId : s.scheduleId;
+                  const key = `${s.localStartDate}|${id}`;
+                  const isSelected = key === selectedKey;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      className={["lap-chip", isSelected ? "lap-chip--selected" : ""].filter(Boolean).join(" ")}
+                      aria-pressed={isSelected}
+                      onClick={() => handleSelect(s)}
+                    >
+                      <span className="lap-idx">Lap {pad(i + 1)}</span>
+                      <span className="lap-time">{timeLabel(s.localStartDate)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

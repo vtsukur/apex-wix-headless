@@ -37,6 +37,9 @@ export default function ServiceBookingFlow({
     const params = new URLSearchParams();
     if (startDate) params.set("startDate", startDate);
     if (serviceName) params.set("service", serviceName);
+    // Grid-pass extras from the selected slot (still in memory on this path).
+    if (selectedSlot?.localEndDate) params.set("endDate", selectedSlot.localEndDate);
+    if (selectedSlot?.resource?.name) params.set("instructor", selectedSlot.resource.name);
     window.location.href = `/booking-confirmation?${params.toString()}`;
   };
 

@@ -29,6 +29,7 @@
     "@wix/redirects": "^1.0.118",
     "@wix/sdk": "^1.21.12",
     "astro": "^5.8.0",
+    "qrcode": "^1.5.4",
     "tailwindcss": "^4.3.1",
     "typescript": "^5.8.3"
   },

@@ -63,11 +63,15 @@ export default function BookingForm({ service, serviceName, slot, fields, onSucc
       });
       if (result.type === BookResultType.CheckoutRequired) {
         // Paid: hand the cart to the Wix-hosted checkout; it returns to /booking-confirmation.
-        // Carry service + start time on the return URL so the confirmation can show them
-        // (the in-memory selection is lost across the full-page redirect to Wix and back).
+        // Carry the session facts on the return URL so the confirmation's grid
+        // pass can show them (the in-memory selection is lost across the
+        // full-page redirect to Wix and back).
+        const params = new URLSearchParams({ service: serviceName, startDate: slot.localStartDate });
+        if (slot.localEndDate) params.set("endDate", slot.localEndDate);
+        if (slot.resource?.name) params.set("instructor", slot.resource.name);
         await navigateToCheckout(
           result.cartId,
-          `${window.location.origin}/booking-confirmation?service=${encodeURIComponent(serviceName)}&startDate=${encodeURIComponent(slot.localStartDate)}`,
+          `${window.location.origin}/booking-confirmation?${params.toString()}`,
         );
         return; // redirect in progress
       }

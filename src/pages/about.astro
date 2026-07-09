@@ -2,7 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import { items } from "@wix/data";
 import { auth } from "@wix/essentials";
-import { renderRicos } from "../utils/ricos";
+import { toHtml } from "../utils/cms-html";
 import { cached } from "../utils/ssr-cache";
 
 // Collection ID resolved from the seeded CMS slice (.wix/seeded.json → cms.collectionIds.about).
@@ -19,28 +19,6 @@ Astro.response.headers.set(
 interface AboutContent {
   title: string;
   bodyHtml: string;
-}
-
-function escapeHtml(s: string): string {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-// The CMS body field may arrive as a Ricos node tree (RICH_CONTENT), a
-// JSON-encoded Ricos string, an HTML string (RICH_TEXT), or plain text.
-// Normalize every shape to safe HTML — never set:html raw field values.
-function toHtml(value: unknown): string {
-  if (value == null) return "";
-  if (typeof value === "object") return renderRicos(value as never);
-  if (typeof value !== "string") return "";
-  const trimmed = value.trim();
-  if (!trimmed) return "";
-  const ricos = renderRicos(trimmed);
-  if (ricos) return ricos;
-  if (trimmed.startsWith("<")) return trimmed;
-  return trimmed
-    .split(/\r?\n\s*\r?\n/)
-    .map((para) => `<p>${escapeHtml(para).replace(/\r?\n/g, "<br />")}</p>`)
-    .join("");
 }
 
 // Live @wix/data query, cached across requests (5-min TTL, serve-stale).

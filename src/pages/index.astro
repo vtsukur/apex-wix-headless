@@ -125,6 +125,12 @@ const fleet = [
   },
 ];
 
+// The hero poster is the LCP element's paint — preloaded in <head> with
+// fetchpriority=high so it never queues behind other requests. The film
+// itself attaches after load+idle (see the deferral script by the video).
+const HERO_POSTER =
+  "https://static.wixstatic.com/media/67964a_26a86398939b49f6b591c8dc0a03c37af002.jpg/v1/fill/w_1600,h_900,q_80/poster.webp";
+
 // Responsive variants of the car stills — the fleet URLs point at the full
 // w_1376 crop, but phones only need ~480-768px. Derive a srcset by swapping
 // the Wix Media fill params (the 1376×768 aspect is preserved per width).
@@ -142,6 +148,7 @@ const carSrcset = (url: string): string =>
     is:inline
     set:html={JSON.stringify(structuredData)}
   />
+  <link slot="head" rel="preload" as="image" href={HERO_POSTER} fetchpriority="high" />
   <!-- Scene 1 — hero: TH-12 lap film (Wix Media) + parallax exit. The video is
        NOT in the repo — it lives in the site's Wix Media and streams from the
        wixstatic CDN. The boot curtain waits for it (BootScreen.astro). -->
@@ -149,27 +156,43 @@ const carSrcset = (url: string): string =>
     <div class="hero-scene" aria-hidden="true">
       {/* Desktop: 720p/24fps low-bitrate encode; phones: the purpose-made
           480p encode. The original 720p master stays in Wix Media for easy
-          revert: 67964a_d30f1f2be4584a65924f05e849b1df3a. No src in markup —
-          the inline script right below picks the rendition synchronously
-          before any video bytes are fetched. */}
+          revert: 67964a_d30f1f2be4584a65924f05e849b1df3a. No src in markup
+          and preload=none — the film is deliberately kept OFF the startup
+          path (it was racing the poster for bandwidth and flapping LCP by
+          ±1.8s); the deferral script below attaches the rendition after
+          load+idle. The preloaded poster carries the first paint. */}
       <video
         data-hero-video
         class="hero-video"
-        poster="https://static.wixstatic.com/media/67964a_26a86398939b49f6b591c8dc0a03c37af002.jpg/v1/fill/w_1600,h_900,q_80/poster.webp"
+        poster={HERO_POSTER}
         data-src-desktop="https://video.wixstatic.com/video/67964a_26a86398939b49f6b591c8dc0a03c37a/720p/mp4/file.mp4"
         data-src-mobile="https://video.wixstatic.com/video/67964a_bab789da01e040619705a8490222cc5e/480p/mp4/file.mp4"
-        autoplay
         muted
         loop
         playsinline
-        preload="auto"
+        preload="none"
       ></video>
       <script is:inline data-astro-rerun>
-        for (const v of document.querySelectorAll("video[data-src-desktop]:not([src])")) {
-          v.src = matchMedia("(max-width: 767px)").matches
-            ? v.dataset.srcMobile
-            : v.dataset.srcDesktop;
-        }
+        // Attach the hero rendition after load + idle. Under the boot curtain
+        // playback stays parked — the apex:boot-done handler (set up in the
+        // page module below) starts the lap at reveal. Reduced motion skips
+        // the film entirely; the poster holds the frame.
+        (() => {
+          const attach = () => {
+            const v = document.querySelector("video[data-hero-video]:not([src])");
+            if (!v || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+            v.src = matchMedia("(max-width: 767px)").matches
+              ? v.dataset.srcMobile
+              : v.dataset.srcDesktop;
+            if (!document.documentElement.classList.contains("booting")) {
+              v.play().catch(() => {});
+            }
+          };
+          const idle = () =>
+            (window.requestIdleCallback || ((f) => setTimeout(f, 200)))(attach, { timeout: 2500 });
+          if (document.readyState === "complete") idle();
+          else addEventListener("load", idle, { once: true });
+        })();
       </script>
       <div class="hero-video-scrim"></div>
       <HeroFluid />
@@ -372,10 +395,11 @@ const carSrcset = (url: string): string =>
     </div>
   </section>
 
-  {/* Rendition pick for the fleet + programme films parsed after the hero's
-      own script ran (480p on phones, 720p on desktop). */}
+  {/* Rendition pick for the fleet + programme films (480p on phones, 720p on
+      desktop). The hero is excluded — its rendition attaches after load+idle
+      via the deferral script next to it. */}
   <script is:inline data-astro-rerun>
-    for (const v of document.querySelectorAll("video[data-src-desktop]:not([src])")) {
+    for (const v of document.querySelectorAll("video[data-src-desktop]:not([src]):not([data-hero-video])")) {
       v.src = matchMedia("(max-width: 767px)").matches
         ? v.dataset.srcMobile
         : v.dataset.srcDesktop;
@@ -384,15 +408,16 @@ const carSrcset = (url: string): string =>
 </Layout>
 
 <script>
-  // Hero-video readiness — the boot curtain (BootScreen.astro) holds until
-  // this fires (or its own 8s failsafe). Also parks the film under
-  // prefers-reduced-motion: the poster frame stays, nothing moves.
+  // Hero-video boot orchestration. The film's src attaches after load+idle
+  // (deferral script by the video), so there is nothing to pause under
+  // prefers-reduced-motion — the deferral script skips the film entirely
+  // and the poster holds the frame. The boot curtain gates on the poster
+  // (BootScreen.astro), not on video readiness.
   function initHeroVideo() {
     const video = document.querySelector<HTMLVideoElement>("[data-hero-video]:not([data-init])");
     if (!video) return;
     video.dataset.init = "1";
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      video.removeAttribute("autoplay");
       video.pause();
     }
     // With the loader up, hold the film on frame zero and start it only when
@@ -409,12 +434,6 @@ const carSrcset = (url: string): string =>
       setTimeout(() => {
         if (video.paused && !document.documentElement.classList.contains("booting")) start();
       }, 14000);
-    }
-    const announce = () => document.dispatchEvent(new CustomEvent("apex:hero-video-ready"));
-    if (video.readyState >= 3) announce();
-    else {
-      video.addEventListener("canplaythrough", announce, { once: true });
-      video.addEventListener("error", announce, { once: true });
     }
   }
   initHeroVideo();

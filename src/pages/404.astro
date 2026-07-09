@@ -9,23 +9,26 @@ Astro.response.status = 404;
 
 <Layout title="Off track" noindex>
   <section class="max-w-3xl mx-auto px-6 pt-8 pb-24 flex flex-col items-center text-center gap-6">
-    <!-- The scene: a ghost 404 board behind the racing line. The line sweeps
-         the corner; one dashed trail misses it and dies in the gravel, where
-         the marker pulses. Draw-in keys off the reveal class so it plays
-         after the boot curtain, never under it. -->
+    <!-- The scene, framed as a cropped telemetry plate (the About figure's
+         hairline-border treatment): ghost 404 holding the quiet top-left,
+         the racing line sweeping the corner, and the story on the outside of
+         it — brake-lock skid, a dashed trail off the tarmac, the gravel trap
+         behind its lip, the marker where the car came to rest. Draw-in keys
+         off the reveal class so it plays after the boot curtain, never under
+         it. -->
     <div class="offtrack-scene w-full" data-reveal aria-hidden="true">
       <span class="offtrack-ghost">404</span>
       <svg viewBox="0 0 720 300" fill="none" preserveAspectRatio="xMidYMid meet">
-        <!-- kerb ticks riding the outside of the apex -->
-        <g class="offtrack-kerbs" stroke-width="3">
-          <line x1="361" y1="198" x2="365" y2="207" class="kerb-a" />
-          <line x1="399" y1="179" x2="404" y2="187" class="kerb-b" />
-          <line x1="435" y1="157" x2="440" y2="165" class="kerb-a" />
-          <line x1="461" y1="139" x2="466" y2="147" class="kerb-b" />
-          <line x1="488" y1="121" x2="493" y2="130" class="kerb-a" />
+        <!-- kerb ticks pushed just outside the glow at the apex -->
+        <g class="offtrack-kerbs" stroke-width="3.5">
+          <line x1="363" y1="202" x2="368" y2="213" class="kerb-a" />
+          <line x1="401" y1="182" x2="407" y2="193" class="kerb-b" />
+          <line x1="437" y1="160" x2="444" y2="170" class="kerb-a" />
+          <line x1="465" y1="143" x2="471" y2="153" class="kerb-b" />
+          <line x1="493" y1="126" x2="499" y2="137" class="kerb-a" />
         </g>
 
-        <!-- the racing line — glow underlay + line share one draw animation.
+        <!-- the racing line — glow underlay + core share one draw animation.
              The exit is tuned to leave through the RIGHT edge (y≈6 at x=720)
              so the viewport never cuts the curve mid-frame along the top. -->
         <path
@@ -39,42 +42,58 @@ Astro.response.status = 404;
           class="offtrack-line offtrack-line-core"
         />
 
-        <!-- the missed corner: brake-lock skid, then the dashed run into the gravel -->
-        <g class="offtrack-skid" stroke-width="2.5">
-          <line x1="228" y1="232" x2="285" y2="217" />
-          <line x1="234" y1="241" x2="291" y2="226" />
+        <!-- the missed corner: brake-lock skid into the departure point,
+             then the dashed run across the grass into the trap -->
+        <g class="offtrack-skid" stroke-width="3">
+          <line x1="201" y1="236" x2="254" y2="223" />
+          <line x1="203" y1="245" x2="256" y2="231" />
         </g>
         <path
-          d="M 255 227 L 623 132"
+          d="M 255 227 L 645 127"
           pathLength="100"
           class="offtrack-trail"
         />
 
-        <!-- the gravel trap -->
+        <!-- the gravel trap: a broken lip where the surface changes, then an
+             organic scatter — dense where the car ploughed in (forward of the
+             marker), thinning toward the fringe -->
+        <path
+          d="M 612 74 Q 560 118 564 168 Q 567 202 600 216"
+          class="offtrack-lip"
+        />
         <g class="offtrack-gravel">
-          <circle cx="500" cy="170" r="1.2" /><circle cx="516" cy="190" r="1.4" />
-          <circle cx="523" cy="132" r="1.1" /><circle cx="536" cy="178" r="1.2" />
-          <circle cx="543" cy="151" r="1.4" /><circle cx="552" cy="168" r="1.6" />
-          <circle cx="563" cy="142" r="1.2" /><circle cx="569" cy="199" r="1.3" />
-          <circle cx="571" cy="181" r="2" /><circle cx="578" cy="120" r="1.3" />
-          <circle cx="586" cy="158" r="1.7" /><circle cx="592" cy="187" r="1.4" />
-          <circle cx="598" cy="131" r="1.2" /><circle cx="604" cy="170" r="2.1" />
-          <circle cx="607" cy="203" r="1.5" /><circle cx="611" cy="147" r="1.3" />
-          <circle cx="617" cy="189" r="1.6" /><circle cx="622" cy="160" r="1.2" />
-          <circle cx="629" cy="120" r="1.4" /><circle cx="633" cy="176" r="1.8" />
-          <circle cx="640" cy="143" r="1.2" /><circle cx="645" cy="199" r="1.4" />
-          <circle cx="646" cy="163" r="1.5" /><circle cx="651" cy="127" r="1.3" />
-          <circle cx="657" cy="186" r="1.9" /><circle cx="663" cy="151" r="1.3" />
-          <circle cx="669" cy="171" r="1.5" /><circle cx="674" cy="136" r="1.2" />
-          <circle cx="681" cy="158" r="1.7" /><circle cx="687" cy="178" r="1.3" />
-          <circle cx="692" cy="144" r="1.4" /><circle cx="699" cy="165" r="1.8" />
+          <circle cx="596" cy="144" r="0.9" /><circle cx="607" cy="141" r="0.7" />
+          <circle cx="618" cy="136" r="0.8" /><circle cx="626" cy="126" r="0.9" />
+          <circle cx="630" cy="118" r="1.1" /><circle cx="633" cy="133" r="1.4" />
+          <circle cx="638" cy="110" r="1.5" /><circle cx="640" cy="96" r="0.9" />
+          <circle cx="643" cy="140" r="1" /><circle cx="649" cy="114" r="1" />
+          <circle cx="652" cy="102" r="1.2" /><circle cx="655" cy="138" r="1.9" />
+          <circle cx="658" cy="121" r="1.7" /><circle cx="661" cy="94" r="1.5" />
+          <circle cx="664" cy="131" r="1.2" /><circle cx="668" cy="112" r="1.3" />
+          <circle cx="672" cy="140" r="1" /><circle cx="676" cy="124" r="1.6" />
+          <circle cx="683" cy="106" r="1.1" /><circle cx="686" cy="134" r="0.8" />
+          <circle cx="690" cy="118" r="1.4" /><circle cx="697" cy="131" r="1" />
+          <circle cx="585" cy="110" r="1" /><circle cx="592" cy="132" r="1.5" />
+          <circle cx="577" cy="148" r="1.1" /><circle cx="600" cy="90" r="1.2" />
+          <circle cx="600" cy="170" r="1.3" /><circle cx="610" cy="72" r="0.9" />
+          <circle cx="622" cy="176" r="1.6" /><circle cx="633" cy="68" r="1.3" />
+          <circle cx="648" cy="182" r="1" /><circle cx="657" cy="64" r="1" />
+          <circle cx="671" cy="172" r="1.2" /><circle cx="681" cy="72" r="1.2" />
+          <circle cx="694" cy="172" r="0.9" /><circle cx="700" cy="88" r="1.5" />
+          <circle cx="706" cy="104" r="0.9" /><circle cx="584" cy="98" r="0.8" />
+          <circle cx="570" cy="130" r="1" /><circle cx="572" cy="166" r="0.9" />
+          <circle cx="580" cy="192" r="1.1" /><circle cx="605" cy="204" r="0.8" />
+          <circle cx="634" cy="207" r="1.2" /><circle cx="663" cy="200" r="0.8" />
+          <circle cx="688" cy="192" r="1" /><circle cx="706" cy="146" r="0.8" />
+          <circle cx="709" cy="64" r="0.8" /><circle cx="712" cy="180" r="1" />
         </g>
 
-        <!-- where you ended up -->
+        <!-- where you ended up — label below the dot, anchored away from the
+             line so it can't read as labeling the track -->
         <g class="offtrack-marker">
-          <circle cx="623" cy="132" r="8" class="offtrack-ring" />
-          <circle cx="623" cy="132" r="4" class="offtrack-dot" />
-          <text x="623" y="104" text-anchor="middle" class="offtrack-label">You are here</text>
+          <circle cx="645" cy="127" r="8" class="offtrack-ring" />
+          <circle cx="645" cy="127" r="4" class="offtrack-dot" />
+          <text x="645" y="160" text-anchor="middle" class="offtrack-label">You are here</text>
         </g>
       </svg>
     </div>
@@ -96,24 +115,27 @@ Astro.response.status = 404;
 </Layout>
 
 <style>
-  /* The ghost 404 — a distance board behind the line, outlined so it sits
-     in the dark without competing with the drawn geometry. */
+  /* The framed plate — the scene reads as a cropped telemetry frame, so the
+     line entering/leaving at the edges reads as a crop, not a clip. */
   .offtrack-scene {
     position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    background: rgba(26, 27, 30, 0.5);
   }
+  /* The ghost 404 — a distance board holding the scene's quiet top-left
+     quadrant, one confident step above the surface; nothing crosses it. */
   .offtrack-ghost {
     position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    top: 6%;
+    left: 4.5%;
     font-family: var(--font-display);
     font-weight: 300;
-    font-size: clamp(6rem, 20vw, 12rem);
+    font-size: clamp(4.5rem, 12.5vw, 9rem);
     line-height: 1;
-    letter-spacing: 0.04em;
-    color: rgba(242, 240, 235, 0.04);
-    -webkit-text-stroke: 1px var(--color-rule);
+    letter-spacing: 0.05em;
+    color: rgba(242, 240, 235, 0.09);
     user-select: none;
   }
   .offtrack-scene svg {
@@ -123,9 +145,19 @@ Astro.response.status = 404;
     height: auto;
   }
 
+  /* Hairline discipline: the story strokes hold their device-pixel weight at
+     every viewport instead of thinning away with the viewBox scale. */
+  .offtrack-line-core,
+  .offtrack-trail,
+  .offtrack-lip,
+  .offtrack-kerbs line,
+  .offtrack-skid line {
+    vector-effect: non-scaling-stroke;
+  }
+
   .offtrack-line-glow {
-    stroke: rgba(225, 18, 31, 0.35);
-    stroke-width: 8;
+    stroke: rgba(225, 18, 31, 0.22);
+    stroke-width: 5;
     stroke-linecap: round;
   }
   .offtrack-line-core {
@@ -133,23 +165,28 @@ Astro.response.status = 404;
     stroke-width: 2;
     stroke-linecap: round;
   }
-  .kerb-a { stroke: rgba(225, 18, 31, 0.4); }
-  .kerb-b { stroke: rgba(242, 240, 235, 0.25); }
+  .kerb-a { stroke: rgba(225, 18, 31, 0.55); }
+  .kerb-b { stroke: rgba(242, 240, 235, 0.35); }
   .offtrack-skid line {
-    stroke: rgba(242, 240, 235, 0.14);
+    stroke: rgba(242, 240, 235, 0.3);
     stroke-linecap: round;
   }
   .offtrack-trail {
     stroke: var(--color-ink-soft);
-    stroke-width: 1.5;
-    stroke-dasharray: 1.2 2.6;
-    opacity: 0.45;
+    stroke-width: 2;
+    stroke-dasharray: 3 3.5;
+    opacity: 0.7;
+  }
+  .offtrack-lip {
+    stroke: rgba(242, 240, 235, 0.15);
+    stroke-width: 1;
+    stroke-dasharray: 5 7;
   }
   .offtrack-gravel circle {
     fill: var(--color-mute);
   }
   .offtrack-gravel {
-    opacity: 0.4;
+    opacity: 0.55;
   }
   .offtrack-dot {
     fill: var(--color-accent);
@@ -164,15 +201,29 @@ Astro.response.status = 404;
   }
   .offtrack-label {
     font-family: var(--font-body);
-    font-size: 11px;
+    font-size: 11.5px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     fill: var(--color-ink-soft);
   }
+
+  /* Counter-scale the story for small screens — SVG text and radii live in
+     viewBox units, so at phone widths they shrink into noise unless pushed
+     back up (the strokes are already non-scaling above). */
+  @media (max-width: 767px) {
+    .offtrack-label { font-size: 15px; }
+    .offtrack-dot { r: 6px; }
+    .offtrack-ring { r: 11px; }
+    .offtrack-trail { stroke-dasharray: 5 6; }
+  }
+  @media (max-width: 480px) {
+    .offtrack-label { font-size: 19px; }
+  }
+
   /* Choreography — keyed to the reveal's .in (post-curtain): the line draws
-     the corner, the trail and gravel fade up where it was missed, the marker
-     lands last and its ring keeps pulsing. Reduced motion shows it all
-     settled, no animation. */
+     the corner, skid and trail surface where it was missed, the trap fades
+     up, the marker lands last and its ring keeps pulsing. Reduced motion
+     shows it all settled, no animation. */
   @media (prefers-reduced-motion: no-preference) {
     .offtrack-line {
       stroke-dasharray: 100;
@@ -183,18 +234,20 @@ Astro.response.status = 404;
     }
     .offtrack-trail,
     .offtrack-skid,
+    .offtrack-lip,
     .offtrack-gravel,
     .offtrack-dot,
     .offtrack-label {
       opacity: 0;
     }
-    .offtrack-scene.in .offtrack-skid { animation: offtrack-in 0.6s ease 0.9s forwards; }
-    .offtrack-scene.in .offtrack-trail { animation: offtrack-in 0.7s ease 1.05s forwards; }
-    .offtrack-scene.in .offtrack-gravel { animation: offtrack-in 0.8s ease 1.25s forwards; }
+    .offtrack-scene.in .offtrack-skid { animation: offtrack-in 0.6s ease 0.85s forwards; }
+    .offtrack-scene.in .offtrack-trail { animation: offtrack-in 0.7s ease 1s forwards; }
+    .offtrack-scene.in .offtrack-lip,
+    .offtrack-scene.in .offtrack-gravel { animation: offtrack-in 0.8s ease 1.2s forwards; }
     .offtrack-scene.in .offtrack-dot,
-    .offtrack-scene.in .offtrack-label { animation: offtrack-in 0.5s ease 1.5s forwards; }
+    .offtrack-scene.in .offtrack-label { animation: offtrack-in 0.5s ease 1.45s forwards; }
     .offtrack-scene.in .offtrack-ring {
-      animation: offtrack-pulse 2.6s ease-out 1.8s infinite;
+      animation: offtrack-pulse 2.6s ease-out 1.75s infinite;
     }
   }
   @keyframes offtrack-draw {
@@ -203,8 +256,8 @@ Astro.response.status = 404;
   @keyframes offtrack-in {
     to { opacity: var(--to, 1); }
   }
-  .offtrack-trail { --to: 0.45; }
-  .offtrack-gravel { --to: 0.4; }
+  .offtrack-trail { --to: 0.7; }
+  .offtrack-gravel { --to: 0.55; }
   @keyframes offtrack-pulse {
     0% { transform: scale(0.4); opacity: 0.6; }
     70% { transform: scale(2.6); opacity: 0; }

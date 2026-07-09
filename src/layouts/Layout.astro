@@ -1,4 +1,9 @@
 ---
+// Self-hosted variable fonts (woff2 served from _astro with immutable
+// caching). The Google Fonts stylesheet was render-blocking for ~0.9s on
+// mobile — two third-party connections on the critical path.
+import '@fontsource-variable/oswald';
+import '@fontsource-variable/inter';
 import '../styles/global.css';
 import '../styles/components-bookings.css';
 import '../styles/components-concierge.css';
@@ -55,9 +60,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <!-- The brand tick — the red corner-apex mark (heavy top-left round).
          Transparent margin keeps it tick-sized in the tab, not a full tile. -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M13 3 A10 10 0 0 0 3 13 L13 13 Z' fill='%23E1121F'/%3E%3C/svg%3E" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..600;1,14..32,400..600&family=Oswald:wght@300..700&display=swap" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     {!hasSeoTags && (
       <>

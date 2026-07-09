@@ -19,8 +19,9 @@
   --color-cream: #E9E6DE;
   --color-error: #E5484D;
 
-  --font-display: Oswald;
-  --font-body: Inter;
+  /* Self-hosted @fontsource-variable faces (registered as "* Variable"). */
+  --font-display: "Oswald Variable", Oswald, sans-serif;
+  --font-body: "Inter Variable", Inter, system-ui, sans-serif;
 
   --radius-sm: 0.125rem;
   --radius-md: 0.25rem;

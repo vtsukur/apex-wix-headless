@@ -3,10 +3,18 @@ import Layout from "../layouts/Layout.astro";
 import { items } from "@wix/data";
 import { auth } from "@wix/essentials";
 import { renderRicos } from "../utils/ricos";
+import { cached } from "../utils/ssr-cache";
 
 // Collection ID resolved from the seeded CMS slice (.wix/seeded.json → cms.collectionIds.faq).
 // Native user collections take the bare name — no namespace prefix.
 const FAQ_COLLECTION_ID = "FAQ";
+
+// Same-for-everyone page, rarely-changing CMS content — cacheable at the
+// Wix edge for 5 minutes (stale-while-revalidate beyond that).
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=0, s-maxage=300, stale-while-revalidate=86400",
+);
 
 interface FaqEntry {
   _id: string;
@@ -46,27 +54,30 @@ function toAnchor(question: string, index: number): string {
   return slug || `question-${index + 1}`;
 }
 
-// Live @wix/data query at request time. Guarded: an uncaught SSR throw would
-// truncate the response stream mid-body, so fall back to the quiet notice below.
+// Live @wix/data query, cached across requests (5-min TTL, serve-stale).
+// Guarded: an uncaught SSR throw would truncate the response stream mid-body,
+// so fall back to the quiet notice below.
 // Ascending _createdDate preserves the seeded briefing order.
 let faqEntries: FaqEntry[] = [];
 try {
-  const elevatedQuery = auth.elevate(items.query);
-  const { items: results } = await elevatedQuery(FAQ_COLLECTION_ID)
-    .ascending("_createdDate")
-    .limit(100)
-    .find();
-  faqEntries = results
-    .map((item, index) => {
-      const question = ((item.question as string) ?? "").trim();
-      return {
-        _id: (item._id as string) ?? `faq-${index}`,
-        anchor: toAnchor(question, index),
-        question,
-        answerHtml: toHtml(item.answer),
-      };
-    })
-    .filter((entry) => entry.question && entry.answerHtml);
+  faqEntries = await cached("cms:faq", 5 * 60_000, async () => {
+    const elevatedQuery = auth.elevate(items.query);
+    const { items: results } = await elevatedQuery(FAQ_COLLECTION_ID)
+      .ascending("_createdDate")
+      .limit(100)
+      .find();
+    return results
+      .map((item, index) => {
+        const question = ((item.question as string) ?? "").trim();
+        return {
+          _id: (item._id as string) ?? `faq-${index}`,
+          anchor: toAnchor(question, index),
+          question,
+          answerHtml: toHtml(item.answer),
+        };
+      })
+      .filter((entry) => entry.question && entry.answerHtml);
+  });
 } catch (err) {
   console.error("[cms:FAQ] query failed:", err);
 }

@@ -3,10 +3,18 @@ import Layout from "../layouts/Layout.astro";
 import { items } from "@wix/data";
 import { auth } from "@wix/essentials";
 import { renderRicos } from "../utils/ricos";
+import { cached } from "../utils/ssr-cache";
 
 // Collection ID resolved from the seeded CMS slice (.wix/seeded.json → cms.collectionIds.about).
 // Native user collections take the bare name — no namespace prefix.
 const ABOUT_COLLECTION_ID = "About";
+
+// Same-for-everyone page, rarely-changing CMS content — cacheable at the
+// Wix edge for 5 minutes (stale-while-revalidate beyond that).
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=0, s-maxage=300, stale-while-revalidate=86400",
+);
 
 interface AboutContent {
   title: string;
@@ -35,22 +43,23 @@ function toHtml(value: unknown): string {
     .join("");
 }
 
-// Live @wix/data query at request time. Guarded: an uncaught SSR throw would
-// truncate the response stream mid-body, so fall back to the quiet notice below.
+// Live @wix/data query, cached across requests (5-min TTL, serve-stale).
+// Guarded: an uncaught SSR throw would truncate the response stream mid-body,
+// so fall back to the quiet notice below.
 let about: AboutContent | null = null;
 try {
-  const elevatedQuery = auth.elevate(items.query);
-  const { items: results } = await elevatedQuery(ABOUT_COLLECTION_ID)
-    .limit(1)
-    .find();
-  const item = results[0];
-  if (item) {
-    const bodyHtml = toHtml(item.body);
-    about = {
+  about = await cached("cms:about", 5 * 60_000, async () => {
+    const elevatedQuery = auth.elevate(items.query);
+    const { items: results } = await elevatedQuery(ABOUT_COLLECTION_ID)
+      .limit(1)
+      .find();
+    const item = results[0];
+    if (!item) return null;
+    return {
       title: ((item.title as string) ?? "").trim() || "The point of maximum commitment",
-      bodyHtml,
+      bodyHtml: toHtml(item.body),
     };
-  }
+  });
 } catch (err) {
   console.error("[cms:About] query failed:", err);
 }

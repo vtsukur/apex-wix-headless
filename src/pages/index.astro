@@ -8,8 +8,17 @@ import Layout from '../layouts/Layout.astro';
 import HeroFluid from '../components/HeroFluid.astro';
 import { services } from "@wix/bookings";
 import { auth } from "@wix/essentials";
+import { cached } from "../utils/ssr-cache";
 
 const BOOKING_APP_ID = "13d21c63-b5ec-5912-8397-c3a5ddb27a97";
+
+// The page is identical for every visitor and its data changes rarely — let
+// the Wix edge (Varnish/Fastly) serve HTML hits for 5 minutes, then a stale
+// copy while it revalidates. Ignored harmlessly if the edge doesn't cache.
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=0, s-maxage=300, stale-while-revalidate=86400",
+);
 
 // Organization + WebSite structured data — home page only.
 const structuredData = {
@@ -33,12 +42,15 @@ const structuredData = {
   ],
 };
 
-const result = await auth
-  .elevate(services.queryServices)()
-  .eq("appId", BOOKING_APP_ID)
-  .limit(8)
-  .find()
-  .catch((err: any) => { console.error("[home] programmes query failed:", err); return null; });
+// Cached across requests (5-min TTL, stale-while-revalidate) — the live
+// Bookings read was most of the ~1s in-grid SSR time on a warm pod.
+const result = await cached("home:programmes", 5 * 60_000, () =>
+  auth
+    .elevate(services.queryServices)()
+    .eq("appId", BOOKING_APP_ID)
+    .limit(8)
+    .find(),
+).catch((err: any) => { console.error("[home] programmes query failed:", err); return null; });
 
 const programmes: any[] = (result?.items ?? []).filter((s: any) => !s.hidden);
 
@@ -112,6 +124,16 @@ const fleet = [
     ],
   },
 ];
+
+// Responsive variants of the car stills — the fleet URLs point at the full
+// w_1376 crop, but phones only need ~480-768px. Derive a srcset by swapping
+// the Wix Media fill params (the 1376×768 aspect is preserved per width).
+const CAR_WIDTHS = [480, 768, 1024, 1376];
+const carSrcset = (url: string): string =>
+  CAR_WIDTHS.map((w) => {
+    const h = Math.round((w * 768) / 1376);
+    return `${url.replace(/w_\d+,h_\d+/, `w_${w},h_${h}`)} ${w}w`;
+  }).join(", ");
 ---
 <Layout>
   <script
@@ -133,7 +155,7 @@ const fleet = [
       <video
         data-hero-video
         class="hero-video"
-        poster="https://static.wixstatic.com/media/67964a_26a86398939b49f6b591c8dc0a03c37af002.jpg"
+        poster="https://static.wixstatic.com/media/67964a_26a86398939b49f6b591c8dc0a03c37af002.jpg/v1/fill/w_1600,h_900,q_80/poster.webp"
         data-src-desktop="https://video.wixstatic.com/video/67964a_26a86398939b49f6b591c8dc0a03c37a/720p/mp4/file.mp4"
         data-src-mobile="https://video.wixstatic.com/video/67964a_bab789da01e040619705a8490222cc5e/480p/mp4/file.mp4"
         autoplay
@@ -217,6 +239,8 @@ const fleet = [
               <div class="pin-car-media">
                 <img
                   src={car.image}
+                  srcset={carSrcset(car.image)}
+                  sizes="100vw"
                   alt={car.alt}
                   loading={i === 0 ? "eager" : "lazy"}
                   decoding="async"

@@ -136,6 +136,17 @@ Mitigations shipped:
 - Protocol: right after a release, plain URLs may legitimately serve the
   previous build for ≤5 min. Verify with a cache-buster (`?rv=...`); do
   NOT diagnose code from a poisoned pop.
+- Follow-up (same day): copies cached under the old header outlived their
+  TTL — the edge honors `stale-while-revalidate` (up to a day of grace),
+  and releases do NOT purge HTML. Un-purgeable poisoned copies were healed
+  by **pinning the old stylesheet hashes in `public/_astro/`** (the CSS
+  was unchanged; their JS refs were still valid). The site stylesheet is
+  now inlined into HTML (`build.inlineStylesheets: "always"`), so future
+  stale copies can't lose their styles at all.
+- Measurement caveat: every Lighthouse run against plain `/` samples the
+  edge-cache lottery. Confirm the served copy matches the current build
+  (grep a marker) before trusting a number — most of today's 82–88 "flap"
+  runs were actually measuring broken stale copies.
 
 ### 6. Drop Lenis + event-driven scroll FX — ✅ shipped 2026-07-09
 

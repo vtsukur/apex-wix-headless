@@ -217,7 +217,7 @@ lazy-mount (item 8 candidate).
 - Rejected: skipping the boot for `navigator.webdriver` — adaptive serving
   for bots would game the challenge's entry criteria.
 
-### 1+2 follow-up: self-hosted right-sized poster — ✅ shipped 2026-07-09
+### 1+2 follow-up: self-hosted right-sized poster — ↩️ PARTIALLY REVERTED 2026-07-09
 
 The LCP resource moved from static.wixstatic.com (third-party DNS+TLS on
 the critical path) to `public/media/hero-poster.webp` on our origin, and
@@ -229,10 +229,37 @@ builds. While the curtain is up, the boot's own first paint IS FCP/LCP,
 and its timing is bimodal in the local headless environment.
 
 **Measurement conclusion: local Lighthouse carries ±7 pts of environment
-noise centered ~87–91. Ground truth needs the real PSI (pagespeed.web.dev
-or an API key) before further optimization — risk of fitting noise.**
+noise centered ~87–91. PSI (pagespeed.web.dev, user-run) is the ground
+truth going forward — the challenge bot lives in that environment.**
 
-Next candidate that attacks the observed failure mode directly: drop the
-boot's 800ms fonts-race gate (obsolete now that the woff2s are preloaded)
-so `boot-play` — and with it the first contentful frame — fires
-immediately instead of after fonts→rAF scheduling.
+**Reversal (same day):** user-run PSI confirmed the same-origin poster
+DEGRADED real scores — the platform's static path revalidates every hit
+(~270ms TTFB) vs wixstatic's cached ~150ms, outweighing the third-party
+handshake saving. Poster is back on wixstatic, keeping the 1366×768 size
+win via URL params. `public/media/hero-poster.webp` stays in place as the
+antidote for stale edge HTML from the self-hosted window. Lesson: the
+platform's own image CDN beats self-hosting on this host — verify serving
+latency before moving any asset.
+
+### Fonts-race gate removed from the boot — ✅ shipped 2026-07-09
+
+While the curtain is up its first frame IS the page's FCP/LCP; the ≤800ms
+`document.fonts.ready` race before `boot-play` was pure scored delay now
+that the latin woff2s are preloaded. The timeline starts immediately.
+
+## Current plan (as of 2026-07-09 EOD)
+
+1. **Ground truth first:** user re-runs pagespeed.web.dev after the
+   poster reversal + fonts-gate removal. No further optimization until
+   those numbers are in — local LH is directional only.
+2. If PSI floor is ≥90: stop; keep the cache warmer running; spot-check
+   PSI before the challenge submission.
+3. If PSI floor is <90, take from the backlog in this order:
+   item 9 (boot canvas later start) → item 10 (lazy fleet stills) →
+   item 5 (CTA background) → item 13 (curtain → 1.5s, taste approval
+   needed) → item 11 (fleet content-visibility, moderate risk) →
+   item 12 (Concierge lazy-mount, last resort — demo-feature risk).
+4. Standing rules: verify releases via `?rv=` cache-buster; plain URLs
+   may serve the previous build ≤5 min; every release 404s old hashed
+   assets (keep the `public/_astro/` + `public/media/` pins until the
+   grace-period copies are gone).

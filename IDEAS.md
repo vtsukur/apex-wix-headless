@@ -77,8 +77,10 @@ the members area.
 ## Craft garnish (cheap, memorable, very shareable)
 
 ### 10. The 404 run-off area
-"You've gone off track" — gravel trap, racing line guiding you back. Judges
-*will* type a bad URL; also closes a real gap (there is no 404 page today).
+✅ **Shipped.** "You've gone off track" — the racing line draws the corner, a
+dashed trail misses it and dies in the gravel trap, a pulsing marker says
+*you are here*, a ghost 404 board sits behind. Echoes the missed path
+("No timing data for /…"), returns a real 404 status, noindex.
 
 ### 11. RPM scroll gauge
 A rev counter in the nav that revs with scroll velocity and "shifts" on page
@@ -111,8 +113,8 @@ published and the only CI workflow is the cache warmer.
 
 ~~The Concierge (#1)~~ — ✅ shipped; the headline is live.
 
-1. **Agents page + 404 + Colophon (#2, #10, #13)** — one polish day that
-   compounds what's already shipped and closes real gaps.
+1. **Agents page + Colophon (#2, #13)** — cheap leverage that compounds
+   what's already shipped (404 ✅ done).
 2. **Timing-tower calendar + Grid Pass (#3, #4)** — the core flow becomes the
    portfolio piece.
 3. **The Paddock (#6)** — biggest breadth unlock.

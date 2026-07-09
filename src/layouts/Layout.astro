@@ -218,15 +218,15 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       const rpmBar = document.querySelector<HTMLElement>("[data-nav-progress]");
       let rev = 0;
       let rpmRaf = 0;
-      let rpmLastY = 0;
+      let rpmAcc = 0; // distance banked by the scroll handler, spent per tick
+      let rpmLastY = window.scrollY;
       let rpmLastT = 0;
       let redlineAt = 0;
       function rpmTick(now: number) {
         const dt = Math.max(now - rpmLastT, 1);
         rpmLastT = now;
-        const y = window.scrollY;
-        const v = Math.abs(y - rpmLastY) / dt; // px per ms
-        rpmLastY = y;
+        const v = rpmAcc / dt; // px per ms
+        rpmAcc = 0;
         const target = Math.min(v / 3.5, 1);
         rev = target > rev ? rev + (target - rev) * 0.35 : rev * Math.pow(0.994, dt);
         if (rev > 0.92) {
@@ -257,8 +257,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         window.addEventListener(
           "scroll",
           () => {
+            // Bank the delta here (measured against a persistent baseline) —
+            // the tick loop starts and stops, the odometer never does.
+            const y = window.scrollY;
+            rpmAcc += Math.abs(y - rpmLastY);
+            rpmLastY = y;
             if (rpmRaf) return;
-            rpmLastY = window.scrollY;
             rpmLastT = performance.now();
             rpmRaf = requestAnimationFrame(rpmTick);
           },
@@ -270,6 +274,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           rpmBar.classList.remove("redline");
           rpmBar.style.removeProperty("transform");
           rpmBar.style.removeProperty("opacity");
+        });
+        // A swap teleports the scroll position — rebaseline, don't rev.
+        document.addEventListener("astro:after-swap", () => {
+          rpmLastY = window.scrollY;
+          rpmAcc = 0;
         });
       }
 

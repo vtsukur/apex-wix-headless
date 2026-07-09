@@ -882,7 +882,7 @@ body[data-navigating="true"] .product-grid {
   transition: color 300ms ease;
 }
 .index-row:hover .index-row-arrow { color: var(--color-accent); }
-/* "Book!" rides the cursor over session rows (element created and moved in
+/* "Book" rides the cursor over session rows (element created and moved in
    index.astro) — the Book a drive button's text voice, sized up, in accent
    red. */
 .cursor-book {

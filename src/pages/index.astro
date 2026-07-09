@@ -490,7 +490,7 @@ const carSrcset = (url: string): string =>
   initRowFilms();
   document.addEventListener("astro:page-load", initRowFilms);
 
-  // "Book!" rides the cursor across the session rows — the Book a drive
+  // "Book" rides the cursor across the session rows — the Book a drive
   // button's voice, sized up, in accent red, trailing just right of the
   // pointer (flipping to its left near the viewport edge).
   function initBookCursor() {
@@ -499,7 +499,7 @@ const carSrcset = (url: string): string =>
     if (window.matchMedia("(hover: none), (pointer: coarse)").matches) return;
     const tag = document.createElement("span");
     tag.className = "cursor-book";
-    tag.textContent = "Book!";
+    tag.textContent = "Book";
     tag.setAttribute("aria-hidden", "true");
     document.body.appendChild(tag);
     window.addEventListener(

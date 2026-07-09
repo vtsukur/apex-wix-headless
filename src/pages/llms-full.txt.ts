@@ -130,7 +130,7 @@ documents each MCP tool, or call tools/list on the endpoint directly.
       "Content-Type": "text/plain; charset=utf-8",
       // Same edge-cache policy as the HTML pages — agents get a fast read,
       // content revalidates within the half hour.
-      "Cache-Control": "public, max-age=0, s-maxage=1800, stale-while-revalidate=86400",
+      "Cache-Control": "public, max-age=0, s-maxage=300",
     },
   });
 };

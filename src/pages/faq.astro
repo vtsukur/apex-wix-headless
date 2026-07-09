@@ -10,10 +10,11 @@ import { cached } from "../utils/ssr-cache";
 const FAQ_COLLECTION_ID = "FAQ";
 
 // Same-for-everyone page, rarely-changing CMS content — cacheable at the
-// Wix edge for 30 minutes (stale-while-revalidate beyond that).
+// Wix edge for 5 minutes. Kept SHORT: every release 404s the previous
+// build's hashed assets, so stale edge HTML is a broken page.
 Astro.response.headers.set(
   "Cache-Control",
-  "public, max-age=0, s-maxage=1800, stale-while-revalidate=86400",
+  "public, max-age=0, s-maxage=300",
 );
 
 interface FaqEntry {

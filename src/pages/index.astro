@@ -165,6 +165,7 @@ const carSrcset = (url: string): string =>
         loop
         playsinline
         preload="auto"
+        fetchpriority="high"
       ></video>
       <script is:inline data-astro-rerun>
         for (const v of document.querySelectorAll("video[data-src-desktop]:not([src])")) {

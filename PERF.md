@@ -20,18 +20,38 @@ CLS 0.011 · doc 90 ms. Desktop: 81 (TBT/main-thread-bound).
 
 ## Items
 
-### 1. Defer the hero video out of the measurement window — 🔄 in progress
+### 1. Defer the hero video out of the measurement window — ✅ shipped 2026-07-09 (partial win)
 
 `preload="none"`, no `src` at parse time; the rendition is attached after
 `window.load` + idle (skipped entirely under `prefers-reduced-motion`).
-Poster (35 KB webp) preloaded in `<head>` with `fetchpriority=high` → LCP
-becomes a deterministic poster paint instead of a race. Coupled change:
-the boot curtain now gates on **poster decode** (3 s cap) instead of hero
-video `readyState ≥ 3` (8 s cap) — mandatory, or the curtain would hang
-waiting for a video that no longer loads at startup. The 3.2 s min-hold is
-unchanged (item 2 decides that separately).
+Poster (35 KB webp) preloaded in `<head>` with `fetchpriority=high`.
+Coupled change: the boot curtain now gates on **poster decode** (3 s cap)
+instead of hero video `readyState ≥ 3` (8 s cap) — mandatory, or the
+curtain would hang waiting for a video that no longer loads at startup.
+The 3.2 s min-hold is unchanged (item 2 decides that separately).
 
-**Result:** _pending measurement._
+**Result (3 runs):** score 84/84/88 — Speed Index stabilized (4.1–4.3 s,
+was 4.3–6.1 s) and the good-vs-bad-run lottery is gone, but the score
+didn't clear 90 because LCP render delay stayed ~1.8 s in every run.
+**Diagnosis was incomplete** — see "Revised diagnosis" below. Keeping the
+change: correct hygiene, saves real-user bandwidth, stabilized SI.
+
+## Revised diagnosis (2026-07-09, after item 1)
+
+The ~1.8 s LCP *element render delay* survives with the video deferred AND
+with the boot curtain + all animations disabled (`--force-prefers-reduced-motion`
+run: still 87, render delay 1,844 ms). So it is not the network race and
+not the boot screen — it is the **simulated main-thread critical path**
+(4× CPU throttle) between first paint and the poster's paint:
+
+- `Layout.astro` script bundle: **1,351 ms total, only 275 ms of it JS** —
+  ~1.1 s is style/layout/paint triggered by its startup work (Lenis smooth
+  scroll, data-reveal observers, parallax + film orchestration measuring a
+  five-viewport page).
+- Page-wide: Style & Layout 515 ms, Rendering 334 ms, "Other" 1,086 ms
+  observed (≈ 4× that simulated).
+
+New items 6–7 below target this directly.
 
 ### 2. Trim the boot-curtain minimum hold — ⏸ pending (taste decision)
 
@@ -58,6 +78,22 @@ guarantee instead of a coincidence.
 `global.css` ships a fixed `w_1920` 166 KB jpg to every viewport as a CSS
 background. Swap to media-queried variants (or `image-set()`) — ~120 KB
 saved on phones.
+
+### 6. Defer the Layout script's heavy init until after first paint — ⬜ todo (top candidate)
+
+Lenis smooth-scroll, reveal observers, parallax and film orchestration all
+initialize at startup and force ~1.1 s of style/layout on a five-viewport
+page — this sits in the LCP critical path. Move the expensive setup behind
+`requestIdleCallback`/first-frame so the poster paints first. Expected: the
+~1.8 s render delay collapses; this is the direct fix for what item 1
+turned out not to be.
+
+### 7. `content-visibility: auto` on below-fold scenes — ⬜ todo
+
+Scenes 2–5 (fleet, programmes, philosophy, CTA) are viewports below the
+fold but still get full style/layout/paint at startup. `content-visibility`
+skips that work until approached. Caution: the pinned fleet section drives
+scroll math — apply scene-by-scene and re-test the pin behavior.
 
 ## Measurement protocol
 

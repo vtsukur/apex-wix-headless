@@ -53,14 +53,14 @@ export const GET: APIRoute = async ({ site }) => {
 
 ## Pages
 
-- [Home](${abs("/")}): the marque, the fleet, and current programmes
+- [Home](${abs("/")}): the marque, the fleet, and current sessions
 - [Sessions](${abs("/services")}): the full catalog of bookable driving experiences
 - [About](${abs("/about")}): who APEX is and how a session runs
 - [FAQ](${abs("/faq")}): experience requirements, deposit and cancellation policy, what happens on the day
 - [Full content for agents](${abs("/llms-full.txt")}): this map plus the complete About story and FAQ, live-generated
 
 ## Sessions
-${sessionLines.length ? "\n" + sessionLines.join("\n") : "\n- See the [Sessions catalog](" + abs("/services") + ") for current programmes and prices."}
+${sessionLines.length ? "\n" + sessionLines.join("\n") : "\n- See the [Sessions catalog](" + abs("/services") + ") for current sessions and prices."}
 
 ## AI Agent Access (Model Context Protocol)
 

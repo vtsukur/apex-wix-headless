@@ -172,7 +172,7 @@ const serviceStructuredData = JSON.stringify({
 // service image stays the poster; the film fades in over it once playing.
 const film = filmFor(serviceName);
 const mediaPos = film?.pos ? `object-position: ${film.pos}` : undefined;
-// "CAR · programme" titles break onto two lines: the car, then what it is.
+// "CAR · session" titles break onto two lines: the car, then what it is.
 const nameDot = serviceName.indexOf(" · ");
 
 // Staff for the optional instructor picker — carried on the service via the
@@ -227,11 +227,11 @@ try {
         href="/services"
         class="inline-block text-sm text-mute hover:text-ink mb-4 md:mb-0 md:justify-self-center"
       >← All sessions</a>
-      <p class="eyebrow w-full justify-center md:w-auto">The programme</p>
+      <p class="eyebrow w-full justify-center md:w-auto">The session</p>
     </div>
 
     <!-- Card hero — the home fleet card, stretched: name top-left with the
-         programme line as its subline, service tagline top-right, car stats
+         session line as its subline, service tagline top-right, car stats
          bottom-left, book CTA bottom-right, the film fading in over the
          still. Image-less services fall back to the warm-paper ground.
          The frame is unclipped so the apex cut can straddle the card's

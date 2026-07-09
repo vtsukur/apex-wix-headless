@@ -395,7 +395,7 @@ const carSrcset = (url: string): string =>
           <br />
           Every session pairs you with an instructor who lives on that edge — and teaches you to hold it.
         </p>
-        <a href="/about" class="btn-secondary" data-fluid data-reveal style="--d:280ms">The story behind APEX</a>
+        <a href="/about" class="btn-secondary" data-fluid data-reveal style="--d:280ms">The story</a>
       </div>
     </div>
   </section>
@@ -403,7 +403,11 @@ const carSrcset = (url: string): string =>
   <!-- Scene 5 — final call -->
   <section class="scene cv-auto" aria-label="Book">
     <div class="container-wide flex flex-col gap-10 items-center text-center">
-      <h2 class="display-hero" data-reveal>The grid<br />is open<span class="accent-dot" data-fluid aria-hidden="true"></span></h2>
+      <!-- The dot laps the heading — one corner per beat, its rounded corner
+           tracking the corner it sits in, while the text holds still. -->
+      <h2 class="display-hero grid-dot-stage" data-reveal>
+        The grid<br />is open<span class="grid-dot grid-dot-br" data-fluid aria-hidden="true"></span><span class="grid-dot grid-dot-bl" data-fluid aria-hidden="true"></span><span class="grid-dot grid-dot-ul" data-fluid aria-hidden="true"></span><span class="grid-dot grid-dot-ur" data-fluid aria-hidden="true"></span>
+      </h2>
       <a href="/services" class="btn-primary" data-reveal style="--d:200ms">Book a drive</a>
     </div>
   </section>

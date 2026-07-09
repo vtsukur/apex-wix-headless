@@ -1,7 +1,7 @@
 // GET /sitemap.xml — static pages plus one entry per live bookable service.
 // Service slugs come from Wix Bookings at request time, so the sitemap tracks
 // the catalog without a rebuild. A failed query degrades to the static pages
-// (non-fatal, same policy as the home programmes query).
+// (non-fatal, same policy as the home sessions query).
 import type { APIRoute } from "astro";
 import { services } from "@wix/bookings";
 import { auth } from "@wix/essentials";

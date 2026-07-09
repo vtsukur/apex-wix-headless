@@ -453,6 +453,36 @@ body[data-navigating="true"] .product-grid {
   height: 0.22em;
   margin-left: 0.09em;
 }
+/* Scene 5's dot laps "The grid is open" — it fades up in one corner of the
+   heading, fades out, and reappears in the next (BR → BL → UL → UR), the
+   rounded corner always pointing out of the corner it occupies. The text
+   never moves; four fixed dots share one staggered opacity loop. */
+.grid-dot-stage {
+  position: relative;
+}
+.grid-dot {
+  position: absolute;
+  width: 0.14em;
+  height: 0.14em;
+  background: var(--color-accent);
+  opacity: 0;
+  animation: grid-dot-lap 6s linear infinite;
+}
+.grid-dot-br { right: -0.19em; bottom: 0.08em; border-radius: 0 0 100% 0; }
+.grid-dot-bl { left: -0.19em; bottom: 0.08em; border-radius: 0 0 0 100%; animation-delay: 1.5s; }
+.grid-dot-ul { left: -0.19em; top: 0.12em; border-radius: 100% 0 0 0; animation-delay: 3s; }
+.grid-dot-ur { right: -0.19em; top: 0.12em; border-radius: 0 100% 0 0; animation-delay: 4.5s; }
+@keyframes grid-dot-lap {
+  0% { opacity: 0; }
+  6% { opacity: 1; }
+  21% { opacity: 1; }
+  27% { opacity: 0; }
+  100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .grid-dot { animation: none; }
+  .grid-dot-br { opacity: 1; }
+}
 
 /* Full-viewport scene (Pagani pacing — one idea per screen). */
 .scene {
@@ -577,7 +607,7 @@ body[data-navigating="true"] .product-grid {
 @media (prefers-reduced-motion: reduce) {
   .detail-apex-cut { animation: none; }
 }
-/* The programme line rides under the car name, an order quieter. */
+/* The session line rides under the car name, an order quieter. */
 .detail-title-sub {
   display: block;
   margin-top: 0.4em;
@@ -755,7 +785,7 @@ body[data-navigating="true"] .product-grid {
   color: var(--color-mute);
 }
 
-/* Programme index rows — editorial listing with a kinetic hover (Exo Ape). */
+/* Session index rows — editorial listing with a kinetic hover (Exo Ape). */
 .index-row {
   display: grid;
   grid-template-columns: 3.5rem 1fr auto;
@@ -805,7 +835,7 @@ body[data-navigating="true"] .product-grid {
     transform 600ms cubic-bezier(0.16, 1, 0.3, 1),
     padding 500ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-/* Hovered programme row swells to roughly three times its height — more
+/* Hovered session row swells to roughly three times its height — more
    stage for the ghost film behind it. Hover-capable pointers only. */
 @media (hover: hover) {
   .index-row:hover {

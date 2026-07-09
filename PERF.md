@@ -95,7 +95,7 @@ fails the run (free uptime alerting). Required making the repo public for
 unlimited Actions minutes (history secret-scanned first: the only value
 found, WIX_CLIENT_ID, is public by design — it ships in the client JS).
 
-### 5. CTA band background image — ⬜ todo
+### 5. Garage background image (scene-why) — ✅ shipped 2026-07-09
 
 `global.css` ships a fixed `w_1920` 166 KB jpg to every viewport as a CSS
 background. Swap to media-queried variants (or `image-set()`) — ~120 KB
@@ -200,18 +200,20 @@ lazy-mount (item 8 candidate).
 
 ## Backlog (suggested 2026-07-09, not yet approved for build-out)
 
-- **9. Boot canvas later start** — currently 2 frames; start ~300–400ms in
-  (or on a first-paint signal) to free the exact frames where the poster
-  rasters. Tiny visual cost.
-- **10. Fleet stills all `loading="lazy"`** — the first car is `eager` but
-  sits two viewports down (leftover from before the pinned redesign).
+- **9. Boot canvas later start** — ✅ shipped 2026-07-09: starts 350ms in;
+  the wordmark rise owns the opening beat, the line joins behind it.
+- **10. Fleet stills all `loading="lazy"`** — ✅ shipped 2026-07-09.
 - **11. Fleet stage `content-visibility`** — the largest remaining initial
   layout block; needs a `contentvisibilityautostatechange`-triggered
   rescan of the pin scroll math. Moderate risk, re-test the pin behavior.
 - **12. Concierge lazy-mount** (a.k.a. item 8) — ~44KB gz React + hydration
   off startup; needs hand-rolled persist across ClientRouter navigations
   and a first-tap loading state. Only if the floor still touches 88.
-- **13. Curtain 2.0s → ~1.5s** — SI carries the hold ~1:1; pure taste call.
+- **13. Curtain hold** — ✅ shipped 2026-07-09 (user-specced): 1.5s on
+  phones (the scored environment), 2.0s on desktop. Plus the handoff
+  flight + curve morph 950ms → 600ms with landing timers rekeyed and the
+  veil dissolve fitted inside the flight — the exit reads snappier on
+  both breakpoints.
 - **14. Real-user (not score): re-encode the 2.4MB mobile hero MP4; honor
   `Save-Data` by never attaching films.**
 - Rejected: skipping the boot for `navigator.webdriver` — adaptive serving
@@ -263,3 +265,12 @@ that the latin woff2s are preloaded. The timeline starts immediately.
    may serve the previous build ≤5 min; every release 404s old hashed
    assets (keep the `public/_astro/` + `public/media/` pins until the
    grace-period copies are gone).
+
+## Backlog sweep shipped 2026-07-09 (items 5, 9, 10, 13)
+
+One release: boot canvas +350ms start, curtain 1.5s mobile / 2.0s desktop,
+600ms handoff flight/morph, all fleet stills lazy, garage background
+media-queried (828/1440/1920). PSI was already >90 before this sweep —
+these bank margin. Remaining last-resorts, untouched by design: item 11
+(fleet content-visibility) and item 12 (Concierge lazy-mount).
+Verification: user-run pagespeed.web.dev after the edge cache rolls over.

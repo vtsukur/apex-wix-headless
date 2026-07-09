@@ -9,7 +9,8 @@
 // display:none unless the head script set `html.booting` before first paint).
 // Reduced motion skips it entirely, and the head script's watchdog clears it
 // even if this module fails. When a hero film is on the page, the curtain
-// holds until the film can play through (8s network failsafe).
+// holds until the hero poster has decoded (3s network failsafe) — the film
+// itself attaches after load+idle and never gates the curtain.
 const LETTERS = "APEX".split("");
 ---
 <div class="boot" aria-hidden="true">
@@ -345,24 +346,29 @@ const LETTERS = "APEX".split("");
     requestAnimationFrame(() => requestAnimationFrame(() => startCanvas()));
     // Wait for the display font (capped) so the wordmark never flashes in a
     // fallback face mid-animation, then run the timeline: rise → hold (gated
-    // on the hero film when one is on the page) → handoff: wordmark flies to
-    // the brand slot, line morphs onto the header curve, veil dissolves →
-    // landing crossfade → cleanup. The video gate is failsafed at 8s so a
-    // slow network can never hold the page hostage.
+    // on the hero POSTER when one is on the page — the film itself attaches
+    // after load+idle and must never hold the curtain) → handoff: wordmark
+    // flies to the brand slot, line morphs onto the header curve, veil
+    // dissolves → landing crossfade → cleanup. The poster gate is failsafed
+    // at 3s so a slow network can never hold the page hostage.
     const fontsReady: Promise<unknown> = (document as any).fonts?.ready ?? Promise.resolve();
     Promise.race([fontsReady, new Promise((r) => setTimeout(r, 800))]).then(() => {
       requestAnimationFrame(() => {
         boot.classList.add("boot-play");
         const minHold = new Promise((r) => setTimeout(r, 3200));
         const video = document.querySelector("[data-hero-video]") as HTMLVideoElement | null;
-        const videoReady =
-          !video || video.readyState >= 3
-            ? Promise.resolve()
-            : Promise.race([
-                new Promise((r) => document.addEventListener("apex:hero-video-ready", r, { once: true })),
-                new Promise((r) => setTimeout(r, 8000)),
-              ]);
-        Promise.all([minHold, videoReady]).then(() => {
+        const posterUrl = video?.getAttribute("poster");
+        const posterReady = !posterUrl
+          ? Promise.resolve()
+          : Promise.race([
+              (() => {
+                const img = new Image();
+                img.src = posterUrl;
+                return img.decode().catch(() => {});
+              })(),
+              new Promise((r) => setTimeout(r, 3000)),
+            ]);
+        Promise.all([minHold, posterReady]).then(() => {
           // FLIP — measure the flight from the loader mark to the header
           // brand before anything moves; the CSS transition carries it.
           const mark = boot.querySelector(".boot-mark") as HTMLElement | null;

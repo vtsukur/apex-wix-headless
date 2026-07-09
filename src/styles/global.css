@@ -464,6 +464,15 @@ body[data-navigating="true"] .product-grid {
   padding-block: 6rem;
   overflow: hidden;
 }
+/* Below-fold scenes skip style/layout/paint until the scroll approaches —
+   the initial render of a five-viewport page sat squarely in the LCP
+   critical path. `auto` keeps the real size once rendered; the 100svh
+   estimate matches a scene's minimum footprint before that. NOT applied to
+   the pinned fleet stage (its scroll math measures real layout). */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100svh;
+}
 /* Mobile — non-hero scenes size to content with tighter padding instead of
    commanding a full viewport each. */
 @media (max-width: 767px) {

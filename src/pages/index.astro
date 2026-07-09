@@ -127,6 +127,12 @@ const fleet = [
   },
 ];
 
+// The hero poster carries the first paint of the hero — preloaded in <head>
+// with fetchpriority=high so it never queues behind other requests. The film
+// itself attaches after load+idle (see the deferral script by the video).
+const HERO_POSTER =
+  "https://static.wixstatic.com/media/67964a_26a86398939b49f6b591c8dc0a03c37af002.jpg/v1/fill/w_1600,h_900,q_80/poster.webp";
+
 // Responsive variants of the car stills — the fleet URLs point at the full
 // w_1376 crop, but phones only need ~480-768px. Derive a srcset by swapping
 // the Wix Media fill params (the 1376×768 aspect is preserved per width).
@@ -144,6 +150,7 @@ const carSrcset = (url: string): string =>
     is:inline
     set:html={JSON.stringify(structuredData)}
   />
+  <link slot="head" rel="preload" as="image" href={HERO_POSTER} fetchpriority="high" />
   <!-- Scene 1 — hero: TH-12 lap film (Wix Media) + parallax exit. The video is
        NOT in the repo — it lives in the site's Wix Media and streams from the
        wixstatic CDN. The boot curtain waits for it (BootScreen.astro). -->
@@ -151,28 +158,46 @@ const carSrcset = (url: string): string =>
     <div class="hero-scene" aria-hidden="true">
       {/* Desktop: 720p/24fps low-bitrate encode; phones: the purpose-made
           480p encode. The original 720p master stays in Wix Media for easy
-          revert: 67964a_d30f1f2be4584a65924f05e849b1df3a. No src in markup —
-          the inline script right below picks the rendition synchronously
-          before any video bytes are fetched. */}
+          revert: 67964a_d30f1f2be4584a65924f05e849b1df3a. No src in markup
+          and preload=none — the film stays OFF the startup path (it competed
+          with the poster and boot for bandwidth/decode during the LCP
+          window); the deferral script below attaches the rendition after
+          load+idle. The preloaded poster carries the first paint. */}
       <video
         data-hero-video
         class="hero-video"
-        poster="https://static.wixstatic.com/media/67964a_26a86398939b49f6b591c8dc0a03c37af002.jpg/v1/fill/w_1600,h_900,q_80/poster.webp"
+        poster={HERO_POSTER}
         data-src-desktop="https://video.wixstatic.com/video/67964a_26a86398939b49f6b591c8dc0a03c37a/720p/mp4/file.mp4"
         data-src-mobile="https://video.wixstatic.com/video/67964a_bab789da01e040619705a8490222cc5e/480p/mp4/file.mp4"
-        autoplay
         muted
         loop
         playsinline
-        preload="auto"
+        preload="none"
         fetchpriority="high"
       ></video>
       <script is:inline data-astro-rerun>
-        for (const v of document.querySelectorAll("video[data-src-desktop]:not([src])")) {
-          v.src = matchMedia("(max-width: 767px)").matches
-            ? v.dataset.srcMobile
-            : v.dataset.srcDesktop;
-        }
+        // Attach the hero rendition after load + idle. Under the boot curtain
+        // playback stays parked — the apex:boot-done handler (page module
+        // below) starts the lap at reveal. Reduced motion skips the film
+        // entirely; the poster holds the frame.
+        (() => {
+          const attach = () => {
+            const v = document.querySelector("video[data-hero-video]:not([src])");
+            if (!v || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+            v.src = matchMedia("(max-width: 767px)").matches
+              ? v.dataset.srcMobile
+              : v.dataset.srcDesktop;
+            if (!document.documentElement.classList.contains("booting")) {
+              v.play().catch(() => {});
+            }
+          };
+          const idle = () =>
+            "requestIdleCallback" in window
+              ? window.requestIdleCallback(attach, { timeout: 2500 })
+              : setTimeout(attach, 200);
+          if (document.readyState === "complete") idle();
+          else addEventListener("load", idle, { once: true });
+        })();
       </script>
       <div class="hero-video-scrim"></div>
       <HeroFluid />
@@ -251,16 +276,18 @@ const carSrcset = (url: string): string =>
                 />
                 {/* The film layer — fades in over the still once the car is
                     in focus and actually playing (driven in Layout.astro).
-                    Same cover crop as the still; preloads in the background
-                    without gating the boot loader. Src is picked by the
-                    inline rendition script (480p phones / 720p desktop). */}
+                    Same cover crop as the still; preload=none keeps its
+                    ~0.5MB off the startup path — initFleetWarm buffers it
+                    when the stage comes within a viewport of the scroll.
+                    Src is picked by the inline rendition script (480p
+                    phones / 720p desktop). */}
                 <video
                   data-src-desktop={car.video}
                   data-src-mobile={car.videoMobile}
                   muted
                   loop
                   playsinline
-                  preload="auto"
+                  preload="none"
                   aria-hidden="true"
                   style={"pos" in car && car.pos ? `object-position: ${car.pos}` : undefined}
                 />
@@ -281,7 +308,7 @@ const carSrcset = (url: string): string =>
 
   <!-- home:bookings -->
   <!-- Scene 3 — the programmes (live from Wix Bookings) -->
-  <section id="programmes" class="scene" aria-label="The programmes">
+  <section id="programmes" class="scene cv-auto" aria-label="The programmes">
     <div class="container-wide flex flex-col gap-14">
       <div class="flex flex-col gap-5" data-reveal>
         <p class="eyebrow w-full justify-center">The programmes</p>
@@ -352,7 +379,7 @@ const carSrcset = (url: string): string =>
   </section>
 
   <!-- Scene 4 — philosophy -->
-  <section class="scene scene-why border-t border-rule" aria-label="Philosophy" style="background-color: var(--color-paper-warm);">
+  <section class="scene scene-why cv-auto border-t border-rule" aria-label="Philosophy" style="background-color: var(--color-paper-warm);">
     <div class="container-wide flex flex-col gap-10 items-start">
       <p class="eyebrow why-eyebrow" data-reveal>Why Apex</p>
       <div class="why-row">
@@ -368,17 +395,18 @@ const carSrcset = (url: string): string =>
   </section>
 
   <!-- Scene 5 — final call -->
-  <section class="scene" aria-label="Book">
+  <section class="scene cv-auto" aria-label="Book">
     <div class="container-wide flex flex-col gap-10 items-center text-center">
       <h2 class="display-hero" data-reveal>The grid<br />is open<span class="accent-dot" data-fluid aria-hidden="true"></span></h2>
       <a href="/services" class="btn-primary" data-reveal style="--d:200ms">Book a drive</a>
     </div>
   </section>
 
-  {/* Rendition pick for the fleet + programme films parsed after the hero's
-      own script ran (480p on phones, 720p on desktop). */}
+  {/* Rendition pick for the fleet + programme films (480p on phones, 720p on
+      desktop). The hero is excluded — its rendition attaches after load+idle
+      via the deferral script next to it. */}
   <script is:inline data-astro-rerun>
-    for (const v of document.querySelectorAll("video[data-src-desktop]:not([src])")) {
+    for (const v of document.querySelectorAll("video[data-src-desktop]:not([src]):not([data-hero-video])")) {
       v.src = matchMedia("(max-width: 767px)").matches
         ? v.dataset.srcMobile
         : v.dataset.srcDesktop;
@@ -394,34 +422,45 @@ const carSrcset = (url: string): string =>
     const video = document.querySelector<HTMLVideoElement>("[data-hero-video]:not([data-init])");
     if (!video) return;
     video.dataset.init = "1";
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      video.removeAttribute("autoplay");
-      video.pause();
-    }
-    // With the loader up, hold the film on frame zero and start it only when
-    // the curtain finishes (apex:boot-done) — the lap begins at reveal, not
-    // behind the veil. Failsafe mirrors the head watchdog in case the boot
-    // module died and only the watchdog cleared the curtain.
+    // The film's src attaches after load+idle (deferral script by the video);
+    // under prefers-reduced-motion it never attaches and the poster holds.
+    // With the loader up, hold playback and start it only when the curtain
+    // finishes (apex:boot-done) — the lap begins at reveal, not behind the
+    // veil. Failsafe mirrors the head watchdog in case the boot module died
+    // and only the watchdog cleared the curtain.
     if (document.documentElement.classList.contains("booting")) {
-      video.pause();
-      try {
-        video.currentTime = 0;
-      } catch {}
       const start = () => video.play().catch(() => {});
       document.addEventListener("apex:boot-done", start, { once: true });
       setTimeout(() => {
         if (video.paused && !document.documentElement.classList.contains("booting")) start();
       }, 14000);
     }
-    const announce = () => document.dispatchEvent(new CustomEvent("apex:hero-video-ready"));
-    if (video.readyState >= 3) announce();
-    else {
-      video.addEventListener("canplaythrough", announce, { once: true });
-      video.addEventListener("error", announce, { once: true });
-    }
   }
   initHeroVideo();
   document.addEventListener("astro:page-load", initHeroVideo);
+
+  // Fleet films are preload=none (1.8MB that used to download at startup) —
+  // pre-warm them only when the pinned stage is within a viewport of the
+  // scroll, so the focus car's film is buffered by the time its beat plays.
+  function initFleetWarm() {
+    const stage = document.querySelector<HTMLElement>("[data-pin-stage]:not([data-warm])");
+    if (!stage) return;
+    stage.dataset.warm = "1";
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        stage.querySelectorAll<HTMLVideoElement>(".pin-car-media video").forEach((v) => {
+          v.preload = "auto";
+          v.load();
+        });
+      },
+      { rootMargin: "100% 0px" },
+    );
+    io.observe(stage);
+  }
+  initFleetWarm();
+  document.addEventListener("astro:page-load", initFleetWarm);
 
   // Programme-row films — the car's fleet clip ghosts behind its row while
   // the cursor rests on it (CSS fades it; playback needs JS). Desktop only.

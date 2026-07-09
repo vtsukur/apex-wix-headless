@@ -148,15 +148,26 @@ function buildCartRequest(args: {
   if (args.businessLocationId)
     cart.businessInfo = { locationId: args.businessLocationId };
   if (args.contactDetails) {
-    cart.customerInfo = args.contactDetails.email
-      ? { email: args.contactDetails.email }
-      : {};
-    if (args.contactDetails.fullAddress?.country) {
-      cart.deliveryInfo = { address: { ...args.contactDetails.fullAddress } };
-      cart.paymentInfo = {
-        billingAddress: { ...args.contactDetails.fullAddress },
-      };
+    // Carry the booking's contact through to the cart. The Cart V2 id doubles
+    // as the checkoutId on the redirect, so customerInfo + billingContact are
+    // what prefill the hosted checkout's contact and billing forms — the
+    // visitor never re-types what the booking form already asked.
+    const cd = args.contactDetails;
+    const contact: any = {};
+    if (cd.firstName) contact.firstName = cd.firstName;
+    if (cd.lastName) contact.lastName = cd.lastName;
+    if (cd.phone) contact.phone = cd.phone;
+    cart.customerInfo = {
+      ...(cd.email ? { email: cd.email } : {}),
+      ...contact,
+    };
+    const paymentInfo: any = {};
+    if (Object.keys(contact).length) paymentInfo.billingContact = contact;
+    if (cd.fullAddress?.country) {
+      cart.deliveryInfo = { address: { ...cd.fullAddress } };
+      paymentInfo.billingAddress = { ...cd.fullAddress };
     }
+    if (Object.keys(paymentInfo).length) cart.paymentInfo = paymentInfo;
   }
   return {
     catalogItems: args.bookingIds.map((id) => ({
@@ -206,9 +217,19 @@ export async function book(params: BookParams): Promise<BookResult> {
 
   // 2. createCart — one catalog item per booking id (channel WEB, bookings appId)
   const businessLocationId = params.slot.locationId ?? undefined;
-  const cart = await createCart(
-    buildCartRequest({ bookingIds: [bookingId], contactDetails, businessLocationId }),
-  );
+  let cart;
+  try {
+    cart = await createCart(
+      buildCartRequest({ bookingIds: [bookingId], contactDetails, businessLocationId }),
+    );
+  } catch (err) {
+    // Contact prefill must never cost the seat — if the enriched cart is
+    // rejected (e.g. a phone that fails the API's format), retry minimal.
+    console.warn("[booking] createCart with contact prefill failed, retrying minimal:", err);
+    cart = await createCart(
+      buildCartRequest({ bookingIds: [bookingId], businessLocationId }),
+    );
+  }
   const cartId = cart?._id;
   if (!cartId) throw new Error("Failed to create cart");
 

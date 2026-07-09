@@ -84,14 +84,16 @@ here*. Plain-bar header on this page (the scene owns the red curve), real
 404 status, noindex, reduced-motion safe, story counter-scaled for phones.
 
 ### 11. RPM scroll gauge
-A rev counter in the nav that revs with scroll velocity and "shifts" on page
-transitions. (The existing `nav-progress` bar is a page-*transition* loading
-indicator, not a scroll bar — this is a build, not a restyle.)
+✅ **Shipped.** The top hairline doubles as a rev counter: scroll velocity
+revs it (redline ≈ 3500px/s), lift-off decays it like a closed throttle,
+holding redline bangs a gear shift. Yields to the loading-bar states during
+navigation; dark at idle and under reduced motion.
 
 ### 12. An easter egg
-Konami code or typing A-P-E-X triggers a ghost lap — the boot screen's racing
-line redraws in gold and races the page. Internal competitions are won in
-hallway conversations; easter eggs start them.
+✅ **Shipped.** Type A-P-E-X anywhere (outside a text field): the boot
+corner redraws across the viewport in champagne gold, a ghost TH-12 laps it,
+the apex ring flares as it crosses, and the readout stamps
+GHOST LAP · 1:07.404. One lap, ~3s, gone.
 
 ---
 

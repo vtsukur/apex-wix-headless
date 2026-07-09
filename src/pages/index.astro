@@ -128,13 +128,17 @@ const fleet = [
 ];
 
 // The hero poster carries the first paint of the hero — preloaded in <head>
-// with fetchpriority=high so it never queues behind other requests, and
-// SELF-HOSTED (public/media/): the LCP resource must not pay a third-party
-// DNS+TLS handshake on a throttled connection — it rides the already-warm
-// origin connection. 1366×768 (was a wixstatic 1600×900): ~27% fewer pixels
-// to decode/raster, imperceptible under the scrim + curtain. The film
-// itself attaches after load+idle (see the deferral script by the video).
-const HERO_POSTER = "/media/hero-poster.webp";
+// with fetchpriority=high so it never queues behind other requests. Served
+// from the wixstatic image CDN: a same-origin copy (public/media/) was
+// tried 2026-07-09 and DEGRADED real PSI scores — the platform's static
+// path revalidates every hit (~270ms TTFB) while wixstatic serves cached
+// (~150ms), which outweighs the third-party handshake. 1366×768 keeps the
+// decode ~27% cheaper than the original 1600×900. The film itself attaches
+// after load+idle (see the deferral script by the video). NOTE: keep
+// public/media/hero-poster.webp in place — stale edge-cached HTML from the
+// self-hosted window still references it.
+const HERO_POSTER =
+  "https://static.wixstatic.com/media/67964a_26a86398939b49f6b591c8dc0a03c37af002.jpg/v1/fill/w_1366,h_768,q_80/poster.webp";
 
 // Responsive variants of the car stills — the fleet URLs point at the full
 // w_1376 crop, but phones only need ~480-768px. Derive a srcset by swapping

@@ -344,15 +344,16 @@ const LETTERS = "APEX".split("");
     // exactly that window, and the racing line joining ~32ms late is
     // imperceptible.
     requestAnimationFrame(() => requestAnimationFrame(() => startCanvas()));
-    // Wait for the display font (capped) so the wordmark never flashes in a
-    // fallback face mid-animation, then run the timeline: rise → hold (gated
-    // on the hero POSTER when one is on the page — the film itself attaches
+    // Start the timeline immediately — the old fonts-race gate (≤800ms) is
+    // obsolete now that the latin woff2s are preloaded from <head>; while
+    // the curtain is up its own first frame IS the page's FCP/LCP, so every
+    // deferred millisecond here was scored. Timeline: rise → hold (gated on
+    // the hero POSTER when one is on the page — the film itself attaches
     // after load+idle and must never hold the curtain) → handoff: wordmark
     // flies to the brand slot, line morphs onto the header curve, veil
     // dissolves → landing crossfade → cleanup. The poster gate is failsafed
     // at 3s so a slow network can never hold the page hostage.
-    const fontsReady: Promise<unknown> = (document as any).fonts?.ready ?? Promise.resolve();
-    Promise.race([fontsReady, new Promise((r) => setTimeout(r, 800))]).then(() => {
+    {
       requestAnimationFrame(() => {
         boot.classList.add("boot-play");
         // 2s hold (was 3.2s): still a deliberate cinematic beat, but the
@@ -393,7 +394,7 @@ const LETTERS = "APEX".split("");
           setTimeout(finish, 1300);
         });
       });
-    });
+    }
   } else if (html.classList.contains("booting")) {
     // Markup missing but the flag is set — never leave the page covered.
     finish();

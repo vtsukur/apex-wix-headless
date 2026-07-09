@@ -17,19 +17,17 @@ book sessions through it.
 ## The headline act: agentic booking, dogfooded
 
 ### 1. "The Concierge" — an on-site agent that books through the site's own MCP
-The site exposes `/_api/mcp` with tools to search content, check availability,
-and create bookings. Build a small chat island (Claude API + those MCP tools)
-so a visitor types *"something fast, Saturday morning, under €600"* and the
-concierge finds the TH-12W session, checks real slots, and walks them to
-checkout. A Wix headless site consuming Wix's own Site MCP is exactly the story
-the platform wants told right now — nobody else in the competition will have it
-working end-to-end.
+✅ **Shipped** (`002adbd`). A chat island (Claude API route + the site's own
+MCP tools) mounted site-wide: a visitor types *"something fast, Saturday
+morning, under €600"* and the concierge finds the TH-12W session, checks real
+slots, and walks them to checkout. A Wix headless site consuming Wix's own
+Site MCP, working end-to-end.
 
 ### 2. "Book it with your own AI" page
 The zero-effort sibling: an `/agents` page with copy-paste prompts and the MCP
 endpoint documented, so judges can point their own Claude at the site and watch
-it book. The llms.txt + JSON-LD groundwork turns into a live demo instruction
-sheet.
+it book. Cheaper than ever now — the Concierge already proves the whole MCP
+path; this page just documents what demonstrably works.
 
 ---
 
@@ -83,8 +81,9 @@ the members area.
 *will* type a bad URL; also closes a real gap (there is no 404 page today).
 
 ### 11. RPM scroll gauge
-The existing nav progress bar becomes a rev counter that revs with scroll
-velocity and "shifts" on page transitions.
+A rev counter in the nav that revs with scroll velocity and "shifts" on page
+transitions. (The existing `nav-progress` bar is a page-*transition* loading
+indicator, not a scroll bar — this is a build, not a restyle.)
 
 ### 12. An easter egg
 Konami code or typing A-P-E-X triggers a ghost lap — the boot screen's racing
@@ -102,20 +101,23 @@ why the site deserves to win — hand them the scorecard.
 
 ### 14. Technical flawlessness as a claim
 Lighthouse near-100s, a CI smoke test, zero-JS-required content (already true).
-Put the numbers on the colophon.
+Put the numbers on the colophon. Partially earned already — the PERF.md
+backlog sweep shipped (poster, fonts gate, lazy stills) — but no numbers are
+published and the only CI workflow is the cache warmer.
 
 ---
 
 ## Shortlist — playing to win
 
-1. **The Concierge (#1)** — the headline nobody else will have.
+~~The Concierge (#1)~~ — ✅ shipped; the headline is live.
+
+1. **Agents page + 404 + Colophon (#2, #10, #13)** — one polish day that
+   compounds what's already shipped and closes real gaps.
 2. **Timing-tower calendar + Grid Pass (#3, #4)** — the core flow becomes the
    portfolio piece.
 3. **The Paddock (#6)** — biggest breadth unlock.
-4. **Colophon + 404 + RPM gauge (#13, #10, #11)** — one polish day,
-   disproportionate impression.
-5. **Debrief reviews (#8)** if time allows — compounds with the SEO/LLM work
+4. **Debrief reviews (#8)** if time allows — compounds with the SEO/LLM work
    already shipped.
 
-First build recommendation: **the Concierge** — most differentiated, and
-everything it needs is already live.
+Next build recommendation: **the polish trio (#2, #10, #13)** — cheapest
+leverage now that the Concierge proves the story they document.

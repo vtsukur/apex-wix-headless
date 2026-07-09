@@ -19,7 +19,7 @@ in action. Divergences are concentrated in the typography-and-copy rules.
 | Images show the business | ✅ pass (AI caveat accepted — item 6) |
 | Kickers earn their place | ✅ fixed 2026-07-09 (item 7) |
 | Captions describe what's seen | ❌ miss (item 5) |
-| Simple, understandable copy | ⚠️ FAQ strong; About opening brochure-speak (item 4) |
+| Simple, understandable copy | ✅ fixed 2026-07-09 — About rewritten (item 4) |
 | No period on titles/subtitles | ✅ fixed 2026-07-09 (item 2) |
 | CTAs: short industry verbs | ✅ pass primary; noun secondaries accepted (item 7) |
 | Avoid ALL CAPS | 🚫 accepted — deliberate motorsport identity (item 1) |
@@ -109,12 +109,22 @@ experiences" is commented out (`src/pages/index.astro:207-208`, "Hidden for
 now, per request"). If the hero film is slow, one muted line does all the
 explaining. Deck would restore the kicker.
 
-### 4. About body opening is brochure-speak — ⬜ open
+### 4. About body opening is brochure-speak — ✅ shipped 2026-07-09
 
-Live CMS copy: "APEX represents the ultimate fusion of precision, courage,
-and mastery…" — the deck's exact "sophisticated manner / will your visitors
-understand?" failure. FAQ answers are the counter-example: concrete and
-strong. Fix is a Wix CMS edit (About collection), no deploy.
+Lead + closing paragraphs rewritten in the About CMS item via the data API
+(no deploy); middle two paragraphs (fleet, instructors — already concrete)
+untouched. Verified live.
+
+- Lead, was: "APEX represents the ultimate fusion of precision, courage,
+  and mastery. We invite you to experience driving at the absolute limit…"
+  Now: "APEX puts you behind the wheel of a supercar on a closed circuit —
+  one car, one instructor, one timed session. You do the driving; the
+  person beside you teaches you to hold the racing line at speed."
+- Closer, was: "…APEX is where ambition meets capability. Safety at the
+  limit. Never compromise." Now: "First time at speed or chasing your last
+  few tenths — the shape of the day is the same. Briefing first, instructor
+  alongside, cool-down lap to finish. Safety sets the limits; you drive up
+  to them."
 
 ### 5. Caption kale — ⬜ open
 

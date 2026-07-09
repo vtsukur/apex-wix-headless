@@ -822,11 +822,10 @@ body[data-navigating="true"] .product-grid {
   .index-row-film { display: none; }
 }
 .index-row:last-of-type { border-bottom: 1px solid var(--color-rule); }
-.index-row:hover { transform: translateX(0.75rem); }
 /* Scroll-linked roll: rows roll in from the left as they enter the
    viewport and roll back out as they leave (the .in class is toggled both
    ways in Layout.astro — unlike data-reveal, this replays every pass).
-   Transition covers opacity too, and the hover slide still wins while in. */
+   Transition covers opacity too. */
 [data-roll] {
   opacity: 0;
   transform: translateX(-2.5rem);
@@ -846,10 +845,10 @@ body[data-navigating="true"] .product-grid {
   opacity: 1;
   transform: none;
 }
-.index-row[data-roll].in:hover {
-  transform: translateX(0.75rem);
-}
 .index-row-num {
+  /* The row baseline-aligns, which would sink this small figure to the big
+     name's baseline — center it against the name instead. */
+  align-self: center;
   font-size: 0.75rem;
   letter-spacing: 0.2em;
   color: var(--color-mute);

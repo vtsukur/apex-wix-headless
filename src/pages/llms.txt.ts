@@ -57,6 +57,7 @@ export const GET: APIRoute = async ({ site }) => {
 - [Sessions](${abs("/services")}): the full catalog of bookable driving experiences
 - [About](${abs("/about")}): who APEX is and how a session runs
 - [FAQ](${abs("/faq")}): experience requirements, deposit and cancellation policy, what happens on the day
+- [For agents](${abs("/agents")}): how to point your AI at this site — MCP endpoint, setup, example prompts
 - [Full content for agents](${abs("/llms-full.txt")}): this map plus the complete About story and FAQ, live-generated
 
 ## Sessions
@@ -69,6 +70,7 @@ business details, search site content, check availability, and book sessions
 on a visitor's behalf. No scraping required.
 
 - Site MCP endpoint: ${abs("/_api/mcp")}
+- Setup guide: ${abs("/agents")}
 - Docs: https://dev.wix.com/docs/develop-websites/articles/get-started/about-the-wix-site-mcp
 
 ## Notes

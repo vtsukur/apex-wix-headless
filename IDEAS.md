@@ -24,10 +24,10 @@ slots, and walks them to checkout. A Wix headless site consuming Wix's own
 Site MCP, working end-to-end.
 
 ### 2. "Book it with your own AI" page
-The zero-effort sibling: an `/agents` page with copy-paste prompts and the MCP
-endpoint documented, so judges can point their own Claude at the site and watch
-it book. Cheaper than ever now — the Concierge already proves the whole MCP
-path; this page just documents what demonstrably works.
+✅ **Shipped.** `/agents` — the endpoint plated with copy buttons, wire-up
+for Claude Code / Claude.ai / any MCP client, a paste-ready booking prompt,
+the tool roster, and the machine-readable layer (llms.txt, JSON-LD) linked.
+Registered in the sitemap, llms.txt, and the footer.
 
 ---
 
@@ -77,10 +77,11 @@ the members area.
 ## Craft garnish (cheap, memorable, very shareable)
 
 ### 10. The 404 run-off area
-✅ **Shipped.** "You've gone off track" — the racing line draws the corner, a
-dashed trail misses it and dies in the gravel trap, a pulsing marker says
-*you are here*, a ghost 404 board sits behind. Echoes the missed path
-("No timing data for /…"), returns a real 404 status, noindex.
+✅ **Shipped** (then refined by review). "You've gone off track" — a framed
+telemetry plate: ghost 404 top-left, the racing line drawing the corner, a
+dashed trail past skid marks into an organic gravel trap, a pulsing *you are
+here*. Plain-bar header on this page (the scene owns the red curve), real
+404 status, noindex, reduced-motion safe, story counter-scaled for phones.
 
 ### 11. RPM scroll gauge
 A rev counter in the nav that revs with scroll velocity and "shifts" on page
@@ -113,8 +114,8 @@ published and the only CI workflow is the cache warmer.
 
 ~~The Concierge (#1)~~ — ✅ shipped; the headline is live.
 
-1. **Agents page + Colophon (#2, #13)** — cheap leverage that compounds
-   what's already shipped (404 ✅ done).
+1. **Colophon (#13)** — the last cheap-leverage item; the story it tells
+   keeps getting better (#1, #2, #10 ✅ done).
 2. **Timing-tower calendar + Grid Pass (#3, #4)** — the core flow becomes the
    portfolio piece.
 3. **The Paddock (#6)** — biggest breadth unlock.

@@ -7,7 +7,7 @@ import { services } from "@wix/bookings";
 import { auth } from "@wix/essentials";
 
 const BOOKING_APP_ID = "13d21c63-b5ec-5912-8397-c3a5ddb27a97";
-const STATIC_PATHS = ["/", "/about", "/faq", "/services"];
+const STATIC_PATHS = ["/", "/about", "/faq", "/services", "/agents"];
 
 export const GET: APIRoute = async ({ site }) => {
   const paths = [...STATIC_PATHS];

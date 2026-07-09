@@ -389,7 +389,7 @@ body[data-navigating="true"] .product-grid {
 /* ── Cinematic layer ──────────────────────────────────────────────────────────
    Pagani pacing (full-viewport scenes) · Rimac scale (massive condensed type,
    data-plates) · Aston refinement (eyebrows, hairlines, tracked caps) ·
-   Exo Ape motion (Lenis smooth scroll + staggered reveals, wired in Layout). */
+   Exo Ape motion (scroll-linked FX + staggered reveals, wired in Layout). */
 
 /* Eyebrow label — tracked caps with a signal-red tick (Aston refinement). */
 .eyebrow {
@@ -872,10 +872,6 @@ body[data-navigating="true"] .product-grid {
   transition-delay: var(--d, 0ms);
 }
 [data-reveal].in { opacity: 1; transform: none; }
-
-/* Lenis smooth-scroll host classes. */
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
 
 @media (prefers-reduced-motion: reduce) {
   [data-reveal] { transition: none; opacity: 1; transform: none; }

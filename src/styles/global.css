@@ -1006,15 +1006,16 @@ body[data-navigating="true"] .product-grid {
 }
 [data-reveal].in { opacity: 1; transform: none; }
 
-/* Once-per-session assembly (boot scenario only) — elements arrive from the
-   side they live on. html.assemble is armed with the entry curtain in
-   Layout.astro's head gate (so never under reduced motion); html.assembled
-   releases at apex:boot-done, which the inline 13s watchdog also fires, so
-   nothing can stay stranded offset. Ordinary visits never see .assemble and
-   keep the plain data-reveal rise. Hero copy carries data-asm to re-aim the
-   reveal's starting vector until the observer stamps .in; nav links and the
-   scroll cue stay out of the reveal system (it would replay them on every
-   client-side nav) and get a one-shot release instead. */
+/* Entrance assembly, every hard load — elements arrive from the side they
+   live on. html.assemble is armed in Layout.astro's head gate (never under
+   reduced motion); html.assembled releases them — at apex:boot-done on the
+   once-per-session boot (the inline 13s watchdog fires it too), right after
+   first paint on ordinary refreshes (4s timeout backstop for background
+   tabs). Hero copy carries data-asm to re-aim the reveal's starting vector
+   until the observer stamps .in; nav links and the scroll cue stay out of
+   the reveal system (it would replay them on every client-side nav) and get
+   a one-shot release instead — both classes persist on <html> through
+   ClientRouter swaps, so soft navigations only replay the data-reveal part. */
 html.assemble [data-asm="left"]:not(.in) { transform: translateX(-5rem); }
 html.assemble [data-asm="right"]:not(.in) { transform: translateX(5rem); }
 html.assemble [data-asm="up"]:not(.in) { transform: translateY(3.5rem); }

@@ -47,34 +47,45 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script is:inline>
-      // Entry-curtain gate — must run before first paint. Shows the boot
-      // overlay only on the first hard load of a session and never under
-      // reduced motion; the 5s watchdog guarantees the page can't stay
-      // covered if anything downstream fails.
+      // Entry gate — must run before first paint. Two jobs, never under
+      // reduced motion: show the boot overlay on the first hard load of a
+      // session, and arm the entrance assembly ("assemble": elements start
+      // offset toward the side they live on; "assembled" releases them) on
+      // EVERY hard load — released at boot-done when the curtain runs,
+      // right after first paint on ordinary refreshes.
       try {
-        if (
-          !sessionStorage.getItem("apex:booted") &&
-          !matchMedia("(prefers-reduced-motion: reduce)").matches
-        ) {
-          // "assemble" arms the once-per-session entrance choreography:
-          // elements start offset toward the side they live on (CSS under
-          // html.assemble) and "assembled" releases them at boot-done.
-          document.documentElement.classList.add("booting", "assemble");
-          document.addEventListener(
-            "apex:boot-done",
-            function () {
-              document.documentElement.classList.add("assembled");
-            },
-            { once: true },
-          );
-          setTimeout(function () {
-            document.documentElement.classList.remove("booting");
-            // The boot module normally dispatches this from finish(); fire it
-            // here too so content gated on it (reveals) can never be stranded
-            // if that chunk failed to load (e.g. stale edge HTML referencing
-            // a purged asset hash).
-            document.dispatchEvent(new CustomEvent("apex:boot-done"));
-          }, 13000);
+        if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          document.documentElement.classList.add("assemble");
+          var release = function () {
+            document.documentElement.classList.add("assembled");
+          };
+          if (!sessionStorage.getItem("apex:booted")) {
+            document.documentElement.classList.add("booting");
+            document.addEventListener("apex:boot-done", release, { once: true });
+            setTimeout(function () {
+              document.documentElement.classList.remove("booting");
+              // The boot module normally dispatches this from finish(); fire it
+              // here too so content gated on it (reveals) can never be stranded
+              // if that chunk failed to load (e.g. stale edge HTML referencing
+              // a purged asset hash).
+              document.dispatchEvent(new CustomEvent("apex:boot-done"));
+            }, 13000);
+          } else {
+            var go = function () {
+              // Double rAF: the offset starting styles must get one painted
+              // frame, or the release lands before any transition can run.
+              requestAnimationFrame(function () {
+                requestAnimationFrame(release);
+              });
+            };
+            if (document.readyState === "loading") {
+              document.addEventListener("DOMContentLoaded", go, { once: true });
+            } else {
+              go();
+            }
+            // rAF stalls in background tabs — never leave the page stranded.
+            setTimeout(release, 4000);
+          }
         }
       } catch (e) {}
     </script>

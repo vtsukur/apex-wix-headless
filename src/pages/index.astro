@@ -162,7 +162,7 @@ const carSrcset = (url: string): string =>
        NOT in the repo — it lives in the site's Wix Media and streams from the
        wixstatic CDN. The boot curtain waits for it (BootScreen.astro). -->
   <section class="scene scene-hero" aria-label="Apex">
-    <div class="hero-scene" aria-hidden="true">
+    <div class="hero-scene" aria-hidden="true" data-asm="wipe">
       {/* Desktop: 720p/24fps low-bitrate encode; phones: the purpose-made
           480p encode. The original 720p master stays in Wix Media for easy
           revert: 67964a_d30f1f2be4584a65924f05e849b1df3a. No src in markup
@@ -209,7 +209,7 @@ const carSrcset = (url: string): string =>
       <div class="hero-video-scrim"></div>
       <HeroFluid />
     </div>
-    <div class="scene-watermark" aria-hidden="true">APEX</div>
+    <div class="scene-watermark" aria-hidden="true" data-asm="far-right">APEX</div>
     <div class="container-wide flex flex-col gap-12 relative z-10" data-hero-parallax>
       <p class="eyebrow" data-reveal data-asm="left">Supercar driving experiences</p>
       <h1 class="display-hero" data-reveal data-asm="left" style="--d:100ms">

@@ -1021,8 +1021,6 @@ body[data-navigating="true"] .product-grid {
 html.assemble [data-asm="left"]:not(.in) { transform: translateX(-5rem); }
 html.assemble [data-asm="right"]:not(.in) { transform: translateX(5rem); }
 html.assemble [data-asm="up"]:not(.in) { transform: translateY(3.5rem); }
-html.assemble [data-asm="draw"]:not(.in) { transform: scaleX(0); }
-[data-asm="draw"] { transform-origin: left center; }
 /* Opacity lands fast, travel lands slow — on one shared curve the element
    finishes most of its journey while still invisible and the arrival reads
    as a plain fade. */
@@ -1031,28 +1029,6 @@ html.assemble [data-asm] {
     opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
     transform 1100ms cubic-bezier(0.16, 1, 0.3, 1);
   transition-delay: var(--asm-d, var(--d, 0ms));
-}
-/* Structure vectors — for page bones with no data-reveal (the observer never
-   stamps them .in): the start state holds only until html.assembled, then
-   the base styles take back over, transitioning on the rules below. "wipe"
-   opens the hero plate left-to-right (clip-path only — the parallax driver
-   owns the element's inline transform); "far-right" carries the watermark
-   in as a big slow mass, its opacity returning to the base value. */
-html.assemble:not(.assembled) [data-asm="wipe"] { clip-path: inset(0 100% 0 0); }
-html.assemble.assembled [data-asm="wipe"] { clip-path: inset(0 0 0 0); }
-html.assemble [data-asm="wipe"] {
-  transition: clip-path 900ms cubic-bezier(0.16, 1, 0.3, 1);
-  transition-delay: var(--asm-d, 0ms);
-}
-html.assemble:not(.assembled) [data-asm="far-right"] {
-  opacity: 0;
-  transform: translateX(8rem);
-}
-html.assemble [data-asm="far-right"] {
-  transition:
-    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 1600ms cubic-bezier(0.16, 1, 0.3, 1);
-  transition-delay: var(--asm-d, 0ms);
 }
 html.assemble .site-nav-item,
 html.assemble .scroll-cue {

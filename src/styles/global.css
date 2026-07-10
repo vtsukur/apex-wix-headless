@@ -66,6 +66,63 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
+  /* The scrollbar as a red cylinder (Chrome/Edge/Safari): capsule thumb,
+     cross-lit gradient for the 3D rod read, floated off the rail edges by a
+     transparent border. Styling this turns off macOS scrollbar auto-hide —
+     the red rail is always on, deliberately. */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 999px;
+    min-height: 3rem;
+    background-image: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-accent) 40%, black),
+      var(--color-accent) 32%,
+      color-mix(in srgb, var(--color-accent) 62%, white) 50%,
+      var(--color-accent) 68%,
+      color-mix(in srgb, var(--color-accent) 40%, black)
+    );
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-image: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-accent) 50%, black),
+      var(--color-accent) 28%,
+      color-mix(in srgb, var(--color-accent) 45%, white) 50%,
+      var(--color-accent) 72%,
+      color-mix(in srgb, var(--color-accent) 50%, black)
+    );
+  }
+  ::-webkit-scrollbar-thumb:horizontal {
+    min-height: 0;
+    min-width: 3rem;
+    background-image: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-accent) 40%, black),
+      var(--color-accent) 32%,
+      color-mix(in srgb, var(--color-accent) 62%, white) 50%,
+      var(--color-accent) 68%,
+      color-mix(in srgb, var(--color-accent) 40%, black)
+    );
+  }
+  /* Firefox can only recolor the native bar — flat accent on black. Guarded
+     so Chrome (121+) never sees scrollbar-color, which would make it drop
+     the ::-webkit-scrollbar redraw above. */
+  @supports not selector(::-webkit-scrollbar) {
+    html {
+      scrollbar-color: var(--color-accent) var(--color-paper);
+      scrollbar-width: thin;
+    }
+  }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     line-height: 1.15;

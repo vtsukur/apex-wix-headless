@@ -56,7 +56,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           !sessionStorage.getItem("apex:booted") &&
           !matchMedia("(prefers-reduced-motion: reduce)").matches
         ) {
-          document.documentElement.classList.add("booting");
+          // "assemble" arms the once-per-session entrance choreography:
+          // elements start offset toward the side they live on (CSS under
+          // html.assemble) and "assembled" releases them at boot-done.
+          document.documentElement.classList.add("booting", "assemble");
+          document.addEventListener(
+            "apex:boot-done",
+            function () {
+              document.documentElement.classList.add("assembled");
+            },
+            { once: true },
+          );
           setTimeout(function () {
             document.documentElement.classList.remove("booting");
             // The boot module normally dispatches this from finish(); fire it

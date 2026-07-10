@@ -211,11 +211,11 @@ const carSrcset = (url: string): string =>
     </div>
     <div class="scene-watermark" aria-hidden="true">APEX</div>
     <div class="container-wide flex flex-col gap-12 relative z-10" data-hero-parallax>
-      <p class="eyebrow" data-reveal>Supercar driving experiences</p>
-      <h1 class="display-hero" data-reveal style="--d:100ms">
+      <p class="eyebrow" data-reveal data-asm="left">Supercar driving experiences</p>
+      <h1 class="display-hero" data-reveal data-asm="left" style="--d:100ms">
         Commit to<br />the corner<span class="accent-dot" aria-hidden="true"></span>
       </h1>
-      <p class="text-xl md:text-2xl text-mute max-w-prose leading-relaxed" data-reveal style="--d:220ms">
+      <p class="text-xl md:text-2xl text-mute max-w-prose leading-relaxed" data-reveal data-asm="right" style="--d:220ms">
         The car, the circuit, the time slot — book and drive the racing line yourself
       </p>
       <div class="flex flex-wrap gap-4 mt-2" data-reveal style="--d:340ms">
@@ -223,7 +223,7 @@ const carSrcset = (url: string): string =>
         <a href="#sessions" class="btn-secondary">The sessions</a>
       </div>
     </div>
-    <div class="scroll-cue z-10" aria-hidden="true">Scroll</div>
+    <div class="scroll-cue z-10" aria-hidden="true" style="--asm-d:600ms">Scroll</div>
   </section>
 
   <!-- Scene 2 — the fleet: pinned scroll sequence, one car per beat -->

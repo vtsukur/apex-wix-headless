@@ -209,6 +209,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       window.addEventListener("scroll", heroGate, { passive: true });
       heroGate();
 
+      /* RPM gauge parked — rev-on-scroll commented out on request. The
+         hairline keeps its navigation loading-state duties untouched.
+
       // RPM gauge — the top hairline doubles as a rev counter: scroll
       // velocity revs it (redline ≈ 3500px/s), lift-off decays it like a
       // closed throttle, and holding redline bangs a shift (revs drop, climb
@@ -281,6 +284,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           rpmAcc = 0;
         });
       }
+      */
 
       // Scroll-driven effects — hero parallax-exit + pinned fleet progress.
       // Re-scanned after every ClientRouter swap; a no-op on pages without the

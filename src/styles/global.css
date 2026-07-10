@@ -1015,19 +1015,29 @@ body[data-navigating="true"] .product-grid {
    reveal's starting vector until the observer stamps .in; nav links and the
    scroll cue stay out of the reveal system (it would replay them on every
    client-side nav) and get a one-shot release instead. */
-html.assemble [data-asm="left"]:not(.in) { transform: translateX(-3rem); }
-html.assemble [data-asm="right"]:not(.in) { transform: translateX(3rem); }
+html.assemble [data-asm="left"]:not(.in) { transform: translateX(-5rem); }
+html.assemble [data-asm="right"]:not(.in) { transform: translateX(5rem); }
+html.assemble [data-asm="up"]:not(.in) { transform: translateY(3.5rem); }
+/* Opacity lands fast, travel lands slow — on one shared curve the element
+   finishes most of its journey while still invisible and the arrival reads
+   as a plain fade. */
+html.assemble [data-asm] {
+  transition:
+    opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1100ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--d, 0ms);
+}
 html.assemble .site-nav-item,
 html.assemble .scroll-cue {
   opacity: 0;
   transition:
-    opacity 1000ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 1000ms cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1100ms cubic-bezier(0.16, 1, 0.3, 1);
   transition-delay: var(--asm-d, 0ms);
 }
-html.assemble .site-nav-item { transform: translateY(-1.25rem); }
+html.assemble .site-nav-item { transform: translateY(-2rem); }
 /* The cue centers itself with translateX(-50%) — carry it through the ride. */
-html.assemble .scroll-cue { transform: translateX(-50%) translateY(1.25rem); }
+html.assemble .scroll-cue { transform: translateX(-50%) translateY(2rem); }
 html.assemble.assembled .site-nav-item {
   opacity: 1;
   transform: none;

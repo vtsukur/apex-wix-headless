@@ -564,6 +564,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       });
 
       function setupReveals() {
+        // Hold while the entry curtain is up — astro:page-load fires on the
+        // initial load too, and stamping .in behind the curtain settles the
+        // hero (and the boot assembly) before the page is even visible. The
+        // boot-done listener re-runs this the moment the curtain lifts.
+        if (document.documentElement.classList.contains("booting")) return;
         const els = document.querySelectorAll<HTMLElement>("[data-reveal]:not(.in)");
         if (reduced) {
           els.forEach((el) => el.classList.add("in"));
